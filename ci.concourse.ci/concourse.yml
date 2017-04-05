@@ -579,9 +579,6 @@ jobs:
       params:
         repository: final-release-repo
         merge: true
-    - put: concourse-master
-      params:
-        repository: final-release-repo
     - put: final-release
       params: {file: final-release-tarball/concourse-*.tgz}
 
@@ -615,7 +612,6 @@ jobs:
       passed: [github-release]
     - get: concourse
       params: {submodules: none}
-      resource: concourse-develop
   - task: build-docs
     file: concourse/ci/build-docs.yml
     params:
@@ -644,10 +640,6 @@ jobs:
       params: {submodules: none}
       passed: [shipit]
       trigger: true
-    - get: concourse-master
-      params: {submodules: none}
-      passed: [shipit]
-      trigger: true
     - get: version
       passed: [shipit]
       trigger: true
@@ -665,7 +657,8 @@ jobs:
           source: {repository: concourse/git-resource}
 
         inputs:
-        - name: concourse-master
+        - name: concourse
+        - name: version
 
         outputs:
         - name: generated-commitish
@@ -675,7 +668,7 @@ jobs:
           args:
           - -c
           - |
-            git -C concourse-master rev-parse HEAD > generated-commitish/commitish
+            git -C concourse rev-parse v$(cat version/version) > generated-commitish/commitish
   - put: github-release
     params:
       name: release-notes/release-name
@@ -850,12 +843,6 @@ resources:
     uri: https://github.com/concourse/concourse-lite.git
     branch: master
 
-- name: concourse-develop
-  type: git
-  source:
-    uri: https://github.com/concourse/concourse.git
-    branch: develop
-
 - name: concourse-docs
   type: cf
   source:
@@ -873,13 +860,6 @@ resources:
     user: concourse
 
 - name: concourse
-  type: git
-  source:
-    uri: git@github.com:concourse/concourse.git
-    branch: develop
-    private_key: {{concourse-repo-private-key}}
-
-- name: concourse-master
   type: git
   source:
     uri: git@github.com:concourse/concourse.git

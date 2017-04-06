@@ -112,7 +112,7 @@ jobs:
     - get: deployments
     - put: cessna-bosh-deployment
       params:
-        manifest: deployments/prod/cessna.yml
+        manifest: deployments/prod/deployments/cessna.yml
         stemcells: [gcp-stemcell/*.tgz]
         releases:
           - garden-runc/*.tgz
@@ -408,7 +408,7 @@ jobs:
   - put: prod-deployment
     params:
       cleanup: true
-      manifest: deployments/prod/concourse.yml
+      manifest: deployments/prod/deployments/concourse.yml
       stemcells: [bosh-stemcell/*.tgz]
       releases:
         - garden-runc-release/*.tgz

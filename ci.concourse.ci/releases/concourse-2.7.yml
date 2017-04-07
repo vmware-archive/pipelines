@@ -640,10 +640,10 @@ jobs:
     - get: version
       trigger: true
       passed: [github-release]
-    - get: concourse
+    - get: concourse-master
       params: {submodules: none}
   - task: build-docs
-    file: concourse/ci/build-docs.yml
+    file: concourse-master/ci/build-docs.yml
     params:
       ANALYTICS_ID: {{analytics-id}}
   - put: concourse-docs
@@ -702,6 +702,13 @@ resources:
   source:
     uri: git@github.com:concourse/concourse.git
     branch: releases/2.7
+    private_key: {{concourse-repo-private-key}}
+
+- name: concourse-master
+  type: git
+  source:
+    uri: git@github.com:concourse/concourse.git
+    branch: master
     private_key: {{concourse-repo-private-key}}
 
 - name: deployments

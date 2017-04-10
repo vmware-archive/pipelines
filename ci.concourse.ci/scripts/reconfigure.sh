@@ -46,6 +46,12 @@ else
   configure_pipeline main \
     $pipelines_path/concourse.yml
 
+  for release in releases/concourse-*.yml; do
+    version=$(echo $release | sed -e 's/.*concourse-\(.*\).yml$/\1/')
+    configure_pipeline releases:$version \
+      $release
+  done
+
   configure_pipeline wings \
     $pipelines_path/wings.yml
 

@@ -46,6 +46,9 @@ else
   configure_pipeline main \
     $pipelines_path/concourse.yml
 
+  configure_pipeline wings \
+    $pipelines_path/wings.yml
+
   configure_pipeline resources \
     $pipelines_path/resources.yml
 

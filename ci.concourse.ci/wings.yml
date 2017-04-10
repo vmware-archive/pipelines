@@ -1,0 +1,51 @@
+jobs:
+  - name: bosh-deploy
+    plan:
+    - aggregate:
+      - get: github-release
+      - get: bosh-stemcell
+        resource: gcp-stemcell
+      - get: deployments
+    - put: wings-deployment
+      params:
+        cleanup: true
+        manifest: deployments/prod/deployments/wings.yml
+        stemcells: [bosh-stemcell/*.tgz]
+        releases:
+          - github-release/concourse-*.tgz
+          - github-release/garden-runc-*.tgz
+
+resources:
+- name: wings-deployment
+  type: bosh-deployment
+  source:
+    target: {{bosh-target}}
+    deployment: {{wings-bosh-deployment}}
+    client: {{bosh-client-id}}
+    client_secret: {{bosh-client-secret}}
+
+- name: github-release
+  type: github-release
+  source:
+    access_token: {{concourse-github-release-access-token}}
+    repository: concourse
+    user: concourse
+
+- name: gcp-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-ubuntu-trusty-go_agent
+
+- name: deployments
+  type: git
+  source:
+    uri: git@github.com:concourse/deployments.git
+    branch: master
+    private_key: {{deployments-repo-private-key}}
+
+
+resource_types:
+- name: bosh-deployment
+  type: docker-image
+  source:
+    repository: cloudfoundry/bosh-deployment-resource

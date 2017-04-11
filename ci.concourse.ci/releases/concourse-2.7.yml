@@ -428,7 +428,7 @@ jobs:
     privileged: true
     file: concourse-lite/ci/build-boxes.yml
     image: concourse-buildbox-ci-image
-    tags: [think]
+    tags: [hetzner]
   - put: virtualbox-box
     params: {file: built-box/*.box}
 
@@ -456,7 +456,7 @@ jobs:
       privileged: true
       file: concourse-lite/ci/testflight.yml
       image: concourse-buildbox-testflight-ci-image
-      tags: [think]
+      tags: [hetzner]
     ensure:
       put: hetzner
       params: {release: hetzner}

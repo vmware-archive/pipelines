@@ -365,6 +365,7 @@ jobs:
     - get: garden-runc
       passed: [bosh-rc]
       trigger: true
+    - get: git-server-release
     - get: gcp-stemcell
     - get: bosh-cli
   - task: topgun
@@ -905,6 +906,13 @@ resources:
     user: concourse
     repository: bin
     access_token: {{bin-release-token}}
+
+- name: git-server-release
+  type: github-release
+  source:
+    user: cloudfoundry-community
+    repository: git-server-release
+    access_token: {{git-server-release-access-token}}
 
 - name: concourse-docker
   type: git

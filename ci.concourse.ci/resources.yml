@@ -990,7 +990,7 @@ resources:
   type: git
   source:
     uri: git@github.com:concourse/concourse.git
-    branch: develop
+    branch: master
     private_key: {{concourse-repo-private-key}}
 
 - name: buildroot

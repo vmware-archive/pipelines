@@ -646,6 +646,8 @@ jobs:
     file: concourse-master/ci/build-docs.yml
     params:
       ANALYTICS_ID: {{analytics-id}}
+    input_mapping:
+      concourse: concourse-master
   - put: concourse-docs
     params:
       current_app_name: docs

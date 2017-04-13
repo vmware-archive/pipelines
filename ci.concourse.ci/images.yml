@@ -40,7 +40,7 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse.git
-    branch: develop
+    branch: master
     paths: [ci/dockerfiles/docs-ci]
 
 - name: concourse-docs-ci-image
@@ -61,7 +61,7 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse.git
-    branch: develop
+    branch: master
     paths: [ci/dockerfiles/bosh-cli]
 
 - name: concourse-bosh-cli-image
@@ -76,7 +76,7 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse.git
-    branch: develop
+    branch: master
     paths: [ci/dockerfiles/btrfs-tools-ci]
 
 - name: concourse-btrfs-tools-ci-image

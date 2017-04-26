@@ -256,23 +256,22 @@ jobs:
       passed: [build-fly]
       params:
         globs: [fly_*]
-    - get: bin
     - get: houdini
     - get: garden-runc-src
   - task: checkout-release-tag
     file: concourse/ci/checkout-garden-runc.yml
   - aggregate:
     - task: build-linux
-      file: bin/ci/build-linux.yml
+      file: concourse/src/github.com/concourse/bin/ci/build-linux.yml
       output_mapping: {binary: linux-binary}
     - task: build-darwin
-      file: bin/ci/build-darwin.yml
+      file: concourse/src/github.com/concourse/bin/ci/build-darwin.yml
       output_mapping: {binary: darwin-binary}
     - task: build-windows
-      file: bin/ci/build-windows.yml
+      file: concourse/src/github.com/concourse/bin/ci/build-windows.yml
       output_mapping: {binary: windows-binary}
   - task: build-release
-    file: bin/ci/build-release.yml
+    file: concourse/src/github.com/concourse/bin/ci/build-release.yml
   - put: bin-rc
     params:
       name: release/name
@@ -331,9 +330,6 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: bin
-      passed: [bin-rc]
-      trigger: true
     - get: concourse
       passed: [bin-rc]
       trigger: true
@@ -347,7 +343,7 @@ jobs:
     - get: fly-rc
       passed: [bin-rc]
   - task: no-auth
-    file: bin/ci/testflight.yml
+    file: concourse/src/github.com/concourse/bin/ci/testflight.yml
     privileged: true
     timeout: 1h
 
@@ -421,9 +417,6 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: bin
-      passed: [bin-testflight]
-      trigger: true
     - get: bin-rc
       passed: [bin-testflight]
       params: {globs: [concourse_linux_amd64]}
@@ -438,7 +431,7 @@ jobs:
     - get: fly-rc
       passed: [bin-testflight]
   - task: setup-tugboat
-    file: bin/ci/smoke-tests/setup-tugboat.yml
+    file: concourse/src/github.com/concourse/bin/ci/smoke-tests/setup-tugboat.yml
     params:
       OS: ubuntu
       USER_NAME: root
@@ -447,19 +440,19 @@ jobs:
       SSH_KEY: {{digitalocean-ssh-key}}
       IMAGE: ubuntu-16-04-x64
   - task: create-droplet
-    file: bin/ci/smoke-tests/create-droplet.yml
+    file: concourse/src/github.com/concourse/bin/ci/smoke-tests/create-droplet.yml
     params: {OS: ubuntu, USER_NAME: root}
   - ensure:
       task: teardown
-      file: bin/ci/smoke-tests/teardown-droplet.yml
+      file: concourse/src/github.com/concourse/bin/ci/smoke-tests/teardown-droplet.yml
       params: {OS: ubuntu}
     do:
     - task: install-postgres
-      file: bin/ci/smoke-tests/install-postgres-xenial.yml
+      file: concourse/src/github.com/concourse/bin/ci/smoke-tests/install-postgres-xenial.yml
       params: {USER_NAME: root}
 
     - task: test-bin
-      file: bin/ci/smoke-tests/smoke-test.yml
+      file: concourse/src/github.com/concourse/bin/ci/smoke-tests/smoke-test.yml
       params: {USER_NAME: root}
 
 - name: bin-docker
@@ -887,12 +880,6 @@ resources:
     branch: master
     pool: hetzner
     private_key: {{locks-repo-private-key}}
-
-- name: bin
-  type: git
-  source:
-    uri: https://github.com/concourse/bin
-    branch: master
 
 - name: garden-runc-src
   type: git

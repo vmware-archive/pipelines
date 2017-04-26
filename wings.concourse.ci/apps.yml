@@ -1,0 +1,65 @@
+resources:
+- name: pagerhub
+  type: git
+  source:
+    uri: git@github.com:concourse/pagerhub
+    private_key: {{concourse-repo-private-key}}
+
+- name: faa
+  type: git
+  source:
+    uri: git@github.com:concourse/faa
+    private_key: {{concourse-repo-private-key}}
+
+- name: pws
+  type: cf
+  source:
+    api: {{cf-target}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-organization}}
+    space: {{cf-space}}
+
+jobs:
+- name: pagerhub
+  plan:
+  - get: pagerhub
+    trigger: true
+  - task: test
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: concourse/atc-ci
+
+      inputs:
+      - name: pagerhub
+        path: gopath/src/github.com/concourse/pagerhub
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          export GOPATH=$PWD/gopath
+          export PATH=$GOPATH/bin:$PATH
+
+          go get -u github.com/onsi/ginkgo/ginkgo
+          go get github.com/onsi/gomega
+
+          cd $GOPATH/src/github.com/concourse/pagerhub
+
+          ginkgo -r -p
+  - put: pws
+    params:
+      manifest: pagerhub/manifest.yml
+      path: pagerhub
+
+- name: faa
+  plan:
+  - get: faa
+    trigger: true
+  - put: pws
+    params:
+      manifest: faa/manifest.yml
+      path: faa

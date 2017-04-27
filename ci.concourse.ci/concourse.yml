@@ -6,6 +6,7 @@ groups:
   - fly
   - go-concourse
   - baggageclaim
+  - groundcrew
   - tsa
   - cessna
   - rc
@@ -85,6 +86,16 @@ jobs:
     privileged: true
     file: concourse/ci/baggageclaim.yml
 
+- name: groundcrew
+  public: true
+  serial: true
+  plan:
+  - get: concourse
+    trigger: true
+  - task: build
+    privileged: true
+    file: concourse/ci/groundcrew.yml
+
 - name: blackbox
   public: true
   plan:
@@ -163,7 +174,7 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-    passed: [atc, fly, go-concourse, blackbox, tsa, baggageclaim]
+    passed: [atc, fly, go-concourse, blackbox, tsa, baggageclaim, groundcrew]
   - get: garden-runc
   - get: version
     params: {pre: rc}

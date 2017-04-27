@@ -57,7 +57,7 @@ resources:
 jobs:
 - name: so-many-resources
   plan:
-    aggregate:
+  - aggregate:
     - get: git-pipelines
     - get: git-input
     - get: semver-version
@@ -67,7 +67,7 @@ jobs:
       trigger: true
     - get: bosh-io-garden-runc
       trigger: true
-    - task: edit-clara-git
+    - task: edit-input-git
       file: git-pipelines/airbus.concourse.ci/tasks/edit-input.yml
       input_mapping:
         pipelines: git-pipelines
@@ -102,7 +102,7 @@ jobs:
   - task: failing-task
     file: git-pipelines/airbus.concourse.ci/tasks/failing-task.yml
     on_failure:
-    - put: semver-version
+      put: semver-version
       params: {file: semver-version/version}
 
 # - name: hijack-failed-container

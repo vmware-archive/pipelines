@@ -8,4 +8,4 @@ cat semver-version/version > my-output/versionfile
 
 cd my-output
 git add .
-git ci -m "append version"
+git commit -m "append version"

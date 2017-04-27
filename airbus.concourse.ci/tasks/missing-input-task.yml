@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: busybox
+
+inputs:
+- name: git-pipelines
+- name: git-clara
+- name: pivnet-pmysql
+- name: s3-concourse-release
+
+run:
+  path: 'false'

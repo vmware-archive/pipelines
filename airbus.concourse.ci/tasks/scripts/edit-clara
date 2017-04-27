@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e -x
+
+git clone my-input my-output
+
+cat semver-version/version >> my-output/versionfile
+
+git add .
+git ci -m "append version"

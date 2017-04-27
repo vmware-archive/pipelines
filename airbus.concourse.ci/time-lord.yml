@@ -1,0 +1,114 @@
+---
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
+
+resources:
+- name: git-pipelines
+  type: git
+  source:
+    uri: https://github.com/concourse/pipelines.git
+
+- name: git-input
+  type: git
+  source:
+    uri: https://github.com/ClaraFuPivotal/tester.git
+
+- name: semver-version
+  type: semver
+  source:
+    driver: git
+    uri: https://github.com/ClaraFuPivotal/tester.git
+    branch: master
+    file: version
+
+- name: pivnet-pmysql
+  type: pivnet
+  source:
+    api_token: {{api-token}}
+    product_slug: p-mysql
+
+- name: bosh-io-concourse
+  type: bosh-io-release
+  source:
+    repository: concourse/concourse
+
+- name: bosh-io-garden-runc
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/garden-runc-release
+
+- name: s3-concourse-release
+  type: s3
+  source:
+    bucket: concourse-releases
+    regexp: concourse-(.*).tgz
+    access_key_id: {{pipeline-bucket-access-key}}
+    secret_access_key: {{pipeline-bucket-secret-key}}
+
+- name: gcp-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-ubuntu-trusty-go_agent
+
+jobs:
+- name: so-many-resources
+  plan:
+    aggregate:
+    - get: git-pipelines
+    - get: git-input
+    - get: semver-version
+      trigger: true
+    - get: pivnet-pmysql
+    - get: bosh-io-concourse
+      trigger: true
+    - get: bosh-io-garden-runc
+      trigger: true
+    - task: edit-clara-git
+      file: git-pipelines/airbus.concourse.ci/tasks/edit-input.yml
+      input_mapping:
+        pipelines: git-pipelines
+        my-input: git-input
+    - put: git-input
+      params: {repository: my-output}
+
+- name: get-more-resources
+  plan:
+  - get: git-pipelines
+    passed: [so-many-resources]
+    trigger: true
+  - get: git-input
+    passed: [so-many-resources]
+    trigger: true
+  - get: semver-version
+    passed: [so-many-resources]
+    trigger: true
+    params: {bump: major}
+  - get: pivnet-pmysql
+    passed: [so-many-resources]
+    trigger: true
+  - get: bosh-io-concourse
+    passed: [so-many-resources]
+    trigger: true
+  - get: bosh-io-garden-runc
+    passed: [so-many-resources]
+    trigger: true
+  - get: s3-concourse-release
+  - get: gcp-stemcell
+    trigger: true
+  - task: failing-task
+    file: git-pipelines/airbus.concourse.ci/tasks/failing-task.yml
+    on_failure:
+    - put: semver-version
+      params: {file: semver-version/version}
+
+# - name: hijack-failed-container
+#   plan:
+#   - get: git-pipelines
+#     passed: [get-more-resources]
+#     trigger: true
+#   - task: hijack-task
+#     file: git-pipelines/airbus.concourse.ci/tasks/hijack-task.yml

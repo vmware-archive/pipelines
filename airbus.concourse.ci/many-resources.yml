@@ -46,8 +46,8 @@ resources:
   source:
     bucket: concourse-releases
     regexp: concourse-(.*).tgz
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: {{s3-resource-access-key}}
+    secret_access_key: {{s3-resource-secret-key}}
 
 - name: gcp-stemcell
   type: bosh-io-stemcell

@@ -4,7 +4,8 @@ set -e -x
 
 git clone my-input my-output
 
-cat semver-version/version >> my-output/versionfile
+cat semver-version/version > my-output/versionfile
 
+cd my-output
 git add .
 git ci -m "append version"

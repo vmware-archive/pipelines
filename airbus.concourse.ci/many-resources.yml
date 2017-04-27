@@ -17,6 +17,22 @@ resources:
   source:
     uri: https://github.com/ClaraFuPivotal/tester.git
 
+- name: git-concourse
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse.git
+    branch: master
+
+- name: git-bosh
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/bosh.git
+    branch: master
+
+- name: time-interval
+  type: time
+  source: {interval: 10m}
+
 - name: semver-version
   type: semver
   source:
@@ -31,15 +47,72 @@ resources:
     api_token: {{api-token}}
     product_slug: p-mysql
 
+- name: pivnet-redis
+  type: pivnet
+  source:
+    api_token: {{api-token}}
+    product_slug: p-redis
+
+- name: pivnet-rabbitmq
+  type: pivnet
+  source:
+    api_token: {{api-token}}
+    product_slug: p-rabbitmq
+
 - name: bosh-io-concourse
   type: bosh-io-release
   source:
     repository: concourse/concourse
 
+- name: bosh-io-cf-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/cf-release
+
+- name: bosh-io-cf-mysql-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/cf-mysql-release
+
 - name: bosh-io-garden-runc
   type: bosh-io-release
   source:
     repository: cloudfoundry/garden-runc-release
+
+- name: bosh-io-bosh-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/bosh
+
+- name: bosh-io-diego-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/diego-release
+
+- name: bosh-io-postgres-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/postgres-release
+
+- name: bosh-io-haproxy-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-community/haproxy-boshrelease
+
+- name: bosh-io-shell-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-community/shell-boshrelease
+
+- name: bosh-io-guardian-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-incubator/guardian-release
+
+- name: bosh-io-lemon-bosh
+  type: bosh-io-release
+  source:
+    repository: pivotal-cf-experimental/bosh-lemon-release
 
 - name: s3-concourse-release
   type: s3
@@ -54,19 +127,39 @@ resources:
   source:
     name: bosh-google-kvm-ubuntu-trusty-go_agent
 
+- name: docker-concourse
+  type: docker-image-resource
+  source:
+    repository: concourse/concourse
+
 jobs:
 - name: so-many-resources
   plan:
   - aggregate:
     - get: git-pipelines
     - get: git-input
+    - get: git-concourse
+    - get: git-bosh
+    - get: time-interval
     - get: semver-version
       trigger: true
     - get: pivnet-pmysql
+    - get: pivnet-redis
+    - get: pivnet-rabbitmq
     - get: bosh-io-concourse
       trigger: true
     - get: bosh-io-garden-runc
       trigger: true
+    - get: bosh-io-bosh-release
+    - get: bosh-io-diego-release
+    - get: bosh-io-postgres-release
+    - get: bosh-io-lemon-bosh
+    - get: bosh-io-guardian-release
+    - get: bosh-io-shell-release
+    - get: bosh-io-cf-release
+    - get: bosh-io-cf-mysql-release
+    - get: bosh-io-haproxy-release
+    - get: docker-concourse
   - task: edit-input-git
     file: git-pipelines/airbus.concourse.ci/tasks/edit-input.yml
     input_mapping:

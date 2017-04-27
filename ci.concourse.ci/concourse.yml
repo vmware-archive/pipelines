@@ -422,7 +422,6 @@ jobs:
       params: {globs: [concourse_linux_amd64]}
       trigger: true
     - get: concourse
-      params: {submodules: none}
       passed: [bin-testflight]
       trigger: true
     - get: version

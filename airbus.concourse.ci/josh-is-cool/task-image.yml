@@ -1,0 +1,19 @@
+resources:
+- name: busybox-registry
+  type: docker-image
+  source:
+    repository: 10.1.1.1:5000/busybox
+    insecure_registries:
+    - 10.1.1.1:5000
+
+jobs:
+- name: busybox
+  plan:
+  - get: busybox-registry
+  - task: use-image
+    image: busybox-registry
+    config:
+      platform: linux
+      run:
+        path: echo
+        args: ["Thats, life"]

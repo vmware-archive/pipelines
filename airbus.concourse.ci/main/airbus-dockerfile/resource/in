@@ -1,0 +1,6 @@
+#!/bin/bash
+
+/opt/resource-og/in '$@'
+
+echo "🐝 ✈️ " > $1/rootfs/tmp/hello
+

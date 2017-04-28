@@ -1,0 +1,47 @@
+jobs:
+- name: start
+  serial: true
+  plan:
+  - get: output1
+    resource: minio-registry-1
+  - task: make-second-input
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      outputs:
+        - name: output2
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          echo "hows life?" > output2/file-2.0.0.txt
+  - task: use-the-inputs
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      inputs:
+      - name: output1
+      - name: output2exit
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          cat output1/file*
+          cat output2/file*
+
+resources:
+- name: minio-registry-1
+  type: s3
+  source:
+    endpoint: 10.1.1.100:9000
+    disable_ssl: true
+    regexp: output1/file-(.*).txt
+    access_key_id: {{minio_access_key_id}}
+    secret_access_key: {{minio_secret_access_key}}
+    bucket: local-inputs

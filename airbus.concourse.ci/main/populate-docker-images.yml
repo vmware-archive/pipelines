@@ -1,0 +1,22 @@
+resources:
+- name: busybox-dockerhub
+  type: docker-image
+  source:
+    repository: busybox
+
+- name: busybox-registry
+  type: docker-image
+  source:
+    repository: 10.1.1.1:5000/busybox
+    insecure_registries:
+    - 10.1.1.1:5000
+
+jobs:
+- name: busybox
+  plan:
+  - get: busybox-dockerhub
+    params:
+      save: true
+  - put: busybox-registry
+    params:
+      load: busybox-dockerhub

@@ -15,4 +15,4 @@ outputs:
 - name: my-output
 
 run:
-  path: pipelines/airbus.concourse.ci/tasks/scripts/edit-input
+  path: pipelines/airbus.concourse.ci/clara/tasks/scripts/edit-input

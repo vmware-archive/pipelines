@@ -16,6 +16,7 @@ resources:
   type: git
   source:
     uri: https://github.com/ClaraFuPivotal/tester.git
+    branch: master
 
 - name: git-concourse
   type: git
@@ -127,11 +128,6 @@ resources:
   source:
     name: bosh-google-kvm-ubuntu-trusty-go_agent
 
-- name: docker-concourse
-  type: docker-image-resource
-  source:
-    repository: concourse/concourse
-
 jobs:
 - name: so-many-resources
   plan:
@@ -159,9 +155,8 @@ jobs:
     - get: bosh-io-cf-release
     - get: bosh-io-cf-mysql-release
     - get: bosh-io-haproxy-release
-    - get: docker-concourse
   - task: edit-input-git
-    file: git-pipelines/airbus.concourse.ci/tasks/edit-input.yml
+    file: git-pipelines/airbus.concourse.ci/clara/tasks/edit-input.yml
     input_mapping:
       pipelines: git-pipelines
       my-input: git-input
@@ -193,15 +188,15 @@ jobs:
   - get: gcp-stemcell
     trigger: true
   - task: failing-task
-    file: git-pipelines/airbus.concourse.ci/tasks/failing-task.yml
+    file: git-pipelines/airbus.concourse.ci/clara/tasks/failing-task.yml
     on_failure:
       put: semver-version
       params: {file: semver-version/version}
 
-# - name: hijack-failed-container
-#   plan:
-#   - get: git-pipelines
-#     passed: [get-more-resources]
-#     trigger: true
-#   - task: hijack-task
-#     file: git-pipelines/airbus.concourse.ci/tasks/hijack-task.yml
+- name: hijack-failed-container
+  plan:
+  - get: git-pipelines
+    passed: [get-more-resources]
+    trigger: true
+  - task: hijack-task
+    file: git-pipelines/airbus.concourse.ci/clara/tasks/hijack-task.yml

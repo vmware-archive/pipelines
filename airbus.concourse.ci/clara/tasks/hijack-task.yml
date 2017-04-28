@@ -1,0 +1,13 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: concourse/buildroot
+
+inputs:
+- name: git-pipelines
+
+run:
+  path: pipelines/airbus.concourse.ci/clara/tasks/scripts/hijack-task

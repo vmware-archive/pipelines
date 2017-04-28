@@ -12,10 +12,10 @@ resources:
   source:
     uri: https://github.com/concourse/pipelines.git
 
-- name: git-input
+- name: git-fake
   type: git
   source:
-    uri: https://github.com/ClaraFuPivotal/tester.git
+    uri: git://10.1.1.200/foo
     branch: master
 
 - name: git-concourse
@@ -133,7 +133,7 @@ jobs:
   plan:
   - aggregate:
     - get: git-pipelines
-    - get: git-input
+    - get: git-fake
     - get: git-concourse
     - get: git-bosh
     - get: time-interval
@@ -159,8 +159,8 @@ jobs:
     file: git-pipelines/airbus.concourse.ci/clara/tasks/edit-input.yml
     input_mapping:
       pipelines: git-pipelines
-      my-input: git-input
-  - put: git-input
+      my-input: git-fake
+  - put: git-fake
     params: {repository: my-output}
 
 - name: get-more-resources
@@ -168,7 +168,7 @@ jobs:
   - get: git-pipelines
     passed: [so-many-resources]
     trigger: true
-  - get: git-input
+  - get: git-fake
     passed: [so-many-resources]
     trigger: true
   - get: semver-version

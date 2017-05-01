@@ -1,0 +1,15 @@
+jobs:
+  - name: missing-input
+    serial: true
+    plan:
+    - task: missing-input
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: {repository: busybox}
+        inputs:
+        - name: does-not-exist
+        run:
+          path: echo
+          args: ["wont", "work"]

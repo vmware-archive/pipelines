@@ -1,6 +1,7 @@
 resources:
 - name: pipelines
   type: git
+  check_every: 10000h
   source:
     uri: https://github.com/concourse/pipelines.git
 

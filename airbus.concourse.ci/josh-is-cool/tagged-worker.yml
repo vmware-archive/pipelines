@@ -1,0 +1,50 @@
+resources:
+- name: pipelines
+  type: git
+  tags: [worker-tag]
+  check_every: 10000h
+  source:
+    uri: https://github.com/concourse/pipelines.git
+
+- name: minio-registry
+  type: s3
+  tags: [worker-tag]
+  source:
+    endpoint: 10.3.0.2:9000
+    disable_ssl: true
+    regexp: tagged-output/file-(.*).txt
+    access_key_id: {{minio_access_key_id}}
+    secret_access_key: {{minio_secret_access_key}}
+    bucket: local-inputs
+
+
+
+jobs:
+- name: do-something-on-tagged-worker
+  serial: true
+  plan:
+  - get: pipelines
+  - task: tagged-worker
+    tags: [worker-tag]
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+
+      inputs:
+      - name: pipelines
+
+      outputs:
+      - name: tagged-output
+
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          mv pipelines/README.md tagged-output/file-1.0.0.txt
+
+  - put: minio-registry
+    params:
+      file: tagged-output/file-*.txt

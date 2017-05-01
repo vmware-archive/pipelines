@@ -1,5 +1,5 @@
 resources:
-- name: git-pipelines
+- name: pipelines
   type: git
   source:
     uri: https://github.com/concourse/pipelines.git
@@ -9,8 +9,14 @@ jobs:
 - name: do-something-on-windows-worker
   serial: true
   plan:
+  - get: pipelines
+    trigger: true
   - task: do-the-windows-thing
     config:
       platform: windows
+
+      inputs:
+      - name: pipelines
+
       run:
         path: pipelines/airbus.concourse.ci/josh-is-cool/scripts/windows.bat

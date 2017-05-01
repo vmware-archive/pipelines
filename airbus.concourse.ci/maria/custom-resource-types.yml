@@ -1,0 +1,42 @@
+resource_types:
+- name: custom-docker-image
+  type: docker-image
+  source:
+    repository: concourse/docker-image-resource
+    tag: docker-1.12.6 # change this to latest to test update
+
+resources:
+- name: marynixie-test
+  type: custom-docker-image
+  source:
+    repository: marynixie/test
+    username: marynixie
+    password: {{password}}
+
+- name: test-repo
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:mariash/test-docker
+    private_key: {{github_private_key}}
+
+jobs:
+- name: custom-resource-as-image-resource
+  plan:
+  - task: say-hello
+    config:
+      platform: linux
+      image_resource:
+        type: custom-docker-image
+        source:
+          repository: busybox
+      run:
+        path: echo
+        args: ["Hello, world!"]
+
+- name: put-to-custom-resource-type
+  plan:
+  - get: test-repo
+  - put: marynixie-test
+    params:
+      build: test-repo

@@ -1,0 +1,12 @@
+resources:
+- name: concourse
+  type: git
+  source:
+    branch: releases/2.7
+    uri: git@github.com:concourse/concourse
+    private_key: {{concourse-repo-private-key}}
+
+jobs:
+- name: put-to-custom-resource-type
+  plan:
+  - get: concourse

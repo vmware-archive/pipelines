@@ -2,9 +2,9 @@ resources:
 - name: busybox-registry
   type: docker-image
   source:
-    repository: 10.1.1.1:5000/busybox
+    repository: 10.3.0.3:5000/busybox
     insecure_registries:
-    - 10.1.1.1:5000
+    - 10.3.0.3:5000
 
 jobs:
 - name: busybox

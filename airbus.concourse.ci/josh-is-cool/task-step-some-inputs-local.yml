@@ -39,7 +39,7 @@ resources:
 - name: minio-registry-1
   type: s3
   source:
-    endpoint: 10.1.1.100:9000
+    endpoint: 10.3.0.2:9000
     disable_ssl: true
     regexp: output1/file-(.*).txt
     access_key_id: {{minio_access_key_id}}

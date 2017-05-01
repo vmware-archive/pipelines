@@ -15,7 +15,7 @@ resources:
 - name: git-fake
   type: git
   source:
-    uri: git://10.1.1.200/foo
+    uri: git://10.3.0.4/foo
     branch: master
 
 - name: git-concourse

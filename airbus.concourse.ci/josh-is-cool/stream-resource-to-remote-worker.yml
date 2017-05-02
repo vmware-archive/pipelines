@@ -1,0 +1,34 @@
+resources:
+- name: concourse
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse.git
+    private_key: {{concourse-repo-private-key}}
+
+- name: pipelines
+  type: git
+  source:
+    uri: https://github.com/concourse/pipelines.git
+    private_key: {{concourse-repo-private-key}}
+
+
+jobs:
+- name: do-something-on-windows-worker
+  serial: true
+  plan:
+  - get: pipelines
+    trigger: true
+    tags: [worker-tag]
+  - get: concourse
+    trigger: true
+    tags: [worker-tag]
+  - task: do-the-windows-thing
+    config:
+      platform: windows
+
+      inputs:
+      - name: pipelines
+      - name: concourse
+
+      run:
+        path: pipelines/airbus.concourse.ci/josh-is-cool/scripts/windows.bat

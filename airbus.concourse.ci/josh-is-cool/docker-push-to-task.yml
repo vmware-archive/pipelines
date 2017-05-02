@@ -1,0 +1,73 @@
+resources:
+- name: flight-school
+  type: git
+  source:
+    uri: https://github.com/concourse/flight-school
+    branch: master
+
+- name: busybox-registry
+  type: docker-image
+  source:
+    repository: 10.3.0.3:5000/busybox
+    insecure_registries:
+    - 10.3.0.3:5000
+
+
+jobs:
+- name: build-cached-image
+  plan:
+  - get: flight-school
+  - task: build-cached-image-workspace
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: ubuntu
+
+      outputs:
+      - name: workspace
+
+      inputs:
+      - name: flight-school
+
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          output_dir=workspace
+
+          cat << EOF > "${output_dir}/Dockerfile"
+          FROM ruby
+
+          ADD flight-school /tmp/flight-school
+          RUN bundle install --gemfile=/tmp/flight-school/Gemfile
+          RUN rm -rf /tmp/flight-school
+          EOF
+
+          cp -R ./flight-school "${output_dir}/flight-school"
+
+  - put: busybox-registry
+    params:
+      build: workspace
+
+- name: test
+  plan:
+  - get: busybox-registry
+    passed: [build-cached-image]
+    trigger: true
+  - get: flight-school
+    passed: [build-cached-image]
+  - task: run-tests
+    image: busybox-registry
+    config:
+      platform: linux
+      inputs:
+      - name: flight-school
+      run:
+        dir: flight-school
+        path: bundle
+        args:
+        - exec
+        - rspec

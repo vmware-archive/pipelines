@@ -1,0 +1,38 @@
+resources:
+- name: s3-image
+  type: s3
+  source:
+    bucket: concourse-public
+    regexp: image-(.*).tar.gz
+    region_name: us-west-1
+jobs:
+- name: start
+  serial: true
+  plan:
+  - get: s3-image
+  - task: prepare-image
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: busybox
+      outputs:
+      - name: image
+      inputs:
+      - name: s3-image
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            mkdir untarred-image
+            tar xzvf s3-image/image-1.tar.gz -C untarred-image/
+            mv untarred-image/image/* image/
+  - task: say-hello
+    image: image
+    config:
+      platform: linux
+      run:
+        path: echo
+        args: ["Hello, world!"]

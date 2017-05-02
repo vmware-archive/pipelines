@@ -8,7 +8,7 @@ resources:
 - name: busybox-registry
   type: docker-image
   source:
-    repository: 10.3.0.3:5000/busybox
+    repository: 10.3.0.3:5000/ruby-repo
     insecure_registries:
     - 10.3.0.3:5000
 

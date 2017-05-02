@@ -1,0 +1,18 @@
+resources:
+- name: concourse
+  type: git
+  source:
+    branch: master
+    uri: git@github.com:concourse/pipelines.git
+    private_key: {{concourse-repo-private-key}}
+
+jobs:
+- name: get-same-resource
+  serial: true
+  plan:
+  - get: first
+    resource: concourse
+    params: {depth: 2}
+  - get: second
+    resource: concourse
+    params: {submodules: none}

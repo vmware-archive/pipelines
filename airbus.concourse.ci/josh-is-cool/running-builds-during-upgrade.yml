@@ -1,0 +1,36 @@
+jobs:
+- name: interruptible
+  serial: true
+  interruptible: true
+  plan:
+  - task: make-first-input
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          sleep 3600000000
+
+- name: not-interruptible
+  serial: true
+  interruptible: false
+  plan:
+  - task: make-first-input
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      outputs:
+        - name: output1
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          sleep 36000000000

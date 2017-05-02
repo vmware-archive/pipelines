@@ -7,6 +7,6 @@ resources:
     private_key: {{concourse-repo-private-key}}
 
 jobs:
-- name: put-to-custom-resource-type
+- name: get-concourse
   plan:
   - get: concourse

@@ -2,8 +2,9 @@
 
 set -e -x
 
-curl -k -o /tmp/fly https://airbus.concourse.ci/api/v1/cli?arch=amd64&platform=linux
-chmod +x /tmp/fly
+curl https://airbus.concourse.ci/api/v1/cli?arch=amd64&platform=linux -k -o ./tmp/fly
+
+chmod +x ./tmp/fly
 
 ./tmp/fly -t airbus login -c https://airbus.concourse.ci -n clara -u $AIRBUS_USERNAME -p $AIRBUS_PASSWORD -k
 

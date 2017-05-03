@@ -166,7 +166,6 @@ jobs:
 - name: get-more-resources
   plan:
   - get: git-pipelines
-    trigger: true
   - get: git-fake
     passed: [so-many-resources]
     trigger: true

@@ -8,4 +8,4 @@ chmod +x fly
 
 ./fly -t airbus login -c https://airbus.concourse.ci -n clara -u $AIRBUS_USERNAME -p $AIRBUS_PASSWORD -k
 
-echo 3 | ./fly -t airbus hijack -j many-resource/so-many-resources -s failing-task -- echo hello | grep hello
+echo 3 | ./fly -t airbus hijack -j many-resource/get-more-resources -s failing-task -- echo hello | grep hello

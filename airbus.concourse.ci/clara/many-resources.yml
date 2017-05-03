@@ -38,7 +38,7 @@ resources:
   type: semver
   source:
     driver: git
-    uri: https://github.com/ClaraFuPivotal/tester.git
+    uri: git://10.3.0.4/foo
     branch: master
     file: version
 
@@ -195,7 +195,7 @@ jobs:
 - name: hijack-failed-container
   plan:
   - get: git-pipelines
-    passed: [get-more-resources]
+  - get: semver-version
     trigger: true
   - task: hijack-task
     file: git-pipelines/airbus.concourse.ci/clara/tasks/hijack-task.yml

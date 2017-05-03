@@ -2,10 +2,10 @@
 
 set -e -x
 
-curl -k -o ./tmp/fly 'https://airbus.concourse.ci/api/v1/cli?arch=amd64&platform=linux'
+curl -k -o fly 'https://airbus.concourse.ci/api/v1/cli?arch=amd64&platform=linux'
 
-chmod +x ./tmp/fly
+chmod +x fly
 
-./tmp/fly -t airbus login -c https://airbus.concourse.ci -n clara -u $AIRBUS_USERNAME -p $AIRBUS_PASSWORD -k
+./fly -t airbus login -c https://airbus.concourse.ci -n clara -u $AIRBUS_USERNAME -p $AIRBUS_PASSWORD -k
 
-echo 3 | ./tmp/fly -t airbus hijack -j many-resource/so-many-resources -s edit-input-git -- echo hello | grep hello
+echo 3 | ./fly -t airbus hijack -j many-resource/so-many-resources -s failing-task -- echo hello | grep hello

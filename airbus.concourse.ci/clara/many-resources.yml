@@ -199,3 +199,6 @@ jobs:
     trigger: true
   - task: hijack-task
     file: git-pipelines/airbus.concourse.ci/clara/tasks/hijack-task.yml
+    params:
+      AIRBUS_USERNAME: {{airbus-username}}
+      AIRBUS_PASSWORD: {{airbus-password}}

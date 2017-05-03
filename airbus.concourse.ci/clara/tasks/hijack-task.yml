@@ -5,6 +5,10 @@ image_resource:
   type: docker-image
   source: {repository: concourse/buildroot, tag: git}
 
+params:
+  AIRBUS_USERNAME:
+  AIRBUS_PASSWORD:
+
 inputs:
 - name: git-pipelines
 

@@ -2,7 +2,7 @@
 
 set -e -x
 
-curl https://airbus.concourse.ci/api/v1/cli?arch=amd64&platform=linux -k -o ./tmp/fly
+curl -k -o ./tmp/fly https://airbus.concourse.ci/api/v1/cli?arch=amd64&platform=linux
 
 chmod +x ./tmp/fly
 

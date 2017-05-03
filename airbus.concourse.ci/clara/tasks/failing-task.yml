@@ -8,7 +8,7 @@ image_resource:
 
 inputs:
 - name: git-pipelines
-- name: git-clara
+- name: git-fake
 - name: pivnet-pmysql
 - name: s3-concourse-release
 

@@ -9,4 +9,4 @@ inputs:
 - name: git-pipelines
 
 run:
-  path: pipelines/airbus.concourse.ci/clara/tasks/scripts/hijack-task
+  path: git-pipelines/airbus.concourse.ci/clara/tasks/scripts/hijack-task

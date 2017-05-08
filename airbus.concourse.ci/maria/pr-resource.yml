@@ -1,0 +1,36 @@
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
+resources:
+- name: mariash-test
+  type: pull-request
+  source:
+    repo: mariash/test-docker
+    access_token: {{access_token}}
+
+jobs:
+- name: test-job
+  plan:
+  - get: mariash-test
+    trigger: true
+    version: every
+  - task: say-hello
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: concourse/buildroot
+          tag: git
+      inputs:
+      - name: mariash-test
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          cd mariash-test
+          git status

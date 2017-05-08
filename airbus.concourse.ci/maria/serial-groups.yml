@@ -1,0 +1,42 @@
+jobs:
+- name: job-1
+  serial_groups: [serial-group-1]
+  plan:
+  - task: say-hello
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      run:
+        path: echo
+        args: ["Hello, world!"]
+
+- name: job-2
+  serial_groups: [serial-group-2]
+  plan:
+  - task: say-hello
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      run:
+        path: echo
+        args: ["Hello, world!"]
+
+- name: other-jobs-will-wait-while-this-one-is-running
+  serial_groups: [serial-group-1, serial-group-2]
+  plan:
+  - task: say-hello
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          sleep 300

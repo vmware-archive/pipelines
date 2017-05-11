@@ -205,8 +205,6 @@ jobs:
     - get: houdini
       trigger: true
     - get: garden-runc-src
-      version:
-        ref: 41e84e3b7f3ca363a61aadc70e729235143ccd2d
     - get: fly-rc
       trigger: true
       passed: [build-fly]

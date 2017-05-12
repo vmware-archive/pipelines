@@ -239,7 +239,6 @@ jobs:
       passed: [build-fly]
       params:
         globs: [fly_*]
-    - get: houdini
     - get: garden-runc-src
   - task: checkout-release-tag
     file: concourse/ci/checkout-garden-runc.yml
@@ -840,12 +839,6 @@ resources:
     uri: git@github.com:concourse/deployments.git
     branch: master
     private_key: {{deployments-repo-private-key}}
-
-- name: houdini
-  type: git
-  source:
-    uri: https://github.com/vito/houdini.git
-    branch: master
 
 - name: hetzner
   type: pool

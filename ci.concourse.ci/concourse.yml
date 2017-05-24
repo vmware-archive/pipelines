@@ -386,7 +386,6 @@ jobs:
       passed: [bosh-testflight]
   - put: prod-deployment
     params:
-      cleanup: true
       manifest: deployments/prod/deployments/concourse.yml
       stemcells: [bosh-stemcell/*.tgz]
       releases:

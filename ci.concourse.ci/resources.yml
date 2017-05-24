@@ -1121,3 +1121,4 @@ resources:
   source:
     user: docker
     repository: docker
+    access_token: {{concourse-github-dummy-access-token}}

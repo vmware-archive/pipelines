@@ -92,7 +92,6 @@ jobs:
   - get: concourse
     trigger: true
   - task: build
-    privileged: true
     file: concourse/ci/groundcrew.yml
 
 - name: blackbox

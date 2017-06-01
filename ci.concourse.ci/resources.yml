@@ -1118,6 +1118,7 @@ resources:
 
 - name: docker
   type: github-release
+  check_every: 1h
   source:
     user: docker
     repository: docker

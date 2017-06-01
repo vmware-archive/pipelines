@@ -227,6 +227,7 @@ resources:
 
 - name: docker
   type: github-release
+  check_every: 1h
   source:
     user: docker
     repository: docker
@@ -234,6 +235,7 @@ resources:
 
 - name: docker-compose
   type: github-release
+  check_every: 1h
   source:
     user: docker
     repository: compose

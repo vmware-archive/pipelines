@@ -480,10 +480,16 @@ jobs:
     - get: bin-rc
       passed: [bin-docker]
       trigger: true
-    - get: fly-rc
+    - get: concourse-docker
+      trigger: true
       passed: [bin-docker]
     - get: concourse-image-rc
       passed: [bin-docker]
+      trigger: true
+      params: {save: true}
+    - get: fly-rc
+      passed: [bin-docker]
+    - get: postgres-image
       params: {save: true}
   - task: testflight
     file: concourse-docker/ci/testflight.yml
@@ -903,6 +909,12 @@ resources:
   source:
     repository: ubuntu
     tag: '16.04'
+
+- name: postgres-image
+  type: docker-image
+  source:
+    repository: postgres
+    tag: latest
 
 - name: concourse-image-rc
   type: docker-image

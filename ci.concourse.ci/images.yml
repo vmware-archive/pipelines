@@ -18,7 +18,6 @@ resources:
   source:
     repository: concourse/buildbox-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-buildbox-testflight-ci
@@ -33,7 +32,6 @@ resources:
   source:
     repository: concourse/buildbox-testflight-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-docs-ci
@@ -48,7 +46,6 @@ resources:
   source:
     repository: concourse/docs-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: bosh-cli
@@ -69,7 +66,6 @@ resources:
   source:
     repository: concourse/bosh-cli
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-btrfs-tools-ci
@@ -84,7 +80,6 @@ resources:
   source:
     repository: concourse/btrfs-tools-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: vagrant-ci-image
@@ -92,7 +87,6 @@ resources:
   source:
     repository: concourse/vagrant-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: vagrant-ci
@@ -113,7 +107,6 @@ resources:
   source:
     repository: concourse/atc-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-tsa-ci
@@ -127,7 +120,6 @@ resources:
   source:
     repository: concourse/tsa-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-baggageclaim-ci
@@ -141,7 +133,6 @@ resources:
   source:
     repository: concourse/baggageclaim-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-bin-ci
@@ -155,7 +146,6 @@ resources:
   source:
     repository: concourse/bin-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-bin-test-ec2-ci
@@ -169,7 +159,6 @@ resources:
   source:
     repository: concourse/bin-test-ec2-ci
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: concourse-bin-testflight-ci
@@ -183,7 +172,19 @@ resources:
   source:
     repository: concourse/bin-testflight-ci
     username: {{docker-username}}
-    email: {{docker-email}}
+    password: {{docker-password}}
+
+- name: concourse-bin-docker-testflight-ci
+  type: git
+  source:
+    uri: https://github.com/concourse/bin.git
+    paths: [Dockerfile.testflight]
+
+- name: concourse-bin-docker-testflight-ci-image
+  type: docker-image
+  source:
+    repository: concourse/bin-docker-testflight-ci
+    username: {{docker-username}}
     password: {{docker-password}}
 
 - name: concourse-static-golang
@@ -197,7 +198,6 @@ resources:
   source:
     repository: concourse/static-golang
     username: {{docker-username}}
-    email: {{docker-email}}
     password: {{docker-password}}
 
 - name: ubuntu-16.04
@@ -224,6 +224,20 @@ resources:
   source:
     repository: alpine
     tag: "3.3"
+
+- name: docker
+  type: github-release
+  source:
+    user: docker
+    repository: docker
+    access_token: {{concourse-github-dummy-access-token}}
+
+- name: docker-compose
+  type: github-release
+  source:
+    user: docker
+    repository: compose
+    access_token: {{concourse-github-dummy-access-token}}
 
 jobs:
 - name: build-buildbox-ci
@@ -459,6 +473,27 @@ jobs:
       load_base: concourse-atc-ci-image
       build: concourse-bin-testflight-ci
       dockerfile: concourse-bin-testflight-ci/Dockerfile.testflight
+
+- name: build-bin-docker-testflight-ci
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-bin-docker-testflight-ci
+      trigger: true
+    - get: docker
+      trigger: true
+    - get: docker-compose
+      trigger: true
+    - get: concourse-bin-testflight-ci-image
+      passed: [build-bin-testflight-ci]
+      trigger: true
+      params: {save: true}
+  - put: concourse-bin-docker-testflight-ci-image
+    params:
+      load_base: concourse-bin-testflight-ci-image
+      build: .
+      dockerfile: concourse-bin-docker-testflight-ci/Dockerfile.testflight
 
 - name: build-vagrant
   public: false

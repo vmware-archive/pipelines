@@ -1,3 +1,16 @@
+#    _______________
+#  /                \ \
+# |                  \ \
+# |      R I P       | |
+# |                  | |
+# |  this  pipeline  | |
+# |    has  been     | |
+# | deprecated  but  | |
+# |  lives forever   | |
+# |  in our hearts   | |
+# |                  | |
+# =======================
+
 groups:
 - name: develop
   jobs:

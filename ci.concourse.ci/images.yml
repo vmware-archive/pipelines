@@ -6,20 +6,6 @@ resources:
     repository: rubinius/docker
     tag: latest
 
-- name: concourse-buildbox-ci
-  type: git
-  source:
-    uri: https://github.com/concourse/concourse-lite.git
-    branch: master
-    paths: [ci/dockerfiles/buildbox-ci, box-setup]
-
-- name: concourse-buildbox-ci-image
-  type: docker-image
-  source:
-    repository: concourse/buildbox-ci
-    username: {{docker-username}}
-    password: {{docker-password}}
-
 - name: concourse-buildbox-testflight-ci
   type: git
   source:
@@ -242,22 +228,6 @@ resources:
     access_token: {{concourse-github-dummy-access-token}}
 
 jobs:
-- name: build-buildbox-ci
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse-buildbox-ci
-      trigger: true
-    - get: ubuntu-16.04
-      trigger: true
-      params: {save: true}
-  - put: concourse-buildbox-ci-image
-    params:
-      dockerfile: concourse-buildbox-ci/ci/dockerfiles/buildbox-ci/Dockerfile
-      load_base: ubuntu-16.04
-      build: concourse-buildbox-ci/
-
 - name: build-buildbox-testflight-ci
   public: true
   serial: true

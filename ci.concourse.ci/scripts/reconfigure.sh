@@ -20,8 +20,8 @@ configure_pipeline() {
     -p $name \
     -c $pipeline \
     -l <(lpass show "Concourse Pipeline Credentials" --notes) \
-    -v basic-auth-username=<(credhub get -n /concourse-prod-bosh/concourse-prod/basic_auth_username --output-json | jq -r .value) \
-    -v basic-auth-password=<(credhub get -n /concourse-prod-bosh/concourse-prod/basic_auth_password --output-json | jq -r .value)
+    -v basic-auth-username=$(credhub get -n /concourse-prod-bosh/concourse-prod/basic_auth_username --output-json | jq -r .value) \
+    -v basic-auth-password=$(credhub get -n /concourse-prod-bosh/concourse-prod/basic_auth_password --output-json | jq -r .value)
 }
 
 check_installed lpass

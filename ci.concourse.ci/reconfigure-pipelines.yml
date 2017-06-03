@@ -1,0 +1,95 @@
+resource_types:
+- name: concourse-pipeline
+  type: docker-image
+  source:
+    repository: robdimsdale/concourse-pipeline-resource
+    tag: latest-final
+
+resources:
+- name: pipelines-src
+  type: git
+  source:
+    uri: git@github.com:concourse/pipelines.git
+    branch: master
+    private_key: {{concourse-repo-private-key}}
+
+- name: concourse-ci
+  type: concourse-pipeline
+  source:
+    target: https://ci.concourse.ci/
+    teams:
+    - name: main
+      username: {{basic-auth-username}}
+      password: {{basic-auth-password}}
+
+jobs:
+- name: set-pipelines
+  plan:
+  - get: pipelines-src
+    trigger: true
+  - task: grab-lpass-note
+    params:
+      LPASS_USERNAME: {{shared-lpass-username}}
+      LPASS_PASSWORD: {{shared-lpass-password}}
+      LPASS_NOTE_ID: {{concourse-pipeline-credentials-note-id}}
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: jess/lpass
+
+      params:
+        LPASS_USERNAME:
+        LPASS_PASSWORD:
+        LPASS_NOTE_ID:
+      outputs:
+      - name: lpass
+      run:
+        path: /bin/sh
+        args:
+        - -c
+        - |
+          set -eu
+
+          echo "${LPASS_PASSWORD}" | lpass login --force "${LPASS_USERNAME}"
+
+          lpass show --notes "${LPASS_NOTE_ID}" > lpass/note.yml
+  - put: concourse-ci
+    params:
+      pipelines:
+      - name: main
+        team: main
+        config_file: pipelines-src/ci.concourse.ci/concourse.yml
+        vars_files:
+        - lpass/note.yml
+      - name: hangar
+        team: main
+        config_file: pipelines-src/ci.concourse.ci/hangar.yml
+        vars_files:
+        - lpass/note.yml
+      - name: images
+        team: main
+        config_file: pipelines-src/ci.concourse.ci/images.yml
+        vars_files:
+        - lpass/note.yml
+      - name: prs
+        team: main
+        config_file: pipelines-src/ci.concourse.ci/pull-requests.yml
+        vars_files:
+        - lpass/note.yml
+      - name: resources
+        team: main
+        config_file: pipelines-src/ci.concourse.ci/resources.yml
+        vars_files:
+        - lpass/note.yml
+      - name: resources
+        team: main
+        config_file: pipelines-src/ci.concourse.ci/resources.yml
+        vars_files:
+        - lpass/note.yml
+      - name: wings
+        team: main
+        config_file: pipelines-src/ci.concourse.ci/wings.yml
+        vars_files:
+        - lpass/note.yml

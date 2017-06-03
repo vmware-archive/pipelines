@@ -19,10 +19,14 @@ configure_pipeline() {
   fly -t ci set-pipeline \
     -p $name \
     -c $pipeline \
-    -l <(lpass show "Concourse Pipeline Credentials" --notes)
+    -l <(lpass show "Concourse Pipeline Credentials" --notes) \
+    -v basic-auth-username=<(credhub get -n /concourse-prod-bosh/concourse-prod/basic_auth_username --output-json | jq -r .value) \
+    -v basic-auth-password=<(credhub get -n /concourse-prod-bosh/concourse-prod/basic_auth_password --output-json | jq -r .value)
 }
 
 check_installed lpass
+check_installed credhub
+check_installed jq
 check_installed fly
 
 # Make sure we're up to date and that we're logged in.
@@ -43,32 +47,6 @@ if [ "$#" -gt 0 ]; then
       $file
   done
 else
-  configure_pipeline main \
-    $pipelines_path/concourse.yml
-
-  if [ -e $pipelines_path/releases/concourse-*.yml ]; then
-    for release in $pipelines_path/releases/concourse-*.yml; do
-      version=$(echo $release | sed -e 's/.*concourse-\(.*\).yml$/\1/')
-      configure_pipeline releases:$version \
-        $release
-    done
-  fi
-
-  configure_pipeline wings \
-    $pipelines_path/wings.yml
-
-  configure_pipeline resources \
-    $pipelines_path/resources.yml
-
-  configure_pipeline images \
-    $pipelines_path/images.yml
-
-   configure_pipeline tracksuit \
-     $pipelines_path/tracksuit.yml
-
-  configure_pipeline hangar \
-    $pipelines_path/hangar.yml
-
-  configure_pipeline prs \
-    $pipelines_path/pull-requests.yml
+  configure_pipeline reconfigure-pipelines \
+    $pipelines_path/reconfigure-pipelines.yml
 fi

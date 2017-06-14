@@ -3,13 +3,13 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse.git
-    private_key: {{concourse-repo-private-key}}
+    private_key: ((concourse-repo-private-key))
 
 - name: pipelines
   type: git
   source:
     uri: https://github.com/concourse/pipelines.git
-    private_key: {{concourse-repo-private-key}}
+    private_key: ((concourse-repo-private-key))
 
 
 jobs:

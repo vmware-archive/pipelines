@@ -11,14 +11,14 @@ resources:
   source:
     repository: marynixie/test
     username: marynixie
-    password: {{password}}
+    password: ((password))
 
 - name: test-repo
   type: git
   source:
     branch: master
     uri: git@github.com:mariash/test-docker
-    private_key: {{github_private_key}}
+    private_key: ((github_private_key))
 
 jobs:
 - name: custom-resource-as-image-resource

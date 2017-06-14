@@ -4,7 +4,7 @@ resources:
   source:
     branch: releases/2.7
     uri: git@github.com:concourse/concourse
-    private_key: {{concourse-repo-private-key}}
+    private_key: ((concourse-repo-private-key))
 
 jobs:
 - name: get-concourse

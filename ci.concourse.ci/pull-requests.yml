@@ -10,21 +10,21 @@ resources:
   type: pull-request
   source:
     repo: concourse/fly
-    access_token: {{pull-requests-access-token}}
+    access_token: ((pull-requests-access-token))
     every: true
 
 - name: atc
   type: pull-request
   source:
     repo: concourse/atc
-    access_token: {{pull-requests-access-token}}
+    access_token: ((pull-requests-access-token))
     every: true
 
 - name: go-concourse
   type: pull-request
   source:
     repo: concourse/go-concourse
-    access_token: {{pull-requests-access-token}}
+    access_token: ((pull-requests-access-token))
     every: true
 
 jobs:

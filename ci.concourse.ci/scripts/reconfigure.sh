@@ -63,9 +63,6 @@ else
   configure_pipeline images \
     $pipelines_path/images.yml
 
-   configure_pipeline tracksuit \
-     $pipelines_path/tracksuit.yml
-
   configure_pipeline hangar \
     $pipelines_path/hangar.yml
 

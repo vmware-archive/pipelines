@@ -45,19 +45,19 @@ resources:
 - name: pivnet-pmysql
   type: pivnet
   source:
-    api_token: {{api-token}}
+    api_token: ((api-token))
     product_slug: p-mysql
 
 - name: pivnet-redis
   type: pivnet
   source:
-    api_token: {{api-token}}
+    api_token: ((api-token))
     product_slug: p-redis
 
 - name: pivnet-rabbitmq
   type: pivnet
   source:
-    api_token: {{api-token}}
+    api_token: ((api-token))
     product_slug: p-rabbitmq
 
 - name: bosh-io-concourse
@@ -120,8 +120,8 @@ resources:
   source:
     bucket: concourse-releases
     regexp: concourse-(.*).tgz
-    access_key_id: {{s3-resource-access-key}}
-    secret_access_key: {{s3-resource-secret-key}}
+    access_key_id: ((s3-resource-access-key))
+    secret_access_key: ((s3-resource-secret-key))
 
 - name: gcp-stemcell
   type: bosh-io-stemcell
@@ -199,5 +199,5 @@ jobs:
   - task: hijack-task
     file: git-pipelines/airbus.concourse.ci/clara/tasks/hijack-task.yml
     params:
-      AIRBUS_USERNAME: {{airbus-username}}
-      AIRBUS_PASSWORD: {{airbus-password}}
+      AIRBUS_USERNAME: ((airbus-username))
+      AIRBUS_PASSWORD: ((airbus-password))

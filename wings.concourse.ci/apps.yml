@@ -3,22 +3,22 @@ resources:
   type: git
   source:
     uri: git@github.com:concourse/pagerhub
-    private_key: {{concourse-repo-private-key}}
+    private_key: ((concourse-repo-private-key))
 
 - name: faa
   type: git
   source:
     uri: git@github.com:concourse/faa
-    private_key: {{concourse-repo-private-key}}
+    private_key: ((concourse-repo-private-key))
 
 - name: pws
   type: cf
   source:
-    api: {{cf-target}}
-    username: {{cf-username}}
-    password: {{cf-password}}
-    organization: {{cf-organization}}
-    space: {{cf-space}}
+    api: ((cf-target))
+    username: ((cf-username))
+    password: ((cf-password))
+    organization: ((cf-organization))
+    space: ((cf-space))
 
 jobs:
 - name: pagerhub

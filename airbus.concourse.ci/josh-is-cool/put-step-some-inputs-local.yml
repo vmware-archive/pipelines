@@ -33,8 +33,8 @@ resources:
     endpoint: 10.3.0.2:9000
     disable_ssl: true
     regexp: output1/file-(.*).txt
-    access_key_id: {{minio_access_key_id}}
-    secret_access_key: {{minio_secret_access_key}}
+    access_key_id: ((minio_access_key_id))
+    secret_access_key: ((minio_secret_access_key))
     bucket: local-inputs
 
 - name: minio-registry-2
@@ -43,8 +43,8 @@ resources:
     endpoint: 10.3.0.2:9000
     disable_ssl: true
     regexp: output2/file-(.*).txt
-    access_key_id: {{minio_access_key_id}}
-    secret_access_key: {{minio_secret_access_key}}
+    access_key_id: ((minio_access_key_id))
+    secret_access_key: ((minio_secret_access_key))
     bucket: local-inputs
 
 - name: minio-registry-3
@@ -53,6 +53,6 @@ resources:
     endpoint: 10.3.0.2:9000
     disable_ssl: true
     regexp: output3/file-(.*).txt
-    access_key_id: {{minio_access_key_id}}
-    secret_access_key: {{minio_secret_access_key}}
+    access_key_id: ((minio_access_key_id))
+    secret_access_key: ((minio_secret_access_key))
     bucket: local-inputs

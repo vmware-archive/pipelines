@@ -289,8 +289,8 @@ jobs:
     params:
       deployment_name: concourse-testflight
       web_ip: 10.244.15.2
-      tls_cert: {{testflight-tls-cert}}
-      tls_key: {{testflight-tls-key}}
+      tls_cert: ((testflight-tls-cert))
+      tls_key: ((testflight-tls-key))
   - put: tf-deployment
     params:
       manifest: concourse/src/github.com/concourse/testflight/scripts/manifests/deployment.yml
@@ -304,7 +304,7 @@ jobs:
     file: concourse/ci/testflight.yml
     params:
       ATC_URL: "https://10.244.15.2:4443"
-      FLY_CA_CERT: {{testflight-tls-cert}}
+      FLY_CA_CERT: ((testflight-tls-cert))
     timeout: 1h
 
 - name: bin-testflight
@@ -354,9 +354,9 @@ jobs:
       stemcell: gcp-stemcell
     params:
       BOSH_ENVIRONMENT: bosh.concourse.ci
-      BOSH_CLIENT: {{bosh-client-id}}
-      BOSH_CLIENT_SECRET: {{bosh-client-secret}}
-      BOSH_KEY: {{topgun-bosh-key}}
+      BOSH_CLIENT: ((bosh-client-id))
+      BOSH_CLIENT_SECRET: ((bosh-client-secret))
+      BOSH_KEY: ((topgun-bosh-key))
       TOPGUN_NETWORK_OFFSET: 0
 
 - name: bosh-deploy
@@ -413,9 +413,9 @@ jobs:
     params:
       OS: ubuntu
       USER_NAME: root
-      ACCESS_TOKEN: {{digitalocean-access-token}}
-      SSH_USER: {{digitalocean-ssh-user}}
-      SSH_KEY: {{digitalocean-ssh-key}}
+      ACCESS_TOKEN: ((digitalocean-access-token))
+      SSH_USER: ((digitalocean-ssh-user))
+      SSH_KEY: ((digitalocean-ssh-key))
       IMAGE: ubuntu-16-04-x64
   - task: create-droplet
     file: concourse/src/github.com/concourse/bin/ci/smoke-tests/create-droplet.yml
@@ -576,7 +576,7 @@ jobs:
       passed: [virtualbox-testflight]
   - task: finalize-release
     file: concourse/ci/finalize-release.yml
-    params: {BOSH_PRIVATE_CONFIG: {{bosh-private-config}}}
+    params: {BOSH_PRIVATE_CONFIG: ((bosh-private-config))}
   - aggregate:
     - put: version
       params: {file: version/version}
@@ -621,7 +621,7 @@ jobs:
     file: concourse/ci/build-docs.yml
     params:
       TMPDIR: /scratch
-      ANALYTICS_ID: {{analytics-id}}
+      ANALYTICS_ID: ((analytics-id))
   - put: concourse-docs
     params:
       current_app_name: docs
@@ -728,7 +728,7 @@ jobs:
       BLOB_NAME: btrfs-tools
       BLOB_VERSION: 4.4
       BLOB_DESTINATION: btrfs
-      BOSH_PRIVATE_CONFIG: {{bosh-private-config}}
+      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -748,7 +748,7 @@ jobs:
       BLOB_NAME: golang-linux-amd64
       BLOB_VERSION_FILE: version
       BLOB_DESTINATION: golang
-      BOSH_PRIVATE_CONFIG: {{bosh-private-config}}
+      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -758,48 +758,48 @@ resources:
   source:
     bucket: concourse-releases
     key: current-version
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((pipeline-bucket-access-key))
+    secret_access_key: ((pipeline-bucket-secret-key))
 
 - name: final-release
   type: s3
   source:
     bucket: concourse-releases
     regexp: concourse-(.*).tgz
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((pipeline-bucket-access-key))
+    secret_access_key: ((pipeline-bucket-secret-key))
 
 - name: bosh-rc
   type: s3
   source:
     bucket: concourse-release-candidates
     regexp: concourse-(.*).tgz
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((pipeline-bucket-access-key))
+    secret_access_key: ((pipeline-bucket-secret-key))
 
 - name: virtualbox-box
   type: s3
   source:
     bucket: concourse-boxes
     regexp: concourse-virtualbox-ubuntu-trusty-(.*).box
-    access_key_id: {{pipeline-bucket-access-key}}
-    secret_access_key: {{pipeline-bucket-secret-key}}
+    access_key_id: ((pipeline-bucket-access-key))
+    secret_access_key: ((pipeline-bucket-secret-key))
 
 - name: prod-deployment
   type: bosh-deployment
   source:
-    target: {{bosh-target}}
-    deployment: {{bosh-deployment}}
-    client: {{bosh-client-id}}
-    client_secret: {{bosh-client-secret}}
+    target: ((bosh-target))
+    deployment: ((bosh-deployment))
+    client: ((bosh-client-id))
+    client_secret: ((bosh-client-secret))
 
 - name: tf-deployment
   type: bosh-deployment
   source:
-    target: {{bosh-target}}
+    target: ((bosh-target))
     deployment: concourse-testflight
-    client: {{bosh-client-id}}
-    client_secret: {{bosh-client-secret}}
+    client: ((bosh-client-id))
+    client_secret: ((bosh-client-secret))
 
 - name: virtualbox-box-cloud
   type: vagrant-cloud
@@ -807,7 +807,7 @@ resources:
     username: concourse
     box: lite
     provider: virtualbox
-    access_token: {{atlas-access-token}}
+    access_token: ((atlas-access-token))
 
 - name: garden-runc
   type: bosh-io-release
@@ -817,7 +817,7 @@ resources:
 - name: fly-rc
   type: github-release
   source:
-    access_token: {{concourse-github-release-access-token}}
+    access_token: ((concourse-github-release-access-token))
     user: concourse
     repository: fly
     release: false
@@ -837,16 +837,16 @@ resources:
 - name: concourse-docs
   type: cf
   source:
-    api: {{cf-target}}
-    username: {{cf-username}}
-    password: {{cf-password}}
-    organization: {{cf-organization}}
-    space: {{cf-space}}
+    api: ((cf-target))
+    username: ((cf-username))
+    password: ((cf-password))
+    organization: ((cf-organization))
+    space: ((cf-space))
 
 - name: github-release
   type: github-release
   source:
-    access_token: {{concourse-github-release-access-token}}
+    access_token: ((concourse-github-release-access-token))
     repository: concourse
     user: concourse
 
@@ -855,14 +855,14 @@ resources:
   source:
     uri: git@github.com:concourse/concourse.git
     branch: master
-    private_key: {{concourse-repo-private-key}}
+    private_key: ((concourse-repo-private-key))
 
 - name: deployments
   type: git
   source:
     uri: git@github.com:concourse/deployments.git
     branch: master
-    private_key: {{deployments-repo-private-key}}
+    private_key: ((deployments-repo-private-key))
 
 - name: hetzner
   type: pool
@@ -870,7 +870,7 @@ resources:
     uri: git@github.com:concourse/locks.git
     branch: master
     pool: hetzner
-    private_key: {{locks-repo-private-key}}
+    private_key: ((locks-repo-private-key))
 
 - name: garden-runc-src
   type: git
@@ -883,14 +883,14 @@ resources:
   source:
     user: concourse
     repository: bin
-    access_token: {{bin-release-token}}
+    access_token: ((bin-release-token))
 
 - name: git-server-release
   type: github-release
   source:
     user: cloudfoundry-community
     repository: git-server-release
-    access_token: {{git-server-release-access-token}}
+    access_token: ((git-server-release-access-token))
 
 - name: concourse-docker
   type: git
@@ -902,7 +902,7 @@ resources:
   source:
     user: Yelp
     repository: dumb-init
-    access_token: {{bin-release-token}} # just so we don't get rate limited
+    access_token: ((bin-release-token)) # just so we don't get rate limited
 
 - name: ubuntu-image
   type: docker-image
@@ -920,15 +920,15 @@ resources:
   type: docker-image
   source:
     repository: concourse/concourse-rc
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-image-final
   type: docker-image
   source:
     repository: concourse/concourse
-    username: {{docker-username}}
-    password: {{docker-password}}
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: golang-windows
   type: s3

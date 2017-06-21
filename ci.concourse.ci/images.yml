@@ -186,6 +186,19 @@ resources:
     username: ((docker-username))
     password: ((docker-password))
 
+- name: concourse-topgun-ci
+  type: git
+  source:
+    uri: https://github.com/concourse/topgun.git
+    paths: [Dockerfile]
+
+- name: concourse-topgun-ci-image
+  type: docker-image
+  source:
+    repository: concourse/topgun-ci
+    username: ((docker-username))
+    password: ((docker-password))
+
 - name: concourse-static-golang
   type: git
   source:
@@ -263,6 +276,22 @@ jobs:
       dockerfile: concourse-buildbox-testflight-ci/ci/dockerfiles/buildbox-testflight-ci/Dockerfile
       load_base: concourse-atc-ci-image
       build: concourse-buildbox-testflight-ci/
+
+- name: build-topgun-ci
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-topgun-ci
+      trigger: true
+    - get: concourse-atc-ci-image
+      passed: [build-atc-ci]
+      trigger: true
+      params: {save: true}
+  - put: concourse-topgun-ci-image
+    params:
+      load_base: concourse-atc-ci-image
+      build: concourse-topgun-ci
 
 - name: build-docs-ci
   public: true

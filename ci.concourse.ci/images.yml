@@ -377,7 +377,7 @@ jobs:
     - get: node
       trigger: true
       params: {save: true}
-  - put: concourse-atc-ci-image
+  - put: concourse-atc-ci-elm-image
     params:
       load_base: node
       build: concourse-atc-ci-elm/web

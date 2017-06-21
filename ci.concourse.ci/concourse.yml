@@ -346,6 +346,7 @@ jobs:
       passed: [bosh-rc]
       trigger: true
     - get: git-server-release
+    - get: vault-release
     - get: gcp-stemcell
     - get: bosh-cli
   - task: topgun
@@ -815,6 +816,11 @@ resources:
   type: bosh-io-release
   source:
     repository: cloudfoundry/garden-runc-release
+
+- name: vault-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-community/vault-boshrelease
 
 - name: fly-rc
   type: github-release

@@ -95,6 +95,19 @@ resources:
     username: ((docker-username))
     password: ((docker-password))
 
+- name: concourse-atc-ci-elm
+  type: git
+  source:
+    uri: https://github.com/concourse/atc.git
+    paths: [web/Dockerfile]
+
+- name: concourse-atc-ci-elm-image
+  type: docker-image
+  source:
+    repository: concourse/atc-ci-elm
+    username: ((docker-username))
+    password: ((docker-password))
+
 - name: concourse-tsa-ci
   type: git
   source:
@@ -190,13 +203,19 @@ resources:
   type: docker-image
   source:
     repository: ubuntu
-    tag: "16.04"
+    tag: 16.04
 
 - name: golang-1.x
   type: docker-image
   source:
     repository: golang
-    tag: '1'
+    tag: 1
+
+- name: node
+  type: docker-image
+  source:
+    repository: node
+    tag: 7.2.0-slim
 
 - name: golang-1.x-tarball
   type: s3
@@ -347,6 +366,21 @@ jobs:
     params:
       load_base: ubuntu-16.04
       build: context
+
+- name: build-atc-ci-elm
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-atc-ci-elm
+      trigger: true
+    - get: node
+      trigger: true
+      params: {save: true}
+  - put: concourse-atc-ci-image
+    params:
+      load_base: node
+      build: concourse-atc-ci-elm/web
 
 - name: build-tsa-ci
   public: true

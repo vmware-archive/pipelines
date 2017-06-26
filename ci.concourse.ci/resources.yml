@@ -846,129 +846,113 @@ resources:
 - name: git-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/git-resource
 
 - name: hg-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/hg-resource
 
 - name: pool-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/pool-resource
 
 - name: docker-image-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/docker-image-resource
 
 - name: archive-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/archive-resource
 
 - name: bosh-deployment-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/bosh-deployment-resource
 
 - name: time-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/time-resource
 
 - name: datadog-event-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/datadog-event-resource
 
 - name: tracker-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/tracker-resource
 
 - name: vagrant-cloud-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/vagrant-cloud-resource
 
 - name: cf-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/cf-resource
 
 - name: s3-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/s3-resource
 
 - name: github-release-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/github-release-resource
 
 - name: semver-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/semver-resource
 
 - name: bosh-io-release-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/bosh-io-release-resource
 
 - name: bosh-io-stemcell-resource-image
   type: docker-image
   source:
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
     repository: concourse/bosh-io-stemcell-resource
 
 - name: autopilot
@@ -1010,9 +994,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/buildroot-tarmaker
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: buildroot-base
   type: git
@@ -1026,9 +1009,8 @@ resources:
   source:
     repository: concourse/buildroot
     tag: base
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: buildroot-git
   type: git
@@ -1042,9 +1024,8 @@ resources:
   source:
     repository: concourse/buildroot
     tag: git
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: buildroot-curl
   type: git
@@ -1058,9 +1039,8 @@ resources:
   source:
     repository: concourse/buildroot
     tag: curl
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: buildroot-hg
   type: git
@@ -1074,9 +1054,8 @@ resources:
   source:
     repository: concourse/buildroot
     tag: hg
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: buildroot-iptables
   type: git
@@ -1090,9 +1069,8 @@ resources:
   source:
     repository: concourse/buildroot
     tag: iptables
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: buildroot-ruby
   type: git
@@ -1106,9 +1084,8 @@ resources:
   source:
     repository: concourse/buildroot
     tag: ruby
-    username: ((docker-username))
-    email: ((docker-email))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: ubuntu-16.04
   type: docker-image

@@ -822,6 +822,7 @@ resources:
   source:
     owner: vito
     repository: vault-boshrelease
+    access_token: ((concourse-github-dummy-access-token))
 
 - name: fly-rc
   type: github-release
@@ -929,15 +930,15 @@ resources:
   type: docker-image
   source:
     repository: concourse/concourse-rc
-    username: ((docker-username))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: concourse-image-final
   type: docker-image
   source:
     repository: concourse/concourse
-    username: ((docker-username))
-    password: ((docker-password))
+    username: ((docker.username))
+    password: ((docker.password))
 
 - name: golang-windows
   type: s3

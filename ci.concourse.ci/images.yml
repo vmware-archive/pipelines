@@ -17,8 +17,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/buildbox-testflight-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-docs-ci
   type: git
@@ -31,8 +31,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/docs-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: bosh-cli
   type: s3
@@ -51,8 +51,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/bosh-cli
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-btrfs-tools-ci
   type: git
@@ -65,15 +65,15 @@ resources:
   type: docker-image
   source:
     repository: concourse/btrfs-tools-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: vagrant-ci-image
   type: docker-image
   source:
     repository: concourse/vagrant-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: vagrant-ci
   type: git
@@ -92,8 +92,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/atc-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-atc-ci-elm
   type: git
@@ -105,8 +105,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/atc-ci-elm
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-tsa-ci
   type: git
@@ -118,8 +118,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/tsa-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-baggageclaim-ci
   type: git
@@ -131,8 +131,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/baggageclaim-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-bin-ci
   type: git
@@ -144,8 +144,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/bin-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-bin-test-ec2-ci
   type: git
@@ -157,8 +157,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/bin-test-ec2-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-bin-testflight-ci
   type: git
@@ -170,8 +170,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/bin-testflight-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-bin-docker-testflight-ci
   type: git
@@ -183,8 +183,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/bin-docker-testflight-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-topgun-ci
   type: git
@@ -196,8 +196,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/topgun-ci
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: concourse-static-golang
   type: git
@@ -209,8 +209,8 @@ resources:
   type: docker-image
   source:
     repository: concourse/static-golang
-    username: ((docker.username))
-    password: ((docker.password))
+    username: ((docker-username))
+    password: ((docker-password))
 
 - name: ubuntu-16.04
   type: docker-image

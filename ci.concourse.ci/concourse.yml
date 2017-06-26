@@ -818,9 +818,10 @@ resources:
     repository: cloudfoundry/garden-runc-release
 
 - name: vault-release
-  type: bosh-io-release
+  type: github-release
   source:
-    repository: cloudfoundry-community/vault-boshrelease
+    owner: vito
+    repository: vault-boshrelease
 
 - name: fly-rc
   type: github-release

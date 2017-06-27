@@ -342,6 +342,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: time-resource
+    passed: [time-resource]
   - get: concourse
   - task: bump-package
     input_mapping:

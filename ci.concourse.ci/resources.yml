@@ -175,6 +175,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: git-resource
+    passed: [git-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -219,6 +220,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: hg-resource
+    passed: [hg-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -258,6 +260,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: pool-resource
+    passed: [pool-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -299,6 +302,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: docker-image-resource
+    passed: [docker-image-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -397,6 +401,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: archive-resource
+    passed: [archive-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -436,6 +441,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: bosh-deployment-resource
+    passed: [bosh-deployment-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -479,6 +485,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: s3-resource
+    passed: [s3-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -518,6 +525,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: github-release-resource
+    passed: [github-release-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -564,6 +572,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: cf-resource
+    passed: [cf-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -608,6 +617,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: semver-resource
+    passed: [semver-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -644,7 +654,8 @@ jobs:
     passed: [bosh-io-release-resource]
     params: {rootfs: true}
     trigger: true
-  - get: bosh-io-release-resource-image
+  - get: bosh-io-release-resource
+    passed: [bosh-io-release-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -684,6 +695,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: bosh-io-stemcell-resource
+    passed: [bosh-io-stemcell-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -725,6 +737,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: tracker-resource
+    passed: [tracker-resource]
   - get: concourse
   - task: bump-package
     input_mapping:
@@ -762,6 +775,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: vagrant-cloud-resource
+    passed: [vagrant-cloud-resource]
   - get: concourse
   - task: bump-package
     input_mapping:

@@ -80,7 +80,7 @@ resources:
   source:
     uri: git@github.com:concourse/deployments.git
     paths: [lite/ci/Dockerfile]
-    private_key: ((deployments-repo-private-key))
+    private_key: ((deployments_repo_private_key))
 
 - name: concourse-atc-ci
   type: git
@@ -249,7 +249,7 @@ resources:
   source:
     user: docker
     repository: docker
-    access_token: ((concourse-github-dummy-access-token))
+    access_token: ((concourse_github_dummy.access_token))
 
 - name: docker-compose
   type: github-release
@@ -257,7 +257,7 @@ resources:
   source:
     user: docker
     repository: compose
-    access_token: ((concourse-github-dummy-access-token))
+    access_token: ((concourse_github_dummy.access_token))
 
 jobs:
 - name: build-buildbox-testflight-ci

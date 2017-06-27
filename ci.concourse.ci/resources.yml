@@ -174,10 +174,12 @@ jobs:
     passed: [git-resource]
     params: {rootfs: true}
     trigger: true
+  - get: git-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: git-resource-image
+      resource-repo: git-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: git-resource
@@ -216,10 +218,12 @@ jobs:
     passed: [hg-resource]
     params: {rootfs: true}
     trigger: true
+  - get: hg-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: hg-resource-image
+      resource-repo: hg-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: hg-resource
@@ -253,10 +257,12 @@ jobs:
     passed: [pool-resource]
     params: {rootfs: true}
     trigger: true
+  - get: pool-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: pool-resource-image
+      resource-repo: pool-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: pool-resource
@@ -292,10 +298,12 @@ jobs:
     passed: [docker-image-resource]
     params: {rootfs: true}
     trigger: true
+  - get: docker-image-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: docker-image-resource-image
+      resource-repo: docker-image-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: docker-image-resource
@@ -329,10 +337,12 @@ jobs:
     passed: [time-resource]
     params: {rootfs: true}
     trigger: true
+  - get: time-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: time-resource-image
+      resource-repo: time-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: time-resource
@@ -386,10 +396,12 @@ jobs:
     passed: [archive-resource]
     params: {rootfs: true}
     trigger: true
+  - get: archive-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: archive-resource-image
+      resource-repo: archive-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: archive-resource
@@ -423,10 +435,12 @@ jobs:
     passed: [bosh-deployment-resource]
     params: {rootfs: true}
     trigger: true
+  - get: bosh-deployment-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: bosh-deployment-resource-image
+      resource-repo: bosh-deployment-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: bosh-deployment-resource
@@ -464,10 +478,12 @@ jobs:
     passed: [s3-resource]
     params: {rootfs: true}
     trigger: true
+  - get: s3-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: s3-resource-image
+      resource-repo: s3-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: s3-resource
@@ -501,10 +517,12 @@ jobs:
     passed: [github-release-resource]
     params: {rootfs: true}
     trigger: true
+  - get: github-release-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: github-release-resource-image
+      resource-repo: github-release-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: github-release-resource
@@ -545,10 +563,12 @@ jobs:
     passed: [cf-resource]
     params: {rootfs: true}
     trigger: true
+  - get: cf-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: cf-resource-image
+      resource-repo: cf-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: cf-resource
@@ -587,10 +607,12 @@ jobs:
     passed: [semver-resource]
     params: {rootfs: true}
     trigger: true
+  - get: semver-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: semver-resource-image
+      resource-repo: semver-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: semver-resource
@@ -622,10 +644,12 @@ jobs:
     passed: [bosh-io-release-resource]
     params: {rootfs: true}
     trigger: true
+  - get: bosh-io-release-resource-image
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: bosh-io-release-resource-image
+      resource-repo: bosh-io-release-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: bosh-io-release-resource
@@ -659,10 +683,12 @@ jobs:
     passed: [bosh-io-stemcell-resource]
     params: {rootfs: true}
     trigger: true
+  - get: bosh-io-stemcell-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: bosh-io-stemcell-resource-image
+      resource-repo: bosh-io-stemcell-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: bosh-io-stemcell-resource
@@ -698,10 +724,12 @@ jobs:
     passed: [tracker-resource]
     params: {rootfs: true}
     trigger: true
+  - get: tracker-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: tracker-resource-image
+      resource-repo: tracker-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: tracker-resource
@@ -733,10 +761,12 @@ jobs:
     passed: [vagrant-cloud-resource]
     params: {rootfs: true}
     trigger: true
+  - get: vagrant-cloud-resource
   - get: concourse
   - task: bump-package
     input_mapping:
       resource-image: vagrant-cloud-resource-image
+      resource-repo: vagrant-cloud-resource
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: vagrant-cloud-resource

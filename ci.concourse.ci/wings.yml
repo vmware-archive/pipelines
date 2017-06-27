@@ -19,15 +19,15 @@ resources:
 - name: wings-deployment
   type: bosh-deployment
   source:
-    target: ((bosh-target))
-    deployment: ((wings-bosh-deployment))
-    client: ((bosh-client-id))
-    client_secret: ((bosh-client-secret))
+    target: ((bosh_target))
+    deployment: concourse-wings
+    client: ((bosh_client.id))
+    client_secret: ((bosh_client.secret))
 
 - name: github-release
   type: github-release
   source:
-    access_token: ((concourse-github-release-access-token))
+    access_token: ((concourse_github_release.access_token))
     repository: concourse
     user: concourse
 
@@ -41,7 +41,7 @@ resources:
   source:
     uri: git@github.com:concourse/deployments.git
     branch: master
-    private_key: ((deployments-repo-private-key))
+    private_key: ((deployments_repo_private_key))
 
 
 resource_types:

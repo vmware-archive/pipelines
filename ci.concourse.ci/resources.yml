@@ -184,7 +184,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: git-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -229,7 +229,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: hg-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -269,7 +269,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: pool-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -311,7 +311,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: docker-image-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -351,7 +351,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: time-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -411,7 +411,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: archive-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -451,7 +451,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: bosh-deployment-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -468,11 +468,11 @@ jobs:
   - task: unit
     file: s3-resource/build.yml
     params:
-      S3_TESTING_ACCESS_KEY_ID:  ((s3-resource-access-key))
-      S3_TESTING_SECRET_ACCESS_KEY: ((s3-resource-secret-key))
-      S3_TESTING_BUCKET: ((s3-resource-bucket))
-      S3_VERSIONED_TESTING_BUCKET: ((s3-resource-versioned-bucket))
-      S3_TESTING_REGION: ((s3-resource-region))
+      S3_TESTING_ACCESS_KEY_ID:  ((s3_resource_bucket.access_key))
+      S3_TESTING_SECRET_ACCESS_KEY: ((s3_resource_bucket.secret_key))
+      S3_TESTING_BUCKET: ((s3_resource.bucket))
+      S3_VERSIONED_TESTING_BUCKET: ((s3_resource.versioned_bucket))
+      S3_TESTING_REGION: ((s3_resource.region))
   - put: s3-resource-image
     params:
       load_base: buildroot-base-image
@@ -495,7 +495,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: s3-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -535,7 +535,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: github-release-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -582,7 +582,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: cf-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -600,10 +600,10 @@ jobs:
   - task: unit
     file: semver-resource/build.yml
     params:
-      SEMVER_TESTING_ACCESS_KEY_ID: ((semver-access-key))
-      SEMVER_TESTING_SECRET_ACCESS_KEY: ((semver-secret-key))
-      SEMVER_TESTING_BUCKET: ((semver-bucket))
-      SEMVER_TESTING_REGION: ((semver-region))
+      SEMVER_TESTING_ACCESS_KEY_ID: ((semver_resource_bucket.access_key))
+      SEMVER_TESTING_SECRET_ACCESS_KEY: ((semver_resource_bucket.secret_key))
+      SEMVER_TESTING_BUCKET: ((semver_resource.bucket))
+      SEMVER_TESTING_REGION: ((semver_resource.region))
   - put: semver-resource-image
     params:
       load_base: buildroot-git-image
@@ -627,7 +627,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: semver-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -665,7 +665,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: bosh-io-release-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -705,7 +705,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: bosh-io-stemcell-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -723,7 +723,7 @@ jobs:
   - task: unit
     file: tracker-resource/build.yml
     params:
-      TRACKER_TOKEN: ((tracker-testing-token))
+      TRACKER_TOKEN: ((tracker_resource.token))
   - put: tracker-resource-image
     params:
       load_base: buildroot-git-image
@@ -747,7 +747,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: tracker-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -785,7 +785,7 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: vagrant-cloud-resource
-      BOSH_PRIVATE_CONFIG: ((bosh-private-config))
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
@@ -1009,10 +1009,10 @@ resources:
 - name: cf-cli
   type: s3
   source:
-    bucket: ((cli-bucket-name))
-    region_name: ((cli-bucket-region))
-    access_key_id: ((cli-bucket-access-key-id))
-    secret_access_key: ((cli-bucket-secret-access-key))
+    bucket: cf-cli-releases
+    region_name: us-west-1
+    access_key_id: ((cli_bucket.access_key))
+    secret_access_key: ((cli_bucket.secret_key))
     regexp: releases/v([\d\.]+)/cf-cli_.*_linux_x86-64.tgz
 
 - name: concourse
@@ -1020,7 +1020,7 @@ resources:
   source:
     uri: git@github.com:concourse/concourse.git
     branch: master
-    private_key: ((concourse-repo-private-key))
+    private_key: ((concourse_repo_private_key))
 
 - name: buildroot
   type: git
@@ -1144,4 +1144,4 @@ resources:
   source:
     user: docker
     repository: docker
-    access_token: ((concourse-github-dummy-access-token))
+    access_token: ((concourse_github_dummy.access_token))

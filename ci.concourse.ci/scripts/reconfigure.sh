@@ -16,17 +16,10 @@ configure_pipeline() {
 
   printf "configuring the $name pipeline...\n"
 
-  fly -t ci set-pipeline \
-    -p $name \
-    -c $pipeline \
-    -l <(lpass show "Concourse Pipeline Credentials" --notes)
+  fly -t ci set-pipeline -p $name -c $pipeline
 }
 
-check_installed lpass
 check_installed fly
-
-# Make sure we're up to date and that we're logged in.
-lpass sync
 
 pipelines_path=$(cd $(dirname $0)/../ && pwd)
 

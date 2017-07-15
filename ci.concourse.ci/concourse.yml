@@ -538,7 +538,7 @@ jobs:
       trigger: true
       passed: [github-release]
     - get: concourse
-      params: {submodules: none}
+      params: {submodules: [docs]}
   - task: build-docs
     file: concourse/ci/build-docs.yml
     params:

@@ -1,11 +1,5 @@
 ---
 resources:
-- name: rubinius
-  type: docker-image
-  source:
-    repository: rubinius/docker
-    tag: latest
-
 - name: concourse-buildbox-testflight-ci
   type: git
   source:
@@ -301,12 +295,12 @@ jobs:
     - get: concourse-docs-ci
       trigger: true
       params: {submodules: none}
-    - get: rubinius
+    - get: golang-1.x
       trigger: true
       params: {save: true}
   - put: concourse-docs-ci-image
     params:
-      load_base: rubinius
+      load_base: golang-1.x
       build: concourse-docs-ci/ci/dockerfiles/docs-ci
 
 - name: build-bosh-cli

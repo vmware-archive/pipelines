@@ -11,6 +11,12 @@ resources:
     uri: git@github.com:concourse/faa
     private_key: ((concourse-repo-private-key))
 
+- name: slack-inviter
+  type: git
+  source:
+    uri: git@github.com:concourse/slack-inviter
+    private_key: ((concourse-repo-private-key))
+
 - name: pws
   type: cf
   source:
@@ -63,3 +69,30 @@ jobs:
     params:
       manifest: faa/manifest.yml
       path: faa
+
+
+- name: slack-inviter
+  plan:
+  - get: slack-inviter
+  - task: update-start-command
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: concourse/atc-ci
+      inputs:
+      - name: slack-inviter
+      outputs:
+      - name: cf-app
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          cp -R slack-inviter/slackin cf-app/
+          cat slack-inviter/manifest.yml | sed "s:REPLACE_COMMAND:((slackin-start-command)):" > cf-app/manifest.yml
+  - put: pws
+    params:
+      manifest: cf-app/manifest.yml
+      path: cf-app/slackin

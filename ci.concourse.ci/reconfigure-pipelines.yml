@@ -1,0 +1,48 @@
+resource_types:
+- name: concourse-pipeline
+  type: docker-image
+  source:
+    repository: concourse/concourse-pipeline-resource
+
+resources:
+- name: pipelines
+  type: git
+  source:
+    uri: https://github.com/concourse/pipelines
+- name: ci.concourse.ci
+  type: concourse-pipeline
+  source:
+    target: https://ci.concourse.ci
+    teams:
+    - name: main
+      username: ((basic_auth.username))
+      password: ((basic_auth.password))
+jobs:
+- name: reconfigure
+  plan:
+  - get: pipelines
+    trigger: true
+  - put: ci.concourse.ci
+    params:
+      pipelines:
+      - name: main
+        team: main
+        config_file: pipelines/ci.concourse.ci/concourse.yml
+      - name: resources
+        team: main
+        config_file: pipelines/ci.concourse.ci/resources.yml
+      - name: images
+        team: main
+        config_file: pipelines/ci.concourse.ci/images.yml
+      - name: hangar
+        team: main
+        config_file: pipelines/ci.concourse.ci/hangar.yml
+      - name: wings
+        team: main
+        config_file: pipelines/ci.concourse.ci/wings.yml
+      - name: prs
+        team: main
+        config_file: pipelines/ci.concourse.ci/pull-requests.yml
+      - name: reconfigure-pipelines
+        team: main
+        config_file: pipelines/ci.concourse.ci/reconfigure-pipelines.yml

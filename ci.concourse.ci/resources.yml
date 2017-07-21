@@ -373,6 +373,28 @@ jobs:
       load_base: buildroot-base-image
       build: built-resource
 
+- name: concourse-pipeline-resource
+  serial: true
+  public: true
+  plan:
+  - aggregate:
+    - get: buildroot-base-image
+      params: {save: true}
+      passed: [buildroot-base]
+      trigger: true
+    - get: concourse-pipeline-resource
+      trigger: true
+    - get: fly
+      trigger: false
+      params:
+        globs: [fly_linux_amd64]
+  - task: unit-and-build
+    file: concourse-pipeline-resource/build.yml
+  - put: concourse-pipeline-resource-image
+    params:
+      load_base: buildroot-base-image
+      build: built-resource
+
 - name: archive-resource
   serial: true
   public: true
@@ -826,6 +848,12 @@ resources:
     uri: https://github.com/concourse/datadog-event-resource.git
     branch: master
 
+- name: concourse-pipeline-resource
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse-pipeline-resource.git
+    branch: master
+
 - name: tracker-resource
   type: git
   source:
@@ -943,6 +971,13 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/datadog-event-resource
+
+- name: concourse-pipeline-resource-image
+  type: docker-image
+  source:
+    username: ((docker.username))
+    password: ((docker.password))
+    repository: concourse/concourse-pipeline-resource
 
 - name: tracker-resource-image
   type: docker-image
@@ -1144,4 +1179,12 @@ resources:
   source:
     user: docker
     repository: docker
+    access_token: ((concourse_github_dummy.access_token))
+
+- name: fly
+  type: github-release
+  check_every: 1h
+  source:
+    user: concourse
+    repository: concourse
     access_token: ((concourse_github_dummy.access_token))

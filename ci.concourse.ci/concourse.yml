@@ -379,8 +379,9 @@ jobs:
       resource: garden-runc
       passed: [bosh-testflight]
       trigger: true
-    - get: bosh-stemcell
-      resource: gcp-stemcell
+    - get: gcp-stemcell
+    - get: gcp-windows-stemcell
+    - get: concourse-windows-release
     - get: deployments
       trigger: true
     - get: fly-rc
@@ -388,10 +389,13 @@ jobs:
   - put: prod-deployment
     params:
       manifest: deployments/prod/deployments/concourse.yml
-      stemcells: [bosh-stemcell/*.tgz]
+      stemcells:
+      - gcp-stemcell/*.tgz
+      - gcp-windows-stemcell/*.tgz
       releases:
         - garden-runc-release/*.tgz
         - bosh-rc/concourse-*.tgz
+        - concourse-windows-release/*.tgz
 
 - name: bin-smoke
   serial: true
@@ -740,6 +744,18 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-google-kvm-ubuntu-trusty-go_agent
+
+- name: gcp-windows-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-windows2012R2-go_agent
+
+- name: concourse-windows-release
+  type: github-release
+  source:
+    access_token: ((concourse-github-release-access-token))
+    user: pivotal-cf-experimental
+    repository: concourse-windows-release
 
 - name: concourse-docs
   type: cf

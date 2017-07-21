@@ -753,7 +753,7 @@ resources:
 - name: concourse-windows-release
   type: github-release
   source:
-    access_token: ((concourse-github-release-access-token))
+    access_token: ((concourse_github_release.access_token))
     user: pivotal-cf-experimental
     repository: concourse-windows-release
 

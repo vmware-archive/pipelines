@@ -32,11 +32,5 @@ pipelines_path=$(cd $(dirname $0)/../ && pwd)
 
 pipeline=${1}
 
-for release in $pipelines_path/releases/concourse-*.yml; do
-  version=$(echo $release | sed -e 's/.*concourse-\(.*\).yml$/\1/')
-  configure_pipeline releases:$version \
-    $release
-
-  configure_pipeline apps \
+configure_pipeline apps \
     $pipelines_path/apps.yml
-done

@@ -557,23 +557,16 @@ jobs:
   - aggregate:
     - get: final-release
       passed: [shipit]
-      trigger: true
     - get: garden-runc
       passed: [shipit]
-      trigger: true
     - get: concourse
       params: {submodules: none}
-      passed: [shipit]
-      trigger: true
     - get: version
       passed: [shipit]
       trigger: true
     - get: bosh-virtualbox-cpi
-      trigger: true
     - get: vsphere-stemcell
-      trigger: true
     - get: concourse-deployment
-      trigger: true
   - task: create-env-manifest
     file: concourse/ci/create-env-bump.yml
   - task: print-manifest

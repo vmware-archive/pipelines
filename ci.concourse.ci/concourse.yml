@@ -26,6 +26,7 @@ groups:
   - minor
   - patch
   - shipit
+  - build-create-env-manifest
   - github-release
   - push-docs
   - promote-docker
@@ -551,6 +552,42 @@ jobs:
       current_app_name: docs
       manifest: built-docs/manifest.yml
 
+- name: build-create-env-manifest
+  plan:
+  - aggregate:
+    - get: final-release
+      passed: [shipit]
+      trigger: true
+    - get: garden-runc
+      passed: [shipit]
+      trigger: true
+    - get: concourse
+      params: {submodules: none}
+      passed: [shipit]
+      trigger: true
+    - get: version
+      passed: [shipit]
+      trigger: true
+    - get: bosh-virtualbox-cpi
+      trigger: true
+    - get: vsphere-stemcell
+      trigger: true
+    - get: concourse-deployment
+      trigger: true
+  - task: create-env-manifest
+    file: concourse/ci/create-env-bump.yml
+  - task: print-manifest
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: busybox}
+      inputs:
+      - name: create-env-manifest
+      run:
+        path: cat
+        args: [create-env-manifest/concourse.yml]
+
 - name: github-release
   plan:
   - aggregate:
@@ -722,6 +759,11 @@ resources:
   source:
     repository: cloudfoundry/garden-runc-release
 
+- name: bosh-virtualbox-cpi
+  type: bosh-io-release
+  source:
+    repository: cppforlife/bosh-virtualbox-cpi-release
+
 - name: vault-release
   type: github-release
   source:
@@ -747,6 +789,11 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-google-kvm-windows2012R2-go_agent
+
+- name: vsphere-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
 
 - name: concourse-docs
   type: cf
@@ -782,6 +829,12 @@ resources:
   type: git
   source:
     uri: https://github.com/cloudfoundry/garden-runc-release
+    branch: master
+
+- name: concourse-deployment
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse-deployment
     branch: master
 
 - name: bin-rc

@@ -575,7 +575,6 @@ jobs:
       - gcp-stemcell/*.tgz
       releases:
       - final-release/*.tgz
-      - garden-runc/*.tgz
   - task: export-release
     file: concourse/ci/export-release.yml
     input_mapping:

@@ -557,8 +557,7 @@ jobs:
   - aggregate:
     - get: final-release
       passed: [shipit]
-    - get: garden-runc-release
-      resource: garden-runc
+    - get: garden-runc
       passed: [shipit]
     - get: concourse
       params: {submodules: none}
@@ -576,7 +575,7 @@ jobs:
       - gcp-stemcell/*.tgz
       releases:
       - final-release/*.tgz
-      - garden-runc-release/*.tgz
+      - garden-runc/*.tgz
   - task: export-release
     file: concourse/ci/export-release.yml
     input_mapping:

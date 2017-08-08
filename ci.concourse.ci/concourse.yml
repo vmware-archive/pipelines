@@ -584,6 +584,7 @@ jobs:
       BOSH_ENVIRONMENT: bosh.concourse.ci
       BOSH_CLIENT: ((bosh_client.id))
       BOSH_CLIENT_SECRET: ((bosh_client.secret))
+      BOSH_DEPLOYMENT: concourse-export
       RELEASE_NAME: concourse
       STEMCELL_NAME: ubuntu-trusty
   - task: create-env-manifest

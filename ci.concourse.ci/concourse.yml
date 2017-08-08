@@ -557,7 +557,8 @@ jobs:
   - aggregate:
     - get: final-release
       passed: [shipit]
-    - get: garden-runc
+    - get: garden-runc-release
+      resource: garden-runc
       passed: [shipit]
     - get: concourse
       params: {submodules: none}

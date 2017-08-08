@@ -566,7 +566,27 @@ jobs:
       trigger: true
     - get: bosh-virtualbox-cpi
     - get: vsphere-stemcell
+    - get: gcp-stemcell
     - get: concourse-deployment
+  - put: export-deployment
+    params:
+      manifest: concourse/ci/manifests/concourse-export.yml
+      stemcells:
+      - gcp-stemcell/*.tgz
+      releases:
+      - final-release/*.tgz
+      - garden-runc-release/*.tgz
+  - task: export-release
+    file: concourse/ci/export-release.yml
+    input_mapping:
+      release: final-release
+      stemcell: gcp-stemcell
+    params:
+      BOSH_ENVIRONMENT: bosh.concourse.ci
+      BOSH_CLIENT: ((bosh_client.id))
+      BOSH_CLIENT_SECRET: ((bosh_client.secret))
+      RELEASE_NAME: concourse
+      STEMCELL_NAME: ubuntu-trusty
   - task: create-env-manifest
     file: concourse/ci/create-env-bump.yml
   - task: print-manifest
@@ -579,7 +599,7 @@ jobs:
       - name: create-env-manifest
       run:
         path: cat
-        args: [create-env-manifest/concourse.yml]
+        args: [create-env-manifest/concourse-lite.yml]
 
 - name: github-release
   plan:
@@ -736,6 +756,14 @@ resources:
   source:
     target: ((bosh_target))
     deployment: concourse-prod
+    client: ((bosh_client.id))
+    client_secret: ((bosh_client.secret))
+
+- name: export-deployment
+  type: bosh-deployment
+  source:
+    target: ((bosh_target))
+    deployment: concourse-export
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 

@@ -17,6 +17,12 @@ resources:
     uri: git@github.com:concourse/slack-inviter
     private_key: ((concourse-repo-private-key))
 
+- name: pilots
+  type: git
+  source:
+    uri: git@github.com:concourse/pairup9000
+    private_key: ((concourse-repo-private-key))
+
 - name: pws
   type: cf
   source:
@@ -70,7 +76,6 @@ jobs:
       manifest: faa/manifest.yml
       path: faa
 
-
 - name: slack-inviter
   plan:
   - get: slack-inviter
@@ -96,3 +101,32 @@ jobs:
     params:
       manifest: cf-app/manifest.yml
       path: cf-app/slackin
+
+- name: pilots
+  plan:
+  - get: pilots
+    trigger: true
+  - task: build
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: node
+      inputs:
+      - name: pilots
+      outputs:
+      - name: cf-app
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          cp -a pilots/. cf-app
+          cd cf-app
+          npm install
+          npm run dist
+  - put: pws
+    params:
+      manifest: cf-app/manifest.yml
+      path: cf-app

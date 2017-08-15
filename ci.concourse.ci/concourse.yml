@@ -572,6 +572,9 @@ jobs:
       params: {submodules: none}
       passed: [shipit]
       trigger: true
+    - get: latest-concourse
+      params: {submodules: none}
+      trigger: true
     - get: version
       passed: [shipit]
       trigger: true
@@ -627,6 +630,7 @@ jobs:
       STEMCELL_NAME: ubuntu-trusty
   - task: generate-concourse-lite-manifest
     file: concourse/ci/generate-concourse-lite-manifest.yml
+    input_mapping: {concourse: latest-concourse}
   - put: github-release
     params:
       name: release-notes/release-name

@@ -573,6 +573,7 @@ jobs:
       passed: [shipit]
       trigger: true
     - get: latest-concourse
+      resource: concourse
       params: {submodules: none}
       trigger: true
     - get: version

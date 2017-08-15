@@ -575,7 +575,6 @@ jobs:
     - get: latest-concourse
       resource: concourse
       params: {submodules: none}
-      trigger: true
     - get: version
       passed: [shipit]
       trigger: true

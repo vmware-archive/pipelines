@@ -14,6 +14,7 @@ groups:
   - bosh-rc
   - bin-testflight
   - bosh-testflight
+  - bosh-wats
   - bin-smoke
   - bin-docker
   - bin-docker-testflight
@@ -324,7 +325,7 @@ jobs:
       trigger: true
     - get: fly-rc
       passed: [bin-rc]
-  - task: no-auth
+  - task: testflight
     file: concourse/src/github.com/concourse/bin/ci/testflight.yml
     privileged: true
     timeout: 1h
@@ -360,6 +361,18 @@ jobs:
       BOSH_KEY: ((topgun.bosh_key))
       TOPGUN_NETWORK_OFFSET: 0
 
+- name: bosh-wats
+  public: true
+  serial: true
+  plan:
+  - get: concourse
+    passed: [bosh-rc]
+    trigger: true
+  - task: wats
+    file: concourse/ci/wats.yml
+    timeout: 1h
+    params: {ATC_URL: "http://10.244.15.2:8080"}
+
 - name: bosh-deploy
   serial: true
   interruptible: true
@@ -367,13 +380,13 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight]
+      passed: [bosh-testflight, bosh-wats, topgun]
       trigger: true
     - get: version
       passed: [bosh-testflight]
       trigger: true
     - get: bosh-rc
-      passed: [bosh-testflight, topgun]
+      passed: [bosh-testflight]
       trigger: true
     - get: garden-runc-release
       resource: garden-runc

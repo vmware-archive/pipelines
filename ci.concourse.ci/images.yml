@@ -89,6 +89,19 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
 
+- name: concourse-wats-ci
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse.git
+    paths: [ci/dockerfiles/wats-ci]
+
+- name: concourse-wats-ci-image
+  type: docker-image
+  source:
+    repository: concourse/wats-ci
+    username: ((docker.username))
+    password: ((docker.password))
+
 - name: concourse-atc-ci-elm
   type: git
   source:
@@ -211,6 +224,12 @@ resources:
   source:
     repository: ubuntu
     tag: 16.04
+
+- name: ruby-2.x
+  type: docker-image
+  source:
+    repository: ruby
+    tag: 2
 
 - name: golang-1.x
   type: docker-image
@@ -388,6 +407,41 @@ jobs:
   - put: concourse-atc-ci-image
     params:
       load_base: ubuntu-16.04
+      build: context
+
+- name: build-wats-ci
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-wats-ci
+      trigger: true
+    - get: ruby-2.x
+      trigger: true
+      params: {save: true}
+    - get: golang-1.x-tarball
+      trigger: true
+  - task: build-context
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source: {repository: ubuntu}
+      inputs:
+      - name: golang-1.x-tarball
+      - name: concourse-wats-ci
+      outputs:
+      - name: context
+      run:
+        path: bash
+        args:
+        - -exuc
+        - |
+          cp -rp concourse-wats-ci/ci/dockerfiles/wats-ci/* context/
+          cp golang-1.x-tarball/go* context/
+  - put: concourse-wats-ci-image
+    params:
+      load_base: ruby-2.x
       build: context
 
 - name: build-atc-ci-elm

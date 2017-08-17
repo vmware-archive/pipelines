@@ -415,6 +415,7 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-wats-ci
+      params: {submodules: none}
       trigger: true
     - get: ruby-2.x
       trigger: true

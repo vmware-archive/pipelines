@@ -366,7 +366,7 @@ jobs:
   serial: true
   plan:
   - get: concourse
-    passed: [bosh-rc]
+    # passed: [bosh-rc]
     trigger: true
   - task: wats
     file: concourse/ci/wats.yml

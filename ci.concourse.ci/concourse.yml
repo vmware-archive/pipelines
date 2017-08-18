@@ -380,7 +380,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight, bosh-wats, topgun]
+      passed: [bosh-testflight, topgun]
       trigger: true
     - get: version
       passed: [bosh-testflight]

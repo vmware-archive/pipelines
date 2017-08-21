@@ -444,10 +444,10 @@ jobs:
     - task: install-postgres
       file: concourse/src/github.com/concourse/bin/ci/smoke-tests/install-postgres-xenial.yml
       params: {USER_NAME: root}
-
     - task: test-bin
       file: concourse/src/github.com/concourse/bin/ci/smoke-tests/smoke-test.yml
       params: {USER_NAME: root}
+      timeout: 1h
 
 - name: bin-docker
   serial: true

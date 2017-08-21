@@ -652,6 +652,7 @@ jobs:
       commitish: generated-commitish/commitish
       globs:
       - exported-release/*.tgz
+      - final-release/*.tgz
       - renamed-release/garden-runc-*.tgz
       - bin-rc/concourse_*
       - fly-rc/fly_*

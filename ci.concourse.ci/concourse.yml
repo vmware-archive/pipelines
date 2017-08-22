@@ -593,6 +593,8 @@ jobs:
       trigger: true
     - get: gcp-stemcell
       passed: [shipit]
+    - get: latest-concourse
+      resource: concourse
     - get: vsphere-stemcell
     - get: bosh-virtualbox-cpi
     - get: concourse-deployment
@@ -630,10 +632,11 @@ jobs:
       releases:
       - final-release/*.tgz
   - task: export-release
-    file: concourse/ci/export-release.yml
+    file: latest-concourse/ci/export-release.yml
     input_mapping:
       release: final-release
       stemcell: gcp-stemcell
+      concourse: latest-concourse
     params:
       BOSH_ENVIRONMENT: bosh.concourse.ci
       BOSH_CLIENT: ((bosh_client.id))

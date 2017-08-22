@@ -593,8 +593,6 @@ jobs:
       trigger: true
     - get: gcp-stemcell
       passed: [shipit]
-    - get: latest-concourse
-      resource: concourse
     - get: vsphere-stemcell
     - get: bosh-virtualbox-cpi
     - get: concourse-deployment

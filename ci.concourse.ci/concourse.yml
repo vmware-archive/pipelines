@@ -371,8 +371,8 @@ jobs:
   - task: wats
     file: concourse/ci/wats.yml
     timeout: 1h
-    params: {ATC_URL: "https://10.244.15.2:4443"}
     privileged: true
+    params: {ATC_URL: "http://10.244.15.2:8080"}
 
 - name: bosh-deploy
   serial: true

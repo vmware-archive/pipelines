@@ -268,8 +268,6 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: 30m
-      trigger: true
     - get: concourse
       passed: [bosh-rc]
       trigger: true

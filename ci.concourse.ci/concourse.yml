@@ -12,14 +12,15 @@ groups:
   - build-fly
   - bin-rc
   - bosh-rc
-  - bin-testflight
+  - bosh-test-deploy
   - bosh-testflight
   - bosh-wats
+  - bin-testflight
   - bin-smoke
   - bin-docker
   - bin-docker-testflight
-  - bosh-deploy
   - topgun
+  - bosh-deploy
 
 - name: publish
   jobs:
@@ -262,7 +263,7 @@ jobs:
       body: release/body
       globs: [release/artifacts/*]
 
-- name: bosh-testflight
+- name: bosh-test-deploy
   public: true
   serial: true
   plan:
@@ -285,49 +286,62 @@ jobs:
       passed: [bosh-rc]
     - get: gcp-stemcell
     - get: deployments
-  - task: create-versions-vars-file
-    file: concourse/ci/create-versions-vars-file.yml
-    params:
-      deployment_name: concourse-testflight
-      web_ip: 10.244.15.2
-      tls_cert: ((testflight_tls.certificate))
-      tls_key: ((testflight_tls.private_key))
-  - put: tf-deployment
+  - put: test-deployment
     params:
       manifest: concourse/src/github.com/concourse/testflight/scripts/manifests/deployment.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
         - garden-runc/*.tgz
         - bosh-rc/concourse-*.tgz
-      vars_files: [versions-vars-file/vars.yml]
       ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      vars:
+        deployment_name: concourse-test
+        web_ip: 10.244.15.2
+
+- name: bosh-testflight
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: 30m
+      trigger: true
+    - get: concourse
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: bosh-rc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: version
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: garden-runc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: test-deployment
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: fly-rc
+      passed: [bosh-test-deploy]
+      trigger: true
   - task: testflight
     file: concourse/ci/testflight.yml
-    params:
-      ATC_URL: "https://10.244.15.2:4443"
-      FLY_CA_CERT: ((testflight_tls.certificate))
+    params: {ATC_URL: "http://10.244.15.2:8080"}
     timeout: 1h
 
-- name: bin-testflight
+- name: bosh-wats
   public: true
   serial: true
   plan:
   - aggregate:
     - get: concourse
-      passed: [bin-rc]
+      passed: [bosh-test-deploy]
       trigger: true
-    - get: linux-binary
-      resource: bin-rc
-      passed: [bin-rc]
+    - get: test-deployment
+      passed: [bosh-test-deploy]
       trigger: true
-    - get: version
-      passed: [bin-rc]
-      trigger: true
-    - get: fly-rc
-      passed: [bin-rc]
-  - task: testflight
-    file: concourse/src/github.com/concourse/bin/ci/testflight.yml
-    privileged: true
+  - task: wats
+    file: concourse/ci/wats.yml
+    params: {ATC_URL: "http://10.244.15.2:8080"}
     timeout: 1h
 
 - name: topgun
@@ -361,19 +375,6 @@ jobs:
       BOSH_KEY: ((topgun.bosh_key))
       TOPGUN_NETWORK_OFFSET: 0
 
-- name: bosh-wats
-  public: true
-  serial: true
-  plan:
-  - get: concourse
-    # passed: [bosh-rc]
-    trigger: true
-  - task: wats
-    file: concourse/ci/wats.yml
-    timeout: 1h
-    privileged: true
-    params: {ATC_URL: "http://10.244.15.2:8080"}
-
 - name: bosh-deploy
   serial: true
   interruptible: true
@@ -381,7 +382,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight, topgun]
+      passed: [bosh-testflight, bosh-wats, topgun]
       trigger: true
     - get: version
       passed: [bosh-testflight]
@@ -393,12 +394,13 @@ jobs:
       resource: garden-runc
       passed: [bosh-testflight]
       trigger: true
+    - get: fly-rc
+      passed: [bosh-testflight]
+      trigger: true
     - get: gcp-stemcell
     - get: gcp-windows-stemcell
     - get: deployments
       trigger: true
-    - get: fly-rc
-      passed: [bosh-testflight]
   - put: prod-deployment
     params:
       manifest: deployments/prod/deployments/concourse.yml
@@ -408,6 +410,28 @@ jobs:
       releases:
         - garden-runc-release/*.tgz
         - bosh-rc/concourse-*.tgz
+
+- name: bin-testflight
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [bin-rc]
+      trigger: true
+    - get: linux-binary
+      resource: bin-rc
+      passed: [bin-rc]
+      trigger: true
+    - get: version
+      passed: [bin-rc]
+      trigger: true
+    - get: fly-rc
+      passed: [bin-rc]
+  - task: testflight
+    file: concourse/src/github.com/concourse/bin/ci/testflight.yml
+    privileged: true
+    timeout: 1h
 
 - name: bin-smoke
   serial: true
@@ -766,11 +790,11 @@ resources:
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 
-- name: tf-deployment
+- name: test-deployment
   type: bosh-deployment
   source:
     target: ((bosh_target))
-    deployment: concourse-testflight
+    deployment: concourse-test
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 

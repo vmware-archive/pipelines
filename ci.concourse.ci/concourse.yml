@@ -286,11 +286,11 @@ jobs:
     - get: deployments
   - put: test-deployment
     params:
-      manifest: concourse/src/github.com/concourse/testflight/scripts/manifests/deployment.yml
+      manifest: concourse/manifests/single-vm.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
-        - garden-runc/*.tgz
-        - bosh-rc/concourse-*.tgz
+      - garden-runc/*.tgz
+      - bosh-rc/concourse-*.tgz
       ops_files: [deployments/testflight/metrics-logs-ops.yml]
       vars:
         deployment_name: concourse-test

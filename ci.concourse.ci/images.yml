@@ -62,20 +62,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
 
-- name: vagrant-ci-image
-  type: docker-image
-  source:
-    repository: concourse/vagrant-ci
-    username: ((docker.username))
-    password: ((docker.password))
-
-- name: vagrant-ci
-  type: git
-  source:
-    uri: git@github.com:concourse/deployments.git
-    paths: [lite/ci/Dockerfile]
-    private_key: ((deployments_repo_private_key))
-
 - name: concourse-atc-ci
   type: git
   source:
@@ -578,22 +564,6 @@ jobs:
       load_base: concourse-bin-testflight-ci-image
       build: .
       dockerfile: concourse-bin-docker-testflight-ci/Dockerfile.testflight
-
-- name: build-vagrant
-  public: false
-  serial: true
-  plan:
-  - aggregate:
-    - get: vagrant-ci
-      trigger: true
-    - get: concourse-bosh-cli-image
-      trigger: true
-      params: {save: true}
-      passed: [build-bosh-cli]
-  - put: vagrant-ci-image
-    params:
-      load_base: concourse-bosh-cli-image
-      build: vagrant-ci/lite/ci
 
 - name: build-static-golang
   public: true

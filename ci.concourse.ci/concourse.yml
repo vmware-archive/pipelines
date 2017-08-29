@@ -265,7 +265,7 @@ jobs:
 
 - name: bosh-test-deploy
   public: true
-  serial: true
+  serial_groups: [bosh-test]
   plan:
   - aggregate:
     - get: concourse
@@ -298,7 +298,7 @@ jobs:
 
 - name: bosh-testflight
   public: true
-  serial: true
+  serial_groups: [bosh-test]
   plan:
   - aggregate:
     - get: 30m
@@ -328,7 +328,7 @@ jobs:
 
 - name: bosh-wats
   public: true
-  serial: true
+  serial_groups: [bosh-test]
   plan:
   - aggregate:
     - get: concourse

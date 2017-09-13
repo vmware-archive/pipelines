@@ -315,46 +315,6 @@ jobs:
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
-- name: time-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-base-image
-      params: {save: true}
-      passed: [buildroot-base]
-      trigger: true
-    - get: time-resource
-      trigger: true
-  - task: unit-and-build
-    file: time-resource/build.yml
-  - put: time-resource-image
-    params:
-      load_base: buildroot-base-image
-      build: built-resource
-
-- name: bump-time-resource
-  serial: true
-  public: true
-  plan:
-  - get: time-resource-image
-    passed: [time-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: time-resource
-    passed: [time-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: time-resource-image
-      resource-repo: time-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: time-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 - name: datadog-event-resource
   serial: true
   public: true
@@ -836,12 +796,6 @@ resources:
     uri: https://github.com/concourse/docker-image-resource.git
     branch: master
 
-- name: time-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/time-resource.git
-    branch: master
-
 - name: datadog-event-resource
   type: git
   source:
@@ -957,13 +911,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/bosh-deployment-resource
-
-- name: time-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/time-resource
 
 - name: datadog-event-resource-image
   type: docker-image

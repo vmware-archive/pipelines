@@ -1,0 +1,67 @@
+---
+resources:
+- name: alpine-edge
+  type: docker-image
+  source:
+    repository: alpine
+    tag: edge
+
+- name: resource-repo
+  type: git
+  source:
+    uri: https://github.com/concourse/time-resource
+
+- name: resource-image
+  type: docker-image
+  source:
+    repository: concourse/time-resource
+    username: ((docker.username))
+    password: ((docker.password))
+
+- name: concourse
+  type: git
+  source:
+    uri: git@github.com:concourse/concourse.git
+    branch: master
+    private_key: ((concourse_repo_private_key))
+
+jobs:
+- name: unit
+  plan:
+  - get: resource-repo
+    trigger: true
+  - task: unit
+    file: resource-repo/ci/unit.yml
+
+- name: build
+  plan:
+  - get: resource-repo
+    passed: [unit]
+    trigger: true
+  - get: alpine-edge
+    params: {save: true}
+    trigger: true
+  - task: build
+    file: resource-repo/ci/build.yml
+  - put: resource-image
+    params:
+      load_base: alpine-edge
+      build: built-resource
+
+- name: ship
+  plan:
+  - get: resource-repo
+    passed: [build]
+    trigger: true
+  - get: resource-image
+    passed: [build]
+    params: {rootfs: true}
+    trigger: true
+  - get: concourse
+  - task: bump-package
+    file: concourse/ci/bump-resource-package.yml
+    params:
+      RESOURCE_NAME: time-resource
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
+  - put: concourse
+    params: {repository: bumped-concourse, rebase: true}

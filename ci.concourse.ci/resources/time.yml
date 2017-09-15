@@ -26,27 +26,17 @@ resources:
     private_key: ((concourse_repo_private_key))
 
 jobs:
-- name: unit
-  plan:
-  - get: resource-repo
-    trigger: true
-  - task: unit
-    file: resource-repo/ci/unit.yml
-
 - name: build
   plan:
   - get: resource-repo
-    passed: [unit]
     trigger: true
   - get: alpine-edge
     params: {save: true}
     trigger: true
-  - task: build
-    file: resource-repo/ci/build.yml
   - put: resource-image
     params:
       load_base: alpine-edge
-      build: built-resource
+      build: resource-repo
 
 - name: ship
   plan:

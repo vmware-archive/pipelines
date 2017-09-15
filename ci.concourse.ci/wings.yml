@@ -15,36 +15,14 @@ jobs:
           - github-release/concourse-*.tgz
           - github-release/garden-runc-*.tgz
 
-  - name: dry-run-bosh-deploy-rc
-    plan:
-    - aggregate:
-      - get: bosh-rc
-      - get: garden-runc
-      - get: bosh-stemcell
-        resource: gcp-stemcell
-      - get: deployments
-    - put: wings-deployment
-      params:
-        cleanup: true
-        manifest: deployments/prod/deployments/wings.yml
-        stemcells: [bosh-stemcell/*.tgz]
-        dry_run: true
-        releases:
-          - garden-runc/*.tgz
-          - bosh-rc/concourse-*.tgz
-
   - name: bosh-deploy-rc
     plan:
     - aggregate:
       - get: bosh-rc
-        passed: [dry-run-bosh-deploy-rc]
       - get: garden-runc
-        passed: [dry-run-bosh-deploy-rc]
       - get: bosh-stemcell
-        passed: [dry-run-bosh-deploy-rc]
         resource: gcp-stemcell
       - get: deployments
-        passed: [dry-run-bosh-deploy-rc]
     - put: wings-deployment
       params:
         cleanup: true

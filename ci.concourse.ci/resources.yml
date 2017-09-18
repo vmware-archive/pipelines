@@ -147,47 +147,6 @@ jobs:
   - put: buildroot-iptables-image
     params: {build: image-root}
 
-- name: git-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: git-resource
-      trigger: true
-    - get: buildroot-git-image
-      params: {save: true}
-      passed: [buildroot-git]
-      trigger: true
-  - put: git-resource-image
-    params:
-      load_base: buildroot-git-image
-      build: git-resource
-  - task: integration
-    image: git-resource-image
-    file: git-resource/ci/tests.yml
-
-- name: bump-git-resource
-  serial: true
-  public: true
-  plan:
-  - get: git-resource-image
-    passed: [git-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: git-resource
-    passed: [git-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: git-resource-image
-      resource-repo: git-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: git-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 - name: hg-resource
   serial: true
   public: true
@@ -772,12 +731,6 @@ jobs:
     params: {repository: bumped-concourse, rebase: true}
 
 resources:
-- name: git-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/git-resource.git
-    branch: master
-
 - name: hg-resource
   type: git
   source:
@@ -869,13 +822,6 @@ resources:
     uri: https://github.com/concourse/bosh-io-stemcell-resource.git
     branch: master
     ignore_paths: [README.md]
-
-- name: git-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/git-resource
 
 - name: hg-resource-image
   type: docker-image

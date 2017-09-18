@@ -692,44 +692,6 @@ jobs:
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
-- name: vagrant-cloud-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-curl-image
-      params: {save: true}
-      passed: [buildroot-curl]
-      trigger: true
-    - get: vagrant-cloud-resource
-      trigger: true
-  - put: vagrant-cloud-resource-image
-    params:
-      load_base: buildroot-curl-image
-      build: vagrant-cloud-resource
-
-- name: bump-vagrant-cloud-resource
-  serial: true
-  public: true
-  plan:
-  - get: vagrant-cloud-resource-image
-    passed: [vagrant-cloud-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: vagrant-cloud-resource
-    passed: [vagrant-cloud-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: vagrant-cloud-resource-image
-      resource-repo: vagrant-cloud-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: vagrant-cloud-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 resources:
 - name: hg-resource
   type: git
@@ -765,12 +727,6 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/tracker-resource.git
-    branch: master
-
-- name: vagrant-cloud-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/vagrant-cloud-resource.git
     branch: master
 
 - name: cf-resource
@@ -878,13 +834,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/tracker-resource
-
-- name: vagrant-cloud-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/vagrant-cloud-resource
 
 - name: cf-resource-image
   type: docker-image

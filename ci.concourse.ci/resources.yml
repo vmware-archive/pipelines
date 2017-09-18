@@ -923,14 +923,6 @@ resources:
     repository: ubuntu
     tag: "16.04"
 
-- name: docker
-  type: github-release
-  check_every: 1h
-  source:
-    user: docker
-    repository: docker
-    access_token: ((concourse_github_dummy.access_token))
-
 - name: fly
   type: github-release
   check_every: 1h

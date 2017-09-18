@@ -1,7 +1,15 @@
 ---
+resource_types:
+- name: docker-image-alpine
+  type: docker-image
+  privileged: true
+  source:
+    repository: concourse/docker-image
+    tag: alpine
+
 resources:
 - name: alpine-edge
-  type: docker-image
+  type: docker-image-alpine
   source:
     repository: alpine
     tag: edge
@@ -9,12 +17,12 @@ resources:
 - name: resource-repo
   type: git
   source:
-    uri: https://github.com/concourse/time-resource
+    uri: https://github.com/concourse/((resource))-resource
 
 - name: resource-image
-  type: docker-image
+  type: docker-image-alpine
   source:
-    repository: concourse/time-resource
+    repository: concourse/((resource))-resource
     username: ((docker.username))
     password: ((docker.password))
 
@@ -51,7 +59,7 @@ jobs:
   - task: bump-package
     file: concourse/ci/bump-resource-package.yml
     params:
-      RESOURCE_NAME: time-resource
+      RESOURCE_NAME: ((resource))-resource
       BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}

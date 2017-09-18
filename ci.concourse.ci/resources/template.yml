@@ -1,15 +1,7 @@
 ---
-resource_types:
-- name: docker-image-alpine
-  type: docker-image
-  privileged: true
-  source:
-    repository: concourse/docker-image
-    tag: alpine
-
 resources:
 - name: alpine-edge
-  type: docker-image-alpine
+  type: docker-image
   source:
     repository: alpine
     tag: edge
@@ -20,7 +12,7 @@ resources:
     uri: https://github.com/concourse/((resource))-resource
 
 - name: resource-image
-  type: docker-image-alpine
+  type: docker-image
   source:
     repository: concourse/((resource))-resource
     username: ((docker.username))

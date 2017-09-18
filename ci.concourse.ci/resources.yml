@@ -125,28 +125,6 @@ jobs:
   - put: buildroot-ruby-image
     params: {build: image-root}
 
-- name: buildroot-iptables
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-images
-      resource: buildroot-iptables
-      trigger: true
-    - get: buildroot
-      trigger: true
-    - get: buildroot-tarmaker-image
-      params: {save: true}
-      passed: [buildroot-tarmaker]
-      trigger: true
-  - task: build-image
-    privileged: true
-    file: buildroot-images/ci/build.yml
-    params:
-      FLAVOR: iptables
-  - put: buildroot-iptables-image
-    params: {build: image-root}
-
 - name: hg-resource
   serial: true
   public: true
@@ -228,48 +206,6 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: pool-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
-- name: docker-image-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: docker
-      trigger: true
-    - get: docker-image-resource
-      trigger: true
-    - get: buildroot-iptables-image
-      params: {save: true}
-      passed: [buildroot-iptables]
-      trigger: true
-  - task: build-resource
-    file: docker-image-resource/ci/build.yml
-  - put: docker-image-resource-image
-    params:
-      load_base: buildroot-iptables-image
-      build: built-resource
-
-- name: bump-docker-image-resource
-  serial: true
-  public: true
-  plan:
-  - get: docker-image-resource-image
-    passed: [docker-image-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: docker-image-resource
-    passed: [docker-image-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: docker-image-resource-image
-      resource-repo: docker-image-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: docker-image-resource
       BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
@@ -705,12 +641,6 @@ resources:
     uri: https://github.com/concourse/pool-resource.git
     branch: master
 
-- name: docker-image-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/docker-image-resource.git
-    branch: master
-
 - name: datadog-event-resource
   type: git
   source:
@@ -792,13 +722,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/pool-resource
-
-- name: docker-image-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/docker-image-resource
 
 - name: archive-resource-image
   type: docker-image
@@ -976,21 +899,6 @@ resources:
   source:
     repository: concourse/buildroot
     tag: hg
-    username: ((docker.username))
-    password: ((docker.password))
-
-- name: buildroot-iptables
-  type: git
-  source:
-    uri: https://github.com/concourse/buildroot-images.git
-    branch: master
-    paths: [iptables, ci]
-
-- name: buildroot-iptables-image
-  type: docker-image
-  source:
-    repository: concourse/buildroot
-    tag: iptables
     username: ((docker.username))
     password: ((docker.password))
 

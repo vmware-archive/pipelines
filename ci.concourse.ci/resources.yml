@@ -170,46 +170,6 @@ jobs:
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
-- name: pool-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: pool-resource
-      trigger: true
-    - get: buildroot-git-image
-      params: {save: true}
-      passed: [buildroot-git]
-      trigger: true
-  - task: unit
-    file: pool-resource/build.yml
-  - put: pool-resource-image
-    params:
-      load_base: buildroot-git-image
-      build: built-resource
-
-- name: bump-pool-resource
-  serial: true
-  public: true
-  plan:
-  - get: pool-resource-image
-    passed: [pool-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: pool-resource
-    passed: [pool-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: pool-resource-image
-      resource-repo: pool-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: pool-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 - name: datadog-event-resource
   serial: true
   public: true
@@ -635,12 +595,6 @@ resources:
     uri: https://github.com/concourse/hg-resource.git
     branch: master
 
-- name: pool-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/pool-resource.git
-    branch: master
-
 - name: datadog-event-resource
   type: git
   source:
@@ -715,13 +669,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/hg-resource
-
-- name: pool-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/pool-resource
 
 - name: archive-resource-image
   type: docker-image

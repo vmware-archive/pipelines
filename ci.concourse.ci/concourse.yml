@@ -282,6 +282,8 @@ jobs:
       trigger: true
     - get: fly-rc
       passed: [bosh-rc]
+      trigger: true
+    - get: postgres-release
     - get: gcp-stemcell
     - get: deployments
   - put: test-deployment
@@ -290,6 +292,7 @@ jobs:
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
+      - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
       ops_files: [deployments/testflight/metrics-logs-ops.yml]
       vars:
@@ -319,6 +322,9 @@ jobs:
       passed: [bosh-test-deploy]
       trigger: true
     - get: fly-rc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: postgres-release
       passed: [bosh-test-deploy]
       trigger: true
   - task: testflight
@@ -354,6 +360,9 @@ jobs:
       passed: [bosh-test-deploy]
       trigger: true
     - get: garden-runc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: postgres-release
       passed: [bosh-test-deploy]
       trigger: true
     - get: git-server-release
@@ -395,6 +404,9 @@ jobs:
     - get: fly-rc
       passed: [bosh-testflight]
       trigger: true
+    - get: postgres-release
+      passed: [bosh-testflight]
+      trigger: true
     - get: gcp-stemcell
     - get: gcp-windows-stemcell
     - get: deployments
@@ -406,8 +418,9 @@ jobs:
       - gcp-stemcell/*.tgz
       - gcp-windows-stemcell/*.tgz
       releases:
-        - garden-runc-release/*.tgz
-        - bosh-rc/concourse-*.tgz
+      - garden-runc-release/*.tgz
+      - postgres-release/*.tgz
+      - bosh-rc/concourse-*.tgz
 
 - name: bin-testflight
   public: true
@@ -800,6 +813,11 @@ resources:
   type: bosh-io-release
   source:
     repository: cloudfoundry/garden-runc-release
+
+- name: postgres-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry/postgres-release
 
 - name: bosh-virtualbox-cpi
   type: bosh-io-release

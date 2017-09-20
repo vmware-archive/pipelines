@@ -210,48 +210,6 @@ jobs:
       load_base: buildroot-base-image
       build: built-resource
 
-- name: archive-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-curl-image
-      params: {save: true}
-      passed: [buildroot-curl]
-      trigger: true
-    - get: archive-resource
-      trigger: true
-  - task: unit
-    file: archive-resource/unit.yml
-  - task: build
-    file: archive-resource/build.yml
-  - put: archive-resource-image
-    params:
-      load_base: buildroot-curl-image
-      build: built-resource
-
-- name: bump-archive-resource
-  serial: true
-  public: true
-  plan:
-  - get: archive-resource-image
-    passed: [archive-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: archive-resource
-    passed: [archive-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: archive-resource-image
-      resource-repo: archive-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: archive-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 - name: bosh-deployment-resource
   serial: true
   public: true
@@ -332,46 +290,6 @@ jobs:
     file: concourse/ci/bump-resource-package.yml
     params:
       RESOURCE_NAME: s3-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
-- name: github-release-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-base-image
-      params: {save: true}
-      passed: [buildroot-base]
-      trigger: true
-    - get: github-release-resource
-      trigger: true
-  - task: unit-and-build
-    file: github-release-resource/build.yml
-  - put: github-release-resource-image
-    params:
-      load_base: buildroot-base-image
-      build: built-resource
-
-- name: bump-github-release-resource
-  serial: true
-  public: true
-  plan:
-  - get: github-release-resource-image
-    passed: [github-release-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: github-release-resource
-    passed: [github-release-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: github-release-resource-image
-      resource-repo: github-release-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: github-release-resource
       BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
@@ -506,46 +424,6 @@ jobs:
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
-- name: bosh-io-stemcell-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-curl-image
-      params: {save: true}
-      passed: [buildroot-curl]
-      trigger: true
-    - get: bosh-io-stemcell-resource
-      trigger: true
-  - task: tests
-    file: bosh-io-stemcell-resource/ci/tests.yml
-  - put: bosh-io-stemcell-resource-image
-    params:
-      load_base: buildroot-curl-image
-      build: built-resource
-
-- name: bump-bosh-io-stemcell-resource
-  serial: true
-  public: true
-  plan:
-  - get: bosh-io-stemcell-resource-image
-    passed: [bosh-io-stemcell-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: bosh-io-stemcell-resource
-    passed: [bosh-io-stemcell-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: bosh-io-stemcell-resource-image
-      resource-repo: bosh-io-stemcell-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: bosh-io-stemcell-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 - name: tracker-resource
   serial: true
   public: true
@@ -625,22 +503,10 @@ resources:
     uri: https://github.com/concourse/s3-resource.git
     branch: master
 
-- name: github-release-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/github-release-resource.git
-    branch: master
-
 - name: semver-resource
   type: git
   source:
     uri: https://github.com/concourse/semver-resource.git
-    branch: master
-
-- name: archive-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/archive-resource.git
     branch: master
 
 - name: bosh-deployment-resource
@@ -656,26 +522,12 @@ resources:
     branch: master
     ignore_paths: [README.md]
 
-- name: bosh-io-stemcell-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/bosh-io-stemcell-resource.git
-    branch: master
-    ignore_paths: [README.md]
-
 - name: hg-resource-image
   type: docker-image
   source:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/hg-resource
-
-- name: archive-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/archive-resource
 
 - name: bosh-deployment-resource-image
   type: docker-image
@@ -719,13 +571,6 @@ resources:
     password: ((docker.password))
     repository: concourse/s3-resource
 
-- name: github-release-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/github-release-resource
-
 - name: semver-resource-image
   type: docker-image
   source:
@@ -739,13 +584,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/bosh-io-release-resource
-
-- name: bosh-io-stemcell-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/bosh-io-stemcell-resource
 
 - name: autopilot
   type: git

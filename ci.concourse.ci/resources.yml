@@ -386,44 +386,6 @@ jobs:
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
-- name: bosh-io-release-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-curl-image
-      params: {save: true}
-      passed: [buildroot-curl]
-      trigger: true
-    - get: bosh-io-release-resource
-      trigger: true
-  - put: bosh-io-release-resource-image
-    params:
-      load_base: buildroot-curl-image
-      build: bosh-io-release-resource
-
-- name: bump-bosh-io-release-resource
-  serial: true
-  public: true
-  plan:
-  - get: bosh-io-release-resource-image
-    passed: [bosh-io-release-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: bosh-io-release-resource
-    passed: [bosh-io-release-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: bosh-io-release-resource-image
-      resource-repo: bosh-io-release-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: bosh-io-release-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 - name: tracker-resource
   serial: true
   public: true
@@ -515,13 +477,6 @@ resources:
     uri: https://github.com/concourse/bosh-deployment-resource.git
     branch: master
 
-- name: bosh-io-release-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/bosh-io-release-resource.git
-    branch: master
-    ignore_paths: [README.md]
-
 - name: hg-resource-image
   type: docker-image
   source:
@@ -577,13 +532,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/semver-resource
-
-- name: bosh-io-release-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/bosh-io-release-resource
 
 - name: autopilot
   type: git

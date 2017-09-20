@@ -84,7 +84,7 @@ resources:
 - name: notify-concourse-wings
   type: slack-notification
   source:
-    url: https://hooks.slack.com/services/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
+    url: ((wings_webhook_url))
 
 resource_types:
 - name: bosh-deployment

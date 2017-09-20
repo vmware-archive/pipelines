@@ -24,6 +24,9 @@ jobs:
       - get: bosh-stemcell
         resource: gcp-stemcell
       - get: deployments
+    - put: notify-concourse-wings
+      params:
+        text: "Nightly deployment is starting"
     - put: wings-deployment
       params:
         cleanup: true
@@ -33,6 +36,9 @@ jobs:
         - nightly-release/concourse-*.tgz
         stemcells:
         - bosh-stemcell/*.tgz
+    - put: notify-concourse-wings
+      params:
+        text: "Nightly deployment finished"
 
 
 resources:
@@ -75,8 +81,19 @@ resources:
   source:
     repository: cloudfoundry/garden-runc-release
 
+- name: notify-concourse-wings
+  type: slack-notification
+  source:
+    url: https://hooks.slack.com/services/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
+
 resource_types:
 - name: bosh-deployment
   type: docker-image
   source:
     repository: cloudfoundry/bosh-deployment-resource
+
+- name: slack-notification
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
+    tag: latest

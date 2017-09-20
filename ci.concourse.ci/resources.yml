@@ -81,28 +81,6 @@ jobs:
   - put: buildroot-curl-image
     params: {build: image-root}
 
-- name: buildroot-hg
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-images
-      resource: buildroot-hg
-      trigger: true
-    - get: buildroot
-      trigger: true
-    - get: buildroot-tarmaker-image
-      params: {save: true}
-      passed: [buildroot-tarmaker]
-      trigger: true
-  - task: build-image
-    privileged: true
-    file: buildroot-images/ci/build.yml
-    params:
-      FLAVOR: hg
-  - put: buildroot-hg-image
-    params: {build: image-root}
-
 - name: buildroot-ruby
   serial: true
   public: true
@@ -124,51 +102,6 @@ jobs:
       FLAVOR: ruby
   - put: buildroot-ruby-image
     params: {build: image-root}
-
-- name: hg-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: hg-resource
-      trigger: true
-    - get: buildroot-hg-image
-      params: {save: true}
-      passed: [buildroot-hg]
-      trigger: true
-  - task: unit
-    file: hg-resource/ci/unit.yml
-  - task: build
-    file: hg-resource/ci/build.yml
-  - put: hg-resource-image
-    params:
-      load_base: buildroot-hg-image
-      build: built-resource
-  - task: integration
-    image: hg-resource-image
-    file: hg-resource/ci/integration.yml
-
-- name: bump-hg-resource
-  serial: true
-  public: true
-  plan:
-  - get: hg-resource-image
-    passed: [hg-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: hg-resource
-    passed: [hg-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: hg-resource-image
-      resource-repo: hg-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: hg-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
 
 - name: datadog-event-resource
   serial: true
@@ -429,12 +362,6 @@ jobs:
     params: {repository: bumped-concourse, rebase: true}
 
 resources:
-- name: hg-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/hg-resource.git
-    branch: master
-
 - name: datadog-event-resource
   type: git
   source:
@@ -476,13 +403,6 @@ resources:
   source:
     uri: https://github.com/concourse/bosh-deployment-resource.git
     branch: master
-
-- name: hg-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/hg-resource
 
 - name: bosh-deployment-resource-image
   type: docker-image
@@ -617,21 +537,6 @@ resources:
   source:
     repository: concourse/buildroot
     tag: curl
-    username: ((docker.username))
-    password: ((docker.password))
-
-- name: buildroot-hg
-  type: git
-  source:
-    uri: https://github.com/concourse/buildroot-images.git
-    branch: master
-    paths: [hg, ci]
-
-- name: buildroot-hg-image
-  type: docker-image
-  source:
-    repository: concourse/buildroot
-    tag: hg
     username: ((docker.username))
     password: ((docker.password))
 

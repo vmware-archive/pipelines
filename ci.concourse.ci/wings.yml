@@ -15,10 +15,11 @@ jobs:
           - github-release/concourse-*.tgz
           - github-release/garden-runc-*.tgz
 
-  - name: bosh-deploy-rc
+  - name: bosh-deploy-nightly
     plan:
     - aggregate:
-      - get: bosh-rc
+      - get: nightly-release
+        trigger: true
       - get: garden-runc
       - get: bosh-stemcell
         resource: gcp-stemcell
@@ -27,10 +28,12 @@ jobs:
       params:
         cleanup: true
         manifest: deployments/prod/deployments/wings.yml
-        stemcells: [bosh-stemcell/*.tgz]
         releases:
-          - garden-runc/*.tgz
-          - bosh-rc/concourse-*.tgz
+        - garden-runc/*.tgz
+        - nightly-release/concourse-*.tgz
+        stemcells:
+        - bosh-stemcell/*.tgz
+
 
 resources:
 - name: wings-deployment
@@ -60,11 +63,12 @@ resources:
     branch: master
     private_key: ((deployments_repo_private_key))
 
-- name: bosh-rc
+- name: nightly-release
   type: s3
   source:
-    bucket: concourse-release-candidates
+    bucket: concourse-nightly-releases
     regexp: concourse-(.*).tgz
+    region_name: us-west-2
 
 - name: garden-runc
   type: bosh-io-release

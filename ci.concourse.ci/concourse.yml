@@ -24,6 +24,7 @@ groups:
 
 - name: publish
   jobs:
+  - nightly
   - major
   - minor
   - patch
@@ -548,6 +549,18 @@ jobs:
     privileged: true
     timeout: 1h
 
+
+- name: nightly
+  plan:
+   - get: in-the-middle-of-the-night
+   - get: version
+     passed: [bosh-deploy, bin-smoke]
+     params: { pre: nightly }
+   - get: bosh-rc
+     passed: [bosh-deploy]
+   - put: nightly-release
+     params: {file: bosh-rc/concourse-*.tgz}
+
 - name: shipit
   serial_groups: [version]
   plan:
@@ -784,6 +797,20 @@ resources:
     regexp: concourse-(.*).tgz
     access_key_id: ((concourse_release_bucket.access_key))
     secret_access_key: ((concourse_release_bucket.secret_key))
+
+- name: nightly-release
+  type: s3
+  source:
+    bucket: concourse-nightly-releases
+    regexp: concourse-(.*).tgz
+    access_key_id: ((concourse_release_bucket.access_key))
+    secret_access_key: ((concourse_release_bucket.secret_key))
+
+- name: in-the-middle-of-the-night
+  type: time
+  source:
+    start: 12:00 AM
+    stop: 1:00 AM
 
 - name: prod-deployment
   type: bosh-deployment

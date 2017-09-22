@@ -19,7 +19,6 @@ jobs:
     plan:
     - aggregate:
       - get: nightly-release
-        trigger: true
       - get: garden-runc
       - get: bosh-stemcell
         resource: gcp-stemcell

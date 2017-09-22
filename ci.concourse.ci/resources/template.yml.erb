@@ -1,3 +1,9 @@
+<%
+  resources ||= ""
+  resources = resources.split(',')
+  ship ||= "true"
+  ship = ship == "true"
+%>
 ---
 resources:
 - name: alpine-edge
@@ -18,12 +24,24 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
 
+<% if ship %>
 - name: concourse
   type: git
   source:
     uri: git@github.com:concourse/concourse.git
     branch: master
     private_key: ((concourse_repo_private_key))
+<% end %>
+
+<% if resources.include?('fly') %>
+- name: fly
+  type: github-release
+  check_every: 1h
+  source:
+    user: concourse
+    repository: concourse
+    access_token: ((concourse_github_dummy.access_token))
+<% end %>
 
 jobs:
 - name: build
@@ -33,11 +51,18 @@ jobs:
   - get: alpine-edge
     params: {save: true}
     trigger: true
+<% resources.each do |resource_name| %>
+  - get: <%= resource_name %>
+    trigger: true
+    params:
+      globs: [ "<%= resource_name %>*linux*" ]
+<% end %>
   - put: resource-image
     params:
       load_base: alpine-edge
       build: resource-repo
 
+<% if ship %>
 - name: ship
   plan:
   - get: resource-repo
@@ -55,3 +80,4 @@ jobs:
       BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
+<% end %>

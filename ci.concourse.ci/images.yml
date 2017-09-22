@@ -211,6 +211,12 @@ resources:
     repository: ubuntu
     tag: 16.04
 
+- name: ubuntu-17.04
+  type: docker-image
+  source:
+    repository: ubuntu
+    tag: 17.04
+
 - name: ruby-2.x
   type: docker-image
   source:
@@ -367,7 +373,7 @@ jobs:
   - aggregate:
     - get: concourse-atc-ci
       trigger: true
-    - get: ubuntu-16.04
+    - get: ubuntu-17.04
       trigger: true
       params: {save: true}
     - get: golang-1.x-tarball
@@ -392,7 +398,7 @@ jobs:
           cp golang-1.x-tarball/go* context/
   - put: concourse-atc-ci-image
     params:
-      load_base: ubuntu-16.04
+      load_base: ubuntu-17.04
       build: context
 
 - name: build-wats-ci

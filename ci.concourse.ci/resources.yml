@@ -161,50 +161,6 @@ jobs:
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
-- name: s3-resource
-  serial: true
-  plan:
-  - aggregate:
-    - get: buildroot-base-image
-      params: {save: true}
-      passed: [buildroot-base]
-      trigger: true
-    - get: s3-resource
-      trigger: true
-  - task: unit
-    file: s3-resource/build.yml
-    params:
-      S3_TESTING_ACCESS_KEY_ID:  ((s3_resource_bucket.access_key))
-      S3_TESTING_SECRET_ACCESS_KEY: ((s3_resource_bucket.secret_key))
-      S3_TESTING_BUCKET: ((s3_resource.bucket))
-      S3_VERSIONED_TESTING_BUCKET: ((s3_resource.versioned_bucket))
-      S3_TESTING_REGION: ((s3_resource.region))
-  - put: s3-resource-image
-    params:
-      load_base: buildroot-base-image
-      build: built-resource
-
-- name: bump-s3-resource
-  serial: true
-  plan:
-  - get: s3-resource-image
-    passed: [s3-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: s3-resource
-    passed: [s3-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: s3-resource-image
-      resource-repo: s3-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: s3-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 - name: semver-resource
   serial: true
   public: false # easy to leak bucket params
@@ -305,12 +261,6 @@ resources:
     uri: https://github.com/concourse/tracker-resource.git
     branch: master
 
-- name: s3-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/s3-resource.git
-    branch: master
-
 - name: semver-resource
   type: git
   source:
@@ -343,13 +293,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/tracker-resource
-
-- name: s3-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/s3-resource
 
 - name: semver-resource-image
   type: docker-image

@@ -49,8 +49,6 @@ resources:
   source:
     bucket: cf-cli-releases
     region_name: us-west-1
-    access_key_id: ((cli_bucket.access_key))
-    secret_access_key: ((cli_bucket.secret_key))
     regexp: releases/v([\d\.]+)/cf-cli_.*_linux_x86-64.tgz
 <% end %>
 

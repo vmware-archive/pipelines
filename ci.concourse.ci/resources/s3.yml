@@ -1,0 +1,66 @@
+groups: []
+resources:
+- name: alpine-edge
+  type: docker-image
+  source:
+    repository: alpine
+    tag: edge
+- name: resource-repo
+  type: git
+  source:
+    uri: https://github.com/concourse/s3-resource
+- name: resource-image
+  type: docker-image
+  source:
+    password: ((docker.password))
+    repository: concourse/s3-resource
+    username: ((docker.username))
+- name: concourse
+  type: git
+  source:
+    branch: master
+    private_key: ((concourse_repo_private_key))
+    uri: git@github.com:concourse/concourse.git
+resource_types: []
+jobs:
+- name: build
+  plan:
+  - get: resource-repo
+    trigger: true
+  - get: alpine-edge
+    trigger: true
+    params:
+      save: true
+  - put: resource-image
+    params:
+      build: resource-repo
+      load_base: alpine-edge
+      build_args:
+        S3_TESTING_ACCESS_KEY_ID:  ((s3_resource_bucket.access_key))
+        S3_TESTING_SECRET_ACCESS_KEY: ((s3_resource_bucket.secret_key))
+        S3_TESTING_BUCKET: ((s3_resource.bucket))
+        S3_VERSIONED_TESTING_BUCKET: ((s3_resource.versioned_bucket))
+        S3_TESTING_REGION: ((s3_resource.region))
+        S3_ENDPOINT: https://s3.amazonaws.com
+- name: ship
+  plan:
+  - get: resource-repo
+    passed:
+    - build
+    trigger: true
+  - get: resource-image
+    passed:
+    - build
+    trigger: true
+    params:
+      rootfs: true
+  - get: concourse
+  - task: bump-package
+    file: concourse/ci/bump-resource-package.yml
+    params:
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
+      RESOURCE_NAME: s3-resource
+  - put: concourse
+    params:
+      rebase: true
+      repository: bumped-concourse

@@ -12,5 +12,9 @@ usage() {
 
 [ -n "$resource" ] || usage
 
-fly -t resources set-pipeline -p "$resource" -c <(erb $params template.yml.erb) -v resource="$resource"
+if [ -e "$resource.yml" ]; then
+  fly -t resources set-pipeline -p "$resource" -c "$resource.yml"
+else
+  fly -t resources set-pipeline -p "$resource" -c <(erb $params template.yml.erb) -v resource="$resource"
+fi
 fly -t resources expose-pipeline -p "$resource"

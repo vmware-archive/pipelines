@@ -14,20 +14,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
 
-- name: concourse-docs-ci
-  type: git
-  source:
-    uri: https://github.com/concourse/concourse.git
-    branch: master
-    paths: [ci/dockerfiles/docs-ci]
-
-- name: concourse-docs-ci-image
-  type: docker-image
-  source:
-    repository: concourse/docs-ci
-    username: ((docker.username))
-    password: ((docker.password))
-
 - name: bosh-cli
   type: s3
   source:
@@ -297,22 +283,6 @@ jobs:
     params:
       load_base: concourse-atc-ci-image
       build: concourse-topgun-ci
-
-- name: build-docs-ci
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse-docs-ci
-      trigger: true
-      params: {submodules: none}
-    - get: golang-1.x
-      trigger: true
-      params: {save: true}
-  - put: concourse-docs-ci-image
-    params:
-      load_base: golang-1.x
-      build: concourse-docs-ci/ci/dockerfiles/docs-ci
 
 - name: build-bosh-cli
   public: true

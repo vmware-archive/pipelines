@@ -1,19 +1,5 @@
 ---
 resources:
-- name: concourse-buildbox-testflight-ci
-  type: git
-  source:
-    uri: https://github.com/concourse/concourse-lite.git
-    branch: master
-    paths: [ci/dockerfiles/buildbox-testflight-ci]
-
-- name: concourse-buildbox-testflight-ci-image
-  type: docker-image
-  source:
-    repository: concourse/buildbox-testflight-ci
-    username: ((docker.username))
-    password: ((docker.password))
-
 - name: bosh-cli
   type: s3
   source:
@@ -251,23 +237,6 @@ resources:
     access_token: ((concourse_github_dummy.access_token))
 
 jobs:
-- name: build-buildbox-testflight-ci
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse-buildbox-testflight-ci
-      trigger: true
-    - get: concourse-atc-ci-image
-      passed: [build-atc-ci]
-      trigger: true
-      params: {save: true}
-  - put: concourse-buildbox-testflight-ci-image
-    params:
-      dockerfile: concourse-buildbox-testflight-ci/ci/dockerfiles/buildbox-testflight-ci/Dockerfile
-      load_base: concourse-atc-ci-image
-      build: concourse-buildbox-testflight-ci/
-
 - name: build-topgun-ci
   public: true
   serial: true

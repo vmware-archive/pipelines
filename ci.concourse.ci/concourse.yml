@@ -601,16 +601,13 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: docs
     - get: version
       trigger: true
       passed: [github-release]
-    - get: concourse
-      params: {submodules: [docs]}
   - task: build-docs
-    file: concourse/ci/build-docs.yml
-    params:
-      TMPDIR: /scratch
-      ANALYTICS_ID: ((analytics_id))
+    file: docs/ci/build.yml
+    params: {ANALYTICS_ID: ((analytics_id))}
   - put: concourse-docs
     params:
       current_app_name: docs
@@ -883,6 +880,12 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
+
+- name: docs
+  type: git
+  source:
+    uri: https://github.com/concourse/docs
+    branch: master
 
 - name: concourse-docs
   type: cf

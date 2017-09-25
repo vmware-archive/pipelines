@@ -358,12 +358,6 @@ resources:
     password: ((docker.password))
     repository: concourse/semver-resource
 
-- name: autopilot
-  type: git
-  source:
-    uri: https://github.com/contraband/autopilot.git
-    branch: master
-
 - name: concourse
   type: git
   source:

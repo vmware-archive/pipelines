@@ -15,7 +15,7 @@ jobs:
           - github-release/concourse-*.tgz
           - github-release/garden-runc-*.tgz
 
-  - name: bosh-deploy-nightly
+  - name: prepare-nightly
     plan:
     - aggregate:
       - get: nightly-release
@@ -23,9 +23,37 @@ jobs:
       - get: bosh-stemcell
         resource: gcp-stemcell
       - get: deployments
+      - get: from-commit
+        resource: last-deployment
+      - get: to-commit
+        resource: latest-nightly
+      - get: concourse
+    - task: compose-message
+      file: concourse/ci/issues-for-commit-range.yml
+      params:
+        FROM_COMMIT_FILE: last-deployment/ref
+        TO_COMMIT_FILE: latest-nightly/ref
+        HEADING: |
+          *Preparing RC for deployment to Wings*. \n
+          Here is a list of issues closed in this RC:
     - put: notify-concourse-wings
       params:
-        text: "Nightly deployment is starting"
+        text_file: message/text
+
+  - name: bosh-deploy-nightly
+    plan:
+    - aggregate:
+      - get: nightly-release
+        passed: [prepare-nightly]
+      - get: garden-runc
+        passed: [prepare-nightly]
+      - get: bosh-stemcell
+        resource: gcp-stemcell
+        passed: [prepare-nightly]
+      - get: deployments
+        passed: [prepare-nightly]
+      - get: latest-nightly
+        passed: [prepare-nightly]
     - put: wings-deployment
       params:
         cleanup: true
@@ -35,6 +63,11 @@ jobs:
         - nightly-release/concourse-*.tgz
         stemcells:
         - bosh-stemcell/*.tgz
+    - put: last-deployment
+      params:
+        file: latest-nightly/ref
+      params:
+        text: "Nightly deployment finished"
     - put: notify-concourse-wings
       params:
         text: "Nightly deployment finished"
@@ -84,6 +117,32 @@ resources:
   type: slack-notification
   source:
     url: ((wings_webhook_url))
+
+
+- name: latest-nightly
+  type: s3
+  source:
+    bucket: concourse-nightly-releases
+    versioned_file: latest-nightly/ref
+    region_name: us-west-2
+    access_key_id: ((concourse_release_bucket.access_key))
+    secret_access_key: ((concourse_release_bucket.secret_key))
+
+- name: last-deployment
+  type: s3
+  source:
+    bucket: concourse-nightly-releases
+    versioned_file: last-deployment/ref
+    region_name: us-west-2
+    access_key_id: ((concourse_release_bucket.access_key))
+    secret_access_key: ((concourse_release_bucket.secret_key))
+
+- name: concourse
+  type: git
+  source:
+    uri: git@github.com:concourse/concourse.git
+    branch: master
+    private_key: ((concourse_repo_private_key))
 
 resource_types:
 - name: bosh-deployment

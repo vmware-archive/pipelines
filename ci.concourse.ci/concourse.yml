@@ -554,13 +554,14 @@ jobs:
   plan:
    - get: in-the-middle-of-the-night
      trigger: true
-   - get: version
-     passed: [bosh-deploy, bin-smoke]
-     params: { pre: nightly }
    - get: bosh-rc
+     passed: [bosh-deploy]
+   - get: concourse
      passed: [bosh-deploy]
    - put: nightly-release
      params: {file: bosh-rc/concourse-*.tgz}
+   - put: latest-nightly
+     params: {file: concourse/.git/ref}
 
 - name: shipit
   serial_groups: [version]
@@ -801,6 +802,15 @@ resources:
   source:
     bucket: concourse-nightly-releases
     regexp: concourse-(.*).tgz
+    region_name: us-west-2
+    access_key_id: ((concourse_release_bucket.access_key))
+    secret_access_key: ((concourse_release_bucket.secret_key))
+
+- name: latest-nightly
+  type: s3
+  source:
+    bucket: concourse-nightly-releases
+    versioned_file: latest-nightly/ref
     region_name: us-west-2
     access_key_id: ((concourse_release_bucket.access_key))
     secret_access_key: ((concourse_release_bucket.secret_key))

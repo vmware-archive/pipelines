@@ -37,28 +37,6 @@ jobs:
   - put: buildroot-base-image
     params: {build: image-root}
 
-- name: buildroot-git
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-images
-      resource: buildroot-git
-      trigger: true
-    - get: buildroot
-      trigger: true
-    - get: buildroot-tarmaker-image
-      params: {save: true}
-      passed: [buildroot-tarmaker]
-      trigger: true
-  - task: build-image
-    privileged: true
-    file: buildroot-images/ci/build.yml
-    params:
-      FLAVOR: git
-  - put: buildroot-git-image
-    params: {build: image-root}
-
 - name: buildroot-ruby
   serial: true
   public: true
@@ -205,21 +183,6 @@ resources:
   source:
     repository: concourse/buildroot
     tag: base
-    username: ((docker.username))
-    password: ((docker.password))
-
-- name: buildroot-git
-  type: git
-  source:
-    uri: https://github.com/concourse/buildroot-images.git
-    branch: master
-    paths: [git, ci]
-
-- name: buildroot-git-image
-  type: docker-image
-  source:
-    repository: concourse/buildroot
-    tag: git
     username: ((docker.username))
     password: ((docker.password))
 

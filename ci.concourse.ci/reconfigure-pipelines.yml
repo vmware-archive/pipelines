@@ -28,15 +28,9 @@ jobs:
       - name: main
         team: main
         config_file: pipelines/ci.concourse.ci/concourse.yml
-      - name: resources
-        team: main
-        config_file: pipelines/ci.concourse.ci/resources.yml
       - name: images
         team: main
         config_file: pipelines/ci.concourse.ci/images.yml
-      - name: hangar
-        team: main
-        config_file: pipelines/ci.concourse.ci/hangar.yml
       - name: wings
         team: main
         config_file: pipelines/ci.concourse.ci/wings.yml

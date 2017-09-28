@@ -59,28 +59,6 @@ jobs:
   - put: buildroot-git-image
     params: {build: image-root}
 
-- name: buildroot-curl
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-images
-      resource: buildroot-curl
-      trigger: true
-    - get: buildroot
-      trigger: true
-    - get: buildroot-tarmaker-image
-      params: {save: true}
-      passed: [buildroot-tarmaker]
-      trigger: true
-  - task: build-image
-    privileged: true
-    file: buildroot-images/ci/build.yml
-    params:
-      FLAVOR: curl
-  - put: buildroot-curl-image
-    params: {build: image-root}
-
 - name: buildroot-ruby
   serial: true
   public: true
@@ -161,110 +139,11 @@ jobs:
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
 
-- name: semver-resource
-  serial: true
-  public: false # easy to leak bucket params
-  plan:
-  - aggregate:
-    - get: buildroot-git-image
-      params: {save: true}
-      passed: [buildroot-git]
-      trigger: true
-    - get: semver-resource
-      trigger: true
-  - task: unit
-    file: semver-resource/build.yml
-    params:
-      SEMVER_TESTING_ACCESS_KEY_ID: ((semver_resource_bucket.access_key))
-      SEMVER_TESTING_SECRET_ACCESS_KEY: ((semver_resource_bucket.secret_key))
-      SEMVER_TESTING_BUCKET: ((semver_resource.bucket))
-      SEMVER_TESTING_REGION: ((semver_resource.region))
-  - put: semver-resource-image
-    params:
-      load_base: buildroot-git-image
-      build: built-resource
-
-- name: bump-semver-resource
-  serial: true
-  public: false # easy to leak bucket params
-  plan:
-  - get: semver-resource-image
-    passed: [semver-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: semver-resource
-    passed: [semver-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: semver-resource-image
-      resource-repo: semver-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: semver-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
-- name: tracker-resource
-  serial: true
-  public: true
-  plan:
-  - aggregate:
-    - get: buildroot-git-image
-      params: {save: true}
-      passed: [buildroot-git]
-      trigger: true
-    - get: tracker-resource
-      trigger: true
-  - task: unit
-    file: tracker-resource/build.yml
-    params:
-      TRACKER_TOKEN: ((tracker_resource.token))
-  - put: tracker-resource-image
-    params:
-      load_base: buildroot-git-image
-      build: built-resource
-
-- name: bump-tracker-resource
-  serial: true
-  public: true
-  plan:
-  - get: tracker-resource-image
-    passed: [tracker-resource]
-    params: {rootfs: true}
-    trigger: true
-  - get: tracker-resource
-    passed: [tracker-resource]
-  - get: concourse
-  - task: bump-package
-    input_mapping:
-      resource-image: tracker-resource-image
-      resource-repo: tracker-resource
-    file: concourse/ci/bump-resource-package.yml
-    params:
-      RESOURCE_NAME: tracker-resource
-      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
-    params: {repository: bumped-concourse, rebase: true}
-
 resources:
 - name: datadog-event-resource
   type: git
   source:
     uri: https://github.com/concourse/datadog-event-resource.git
-    branch: master
-
-- name: tracker-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/tracker-resource.git
-    branch: master
-
-- name: semver-resource
-  type: git
-  source:
-    uri: https://github.com/concourse/semver-resource.git
     branch: master
 
 - name: bosh-deployment-resource
@@ -286,20 +165,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
     repository: concourse/datadog-event-resource
-
-- name: tracker-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/tracker-resource
-
-- name: semver-resource-image
-  type: docker-image
-  source:
-    username: ((docker.username))
-    password: ((docker.password))
-    repository: concourse/semver-resource
 
 - name: concourse
   type: git
@@ -355,21 +220,6 @@ resources:
   source:
     repository: concourse/buildroot
     tag: git
-    username: ((docker.username))
-    password: ((docker.password))
-
-- name: buildroot-curl
-  type: git
-  source:
-    uri: https://github.com/concourse/buildroot-images.git
-    branch: master
-    paths: [curl, ci]
-
-- name: buildroot-curl-image
-  type: docker-image
-  source:
-    repository: concourse/buildroot
-    tag: curl
     username: ((docker.username))
     password: ((docker.password))
 

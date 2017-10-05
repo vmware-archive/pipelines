@@ -1,5 +1,6 @@
 jobs:
   - name: bosh-deploy-final-release
+    serial_groups: [deploy]
     plan:
     - aggregate:
       - get: github-release
@@ -16,6 +17,7 @@ jobs:
           - github-release/garden-runc-*.tgz
 
   - name: prepare-nightly
+    serial_groups: [deploy]
     plan:
     - aggregate:
       - get: nightly-release
@@ -41,6 +43,7 @@ jobs:
         text_file: message/text
 
   - name: bosh-deploy-nightly
+    serial_groups: [deploy]
     plan:
     - aggregate:
       - get: nightly-release
@@ -66,8 +69,6 @@ jobs:
     - put: last-deployment
       params:
         file: latest-nightly/ref
-      params:
-        text: "Nightly deployment finished"
     - put: notify-concourse-wings
       params:
         text: "Nightly deployment finished"

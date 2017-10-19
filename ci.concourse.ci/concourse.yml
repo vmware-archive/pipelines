@@ -361,8 +361,13 @@ jobs:
     - get: test-deployment
       passed: [bosh-test-deploy]
       trigger: true
+    - get: fly-rc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: codeceptjs
   - task: watsjs
     file: concourse/ci/watsjs.yml
+    image: codeceptjs
     params: {ATC_URL: "http://10.244.15.2:8080"}
     timeout: 1h
 
@@ -1031,6 +1036,10 @@ resources:
 - name: 30m
   type: time
   source: {interval: 30m}
+
+- name: codeceptjs
+  type: docker-image
+  source: {repository: codeception/codeceptjs}
 
 resource_types:
 - name: bosh-deployment

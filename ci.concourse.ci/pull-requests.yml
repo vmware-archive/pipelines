@@ -6,6 +6,11 @@ resource_types:
     repository: jtarchie/pr
 
 resources:
+- name: concourse
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse
+
 - name: fly
   type: pull-request
   source:
@@ -31,11 +36,13 @@ jobs:
 - name: fly
   public: true
   plan:
-  - get: fly
-    trigger: true
-    version: every
-    params:
-      fetch_merge: true
+  - aggregate:
+    - get: fly
+      trigger: true
+      version: every
+      params:
+        fetch_merge: true
+    - get: concourse
   - put: fly
     params: {path: fly, status: pending}
   - task: unit
@@ -51,11 +58,13 @@ jobs:
 - name: atc
   public: true
   plan:
-  - get: atc
-    trigger: true
-    version: every
-    params:
-      fetch_merge: true
+  - aggregate:
+    - get: atc
+      trigger: true
+      version: every
+      params:
+        fetch_merge: true
+    - get: concourse
   - put: atc
     params: {path: atc, status: pending}
   - task: unit
@@ -71,11 +80,13 @@ jobs:
 - name: go-concourse
   public: true
   plan:
-  - get: go-concourse
-    trigger: true
-    version: every
-    params:
-      fetch_merge: true
+  - aggregate:
+    - get: go-concourse
+      trigger: true
+      version: every
+      params:
+        fetch_merge: true
+    - get: concourse
   - put: go-concourse
     params: {path: go-concourse, status: pending}
   - task: unit

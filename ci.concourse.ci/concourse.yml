@@ -364,10 +364,10 @@ jobs:
     - get: fly-rc
       passed: [bosh-test-deploy]
       trigger: true
-    - get: codeceptjs
+    - get: puppeteer
   - task: watsjs
     file: concourse/ci/watsjs.yml
-    image: codeceptjs
+    image: puppeteer
     params: {ATC_URL: "http://10.244.15.2:8080"}
     timeout: 1h
 
@@ -1037,9 +1037,9 @@ resources:
   type: time
   source: {interval: 30m}
 
-- name: codeceptjs
+- name: puppeteer
   type: docker-image
-  source: {repository: codeception/codeceptjs}
+  source: {repository: alekzonder/puppeteer}
 
 resource_types:
 - name: bosh-deployment

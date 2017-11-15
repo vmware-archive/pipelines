@@ -16,6 +16,7 @@ groups:
   - bosh-testflight
   - bosh-wats
   - bosh-watsjs
+  - bosh-upgrade
   - bin-testflight
   - bin-smoke
   - bin-docker
@@ -301,6 +302,78 @@ jobs:
         deployment_name: concourse-test
         web_ip: 10.244.15.2
 
+- name: bosh-upgrade
+  public: true
+  serial_groups: [bosh-upgrade]
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: bosh-rc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: version
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: garden-runc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: fly-rc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: postgres-release
+    - get: gcp-stemcell
+    - get: deployments
+    - get: final-release
+  - task: delete-deployment
+    file: concourse/ci/delete-deployment.yml
+    params:
+      BOSH_ENVIRONMENT: bosh.concourse.ci
+      BOSH_CLIENT: ((bosh_client.id))
+      BOSH_CLIENT_SECRET: ((bosh_client.secret))
+      BOSH_DEPLOYMENT: concourse-test-upgrade
+  - put: final-release-deployment
+    resource: upgrade-deployment
+    params:
+      manifest: concourse/manifests/single-vm.yml
+      stemcells: [gcp-stemcell/*.tgz]
+      releases:
+      - garden-runc/*.tgz
+      - postgres-release/*.tgz
+      - final-release/*.tgz
+      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      vars:
+        deployment_name: concourse-test-upgrade
+        web_ip: 10.244.16.2
+  - task: create-test-pipeline
+    file: concourse/ci/create-uber-pipeline.yml
+    params:
+      WEB_IP: 10.244.16.2
+      PIPELINE_NAME: test-pipeline
+  - put: bosh-rc-deployment
+    resource: upgrade-deployment
+    params:
+      manifest: concourse/manifests/single-vm.yml
+      stemcells: [gcp-stemcell/*.tgz]
+      releases:
+      - garden-runc/*.tgz
+      - postgres-release/*.tgz
+      - bosh-rc/concourse-*.tgz
+      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      vars:
+        deployment_name: concourse-test-upgrade
+        web_ip: 10.244.16.2
+  - task: verify-test-pipeline
+    file: concourse/ci/verify-uber-pipeline.yml
+    params:
+      WEB_IP: 10.244.16.2
+      PIPELINE_NAME: test-pipeline
+  - task: testflight
+    file: concourse/ci/testflight.yml
+    params: {ATC_URL: "http://10.244.16.2:8080"}
+    timeout: 1h
+
 - name: bosh-testflight
   public: true
   serial_groups: [bosh-testflight]
@@ -412,7 +485,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight, bosh-watsjs, topgun]
+      passed: [bosh-upgrade, bosh-testflight, bosh-watsjs, topgun]
       trigger: true
     - get: version
       passed: [bosh-testflight]
@@ -856,6 +929,14 @@ resources:
   source:
     target: ((bosh_target))
     deployment: concourse-export
+    client: ((bosh_client.id))
+    client_secret: ((bosh_client.secret))
+
+- name: upgrade-deployment
+  type: bosh-deployment
+  source:
+    target: ((bosh_target))
+    deployment: concourse-test-upgrade
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 

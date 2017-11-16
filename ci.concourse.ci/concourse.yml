@@ -301,6 +301,8 @@ jobs:
       vars:
         deployment_name: concourse-test
         web_ip: 10.244.15.2
+        network_name: testflight
+        vm_type: testflight
 
 - name: bosh-upgrade
   public: true

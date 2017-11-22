@@ -324,6 +324,7 @@ jobs:
     - get: gcp-stemcell
     - get: deployments
     - get: final-release
+    - get: final-release-manifest
   - task: delete-deployment
     file: concourse/ci/delete-deployment.yml
     params:
@@ -334,7 +335,7 @@ jobs:
   - put: final-release-deployment
     resource: upgrade-deployment
     params:
-      manifest: concourse/manifests/single-vm.yml
+      manifest: final-release-manifest/single-vm-*.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
@@ -694,6 +695,8 @@ jobs:
         merge: true
     - put: final-release
       params: {file: final-release-tarball/concourse-*.tgz}
+    - put: final-release-manifest
+      params: {file: final-release-tarball/single-vm-*.yml}
 
 - name: push-docs
   serial: true
@@ -883,6 +886,14 @@ resources:
   source:
     bucket: concourse-releases
     regexp: concourse-(.*).tgz
+    access_key_id: ((concourse_release_bucket.access_key))
+    secret_access_key: ((concourse_release_bucket.secret_key))
+
+- name: final-release-manifest
+  type: s3
+  source:
+    bucket: concourse-release-manifests
+    regexp: single-vm-(.*).yml
     access_key_id: ((concourse_release_bucket.access_key))
     secret_access_key: ((concourse_release_bucket.secret_key))
 

@@ -332,10 +332,30 @@ jobs:
       BOSH_CLIENT: ((bosh_client.id))
       BOSH_CLIENT_SECRET: ((bosh_client.secret))
       BOSH_DEPLOYMENT: concourse-test-upgrade
+  - task: remove-me-once-bosh-deployment-supports-globs-in-manifest-path
+    config:
+      platform: linux
+
+      image_resource:
+        type: docker-image
+        source: {repository: ubuntu}
+
+      inputs:
+      - name: final-release-manifest
+
+      outputs:
+      - name: final-manifest
+
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          cp final-release-manifest/single-vm-*.yml final-manifest/single-vm.yml
   - put: final-release-deployment
     resource: upgrade-deployment
     params:
-      manifest: final-release-manifest/single-vm-*.yml
+      manifest: final-manifest/single-vm.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz

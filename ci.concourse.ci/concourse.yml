@@ -57,8 +57,6 @@ jobs:
       file: concourse/ci/fly-darwin.yml
     - task: windows
       file: concourse/ci/fly-windows.yml
-      timeout: 15m
-      attempts: 2
 
 - name: go-concourse
   public: true
@@ -182,8 +180,6 @@ jobs:
       file: concourse/ci/fly-build-darwin.yml
     - task: build-windows
       file: concourse/ci/fly-build-windows.yml
-      timeout: 15m
-      attempts: 2
   - task: build-release
     file: concourse/src/github.com/concourse/fly/ci/build-release.yml
   - put: fly-rc

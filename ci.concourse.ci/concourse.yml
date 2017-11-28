@@ -295,6 +295,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/no-auth.yml
       - concourse-deployment/cluster/operations/influxdb.yml
       - concourse-deployment/cluster/operations/blackbox.yml
       - concourse-deployment/cluster/operations/static-web.yml
@@ -372,6 +373,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/no-auth.yml
       - concourse-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
@@ -398,6 +400,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/no-auth.yml
       - concourse-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade

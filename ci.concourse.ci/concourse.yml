@@ -1090,12 +1090,6 @@ resources:
     branch: master
     private_key: ((concourse_repo_private_key))
 
-- name: concourse-deployment
-  type: git
-  source:
-    uri: https://github.com/concourse/concourse-deployment
-    branch: master
-
 - name: deployments
   type: git
   source:

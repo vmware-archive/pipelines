@@ -528,11 +528,10 @@ jobs:
       trigger: true
     - get: gcp-stemcell
     - get: gcp-windows-stemcell
-    - get: deployments
-      trigger: true
+    - get: concourse-deployment
   - put: prod-deployment
     params:
-      manifest: deployments/prod/deployments/concourse.yml
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells:
       - gcp-stemcell/*.tgz
       - gcp-windows-stemcell/*.tgz
@@ -540,6 +539,41 @@ jobs:
       - garden-runc-release/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
+      ops_files:
+      - concourse-deployment/cluster/operations/scale.yml
+      - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/privileged-http.yml
+      - concourse-deployment/cluster/operations/tls.yml
+      - concourse-deployment/cluster/operations/privileged-https.yml
+      - concourse-deployment/cluster/operations/basic-auth.yml
+      - concourse-deployment/cluster/operations/github-auth.yml
+      - concourse-deployment/cluster/operations/encryption.yml
+      - concourse-deployment/cluster/operations/vault-tls-cert-auth.yml
+      - concourse-deployment/cluster/operations/influxdb.yml
+      - concourse-deployment/cluster/operations/blackbox.yml
+      - concourse-deployment/cluster/operations/db-stats.yml
+      - concourse-deployment/cluster/operations/web-network-extension.yml
+      - concourse-deployment/cluster/operations/team-authorized-keys.yml
+      - concourse-deployment/cluster/operations/untrusted-worker.yml
+      - concourse-deployment/cluster/operations/windows-worker.yml
+      - concourse-deployment/cluster/operations/telegraf-postgres.yml
+      vars:
+        deployment_name: concourse-prod
+        web_instances: 2
+        worker_instances: 3
+        external_url: "https://ci.concourse.ci"
+        web_vm_type: web
+        db_vm_type: database
+        worker_vm_type: worker
+        untrusted_worker_vm_type: worker
+        db_persistent_disk_type: large
+        network_name: private
+        web_network_name: web
+        untrusted_worker_network_name: private
+        web_network_vm_extension: concourse-web-target-pool
+        untrusted_worker_deny_networks: [10.0.0.0/16]
+        untrusted_worker_tags: [pr]
+        windows_worker_tsa_host: ci.concourse.ci
 
 - name: bin-testflight
   public: true
@@ -1055,6 +1089,12 @@ resources:
     uri: git@github.com:concourse/concourse.git
     branch: master
     private_key: ((concourse_repo_private_key))
+
+- name: concourse-deployment
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse-deployment
+    branch: master
 
 - name: deployments
   type: git

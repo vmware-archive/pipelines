@@ -284,21 +284,30 @@ jobs:
       trigger: true
     - get: postgres-release
     - get: gcp-stemcell
-    - get: deployments
+    - get: concourse-deployment
   - put: test-deployment
     params:
-      manifest: concourse/manifests/single-vm.yml
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
-      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      ops_files:
+      - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/influxdb.yml
+      - concourse-deployment/cluster/operations/blackbox.yml
+      - concourse-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test
         web_ip: 10.244.15.2
+        external_url: "http://10.244.15.2:8080"
         network_name: testflight
-        vm_type: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
+
 
 - name: bosh-upgrade
   public: true
@@ -322,7 +331,7 @@ jobs:
       trigger: true
     - get: postgres-release
     - get: gcp-stemcell
-    - get: deployments
+    - get: concourse-deployment
     - get: final-release
     - get: final-release-manifest
   - task: delete-deployment
@@ -355,18 +364,24 @@ jobs:
   - put: final-release-deployment
     resource: upgrade-deployment
     params:
-      manifest: final-manifest/single-vm.yml
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
-      - final-release/*.tgz
-      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      - bosh-rc/concourse-*.tgz
+      ops_files:
+      - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
         web_ip: 10.244.16.2
+        external_url: "http://10.244.16.2:8080"
         network_name: testflight
-        vm_type: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
   - task: create-test-pipeline
     file: concourse/ci/create-uber-pipeline.yml
     params:
@@ -375,18 +390,24 @@ jobs:
   - put: bosh-rc-deployment
     resource: upgrade-deployment
     params:
-      manifest: concourse/manifests/single-vm.yml
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
-      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      ops_files:
+      - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
         web_ip: 10.244.16.2
+        external_url: "http://10.244.16.2:8080"
         network_name: testflight
-        vm_type: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
   - task: verify-test-pipeline
     file: concourse/ci/verify-uber-pipeline.yml
     params:
@@ -1089,13 +1110,6 @@ resources:
     uri: git@github.com:concourse/concourse.git
     branch: master
     private_key: ((concourse_repo_private_key))
-
-- name: deployments
-  type: git
-  source:
-    uri: git@github.com:concourse/deployments.git
-    branch: master
-    private_key: ((deployments_repo_private_key))
 
 - name: garden-runc-src
   type: git

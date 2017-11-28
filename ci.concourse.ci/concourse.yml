@@ -17,6 +17,7 @@ groups:
   - bosh-wats
   - bosh-watsjs
   - bosh-upgrade
+  - bosh-downgrade
   - bin-testflight
   - bin-smoke
   - bin-docker
@@ -401,6 +402,110 @@ jobs:
     params: {ATC_URL: "http://10.244.16.2:8080"}
     timeout: 1h
 
+- name: bosh-downgrade
+  public: true
+  serial_groups: [bosh-downgrade]
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: bosh-rc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: version
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: garden-runc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: fly-rc
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: postgres-release
+    - get: gcp-stemcell
+    - get: deployments
+    - get: final-release
+    - get: final-release-manifest
+  - task: delete-deployment
+    file: concourse/ci/delete-deployment.yml
+    params:
+      BOSH_ENVIRONMENT: bosh.concourse.ci
+      BOSH_CLIENT: ((bosh_client.id))
+      BOSH_CLIENT_SECRET: ((bosh_client.secret))
+      BOSH_DEPLOYMENT: concourse-test-downgrade
+  - put: bosh-rc-deployment
+    resource: downgrade-deployment
+    params:
+      manifest: concourse/manifests/single-vm.yml
+      stemcells: [gcp-stemcell/*.tgz]
+      releases:
+      - garden-runc/*.tgz
+      - postgres-release/*.tgz
+      - bosh-rc/concourse-*.tgz
+      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      vars:
+        deployment_name: concourse-test-downgrade
+        web_ip: 10.244.17.2
+        network_name: testflight
+        vm_type: testflight
+  - task: create-test-pipeline
+    file: concourse/ci/create-uber-pipeline.yml
+    params:
+      WEB_IP: 10.244.17.2
+      PIPELINE_NAME: test-pipeline
+  - task: remove-me-once-bosh-deployment-supports-globs-in-manifest-path
+    config:
+      platform: linux
+
+      image_resource:
+        type: docker-image
+        source: {repository: ubuntu}
+
+      inputs:
+      - name: final-release-manifest
+
+      outputs:
+      - name: final-manifest
+
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          cp final-release-manifest/single-vm-*.yml final-manifest/single-vm.yml
+  - put: final-release-deployment
+    resource: downgrade-deployment
+    params:
+      manifest: final-manifest/single-vm.yml
+      stemcells: [gcp-stemcell/*.tgz]
+      releases:
+      - garden-runc/*.tgz
+      - postgres-release/*.tgz
+      - final-release/*.tgz
+      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      vars:
+        deployment_name: concourse-test-upgrade
+        web_ip: 10.244.17.2
+        network_name: testflight
+        vm_type: testflight
+  - task: manual-downgrade
+    file: concourse/ci/manual-downgrade.yml
+    params:
+      BOSH_ENVIRONMENT: bosh.concourse.ci
+      BOSH_CLIENT: ((bosh_client.id))
+      BOSH_CLIENT_SECRET: ((bosh_client.secret))
+      BOSH_DEPLOYMENT: concourse-test-downgrade
+  - task: verify-test-pipeline
+    file: concourse/ci/verify-uber-pipeline.yml
+    params:
+      WEB_IP: 10.244.17.2
+      PIPELINE_NAME: test-pipeline
+  - task: testflight
+    file: concourse/ci/testflight.yml
+    params: {ATC_URL: "http://10.244.17.2:8080"}
+    timeout: 1h
+
 - name: bosh-testflight
   public: true
   serial_groups: [bosh-testflight]
@@ -510,7 +615,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-upgrade, bosh-testflight, bosh-watsjs, topgun]
+      passed: [bosh-upgrade, bosh-downgrade, bosh-testflight, bosh-watsjs, topgun]
       trigger: true
     - get: version
       passed: [bosh-testflight]

@@ -811,9 +811,6 @@ jobs:
       params: {submodules: none}
       passed: [shipit]
       trigger: true
-    - get: latest-concourse
-      resource: concourse
-      params: {submodules: none}
     - get: version
       passed: [shipit]
       trigger: true
@@ -822,6 +819,7 @@ jobs:
     - get: vsphere-stemcell
     - get: bosh-virtualbox-cpi
     - get: concourse-deployment
+    - get: postgres-release
   - aggregate:
     - task: build-release-notes
       file: concourse/ci/build-release-notes.yml
@@ -856,11 +854,10 @@ jobs:
       releases:
       - final-release/*.tgz
   - task: export-release
-    file: latest-concourse/ci/export-release.yml
+    file: concourse/ci/export-release.yml
     input_mapping:
       release: final-release
       stemcell: gcp-stemcell
-      concourse: latest-concourse
     params:
       BOSH_ENVIRONMENT: bosh.concourse.ci
       BOSH_CLIENT: ((bosh_client.id))
@@ -869,8 +866,7 @@ jobs:
       RELEASE_NAME: concourse
       STEMCELL_NAME: ubuntu-trusty
   - task: generate-concourse-lite-manifest
-    file: concourse/ci/generate-concourse-lite-manifest.yml
-    input_mapping: {concourse: latest-concourse}
+    file: concourse-deployment/ci/generate-concourse-lite-manifest.yml
   - put: github-release
     params:
       name: release-notes/release-name

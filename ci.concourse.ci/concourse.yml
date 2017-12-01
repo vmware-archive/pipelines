@@ -761,13 +761,14 @@ jobs:
       passed: [bin-smoke, bin-docker-testflight, bosh-deploy]
     - get: concourse-image-rc
       passed: [bin-docker-testflight]
+    - get: concourse-head
   - task: finalize-release
-    file: concourse/ci/finalize-release.yml
+    file: concourse-head/ci/finalize-release.yml
     params: {BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))}
   - aggregate:
     - put: version
       params: {file: version/version}
-    - put: concourse
+    - put: concourse-head
       params:
         repository: final-release-repo
         merge: true
@@ -924,7 +925,7 @@ jobs:
       BLOB_VERSION: 4.4
       BLOB_DESTINATION: btrfs
       BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
+  - put: concourse-head
     params: {repository: bumped-concourse, rebase: true}
 
 - name: bump-golang
@@ -945,7 +946,7 @@ jobs:
       BLOB_VERSION_FILE: version
       BLOB_DESTINATION: golang
       BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
-  - put: concourse
+  - put: concourse-head
     params: {repository: bumped-concourse, rebase: true}
 
 resources:
@@ -1106,6 +1107,12 @@ resources:
     access_token: ((concourse_github_release.access_token))
 
 - name: concourse
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse.git
+    branch: master
+
+- name: concourse-head
   type: git
   source:
     uri: git@github.com:concourse/concourse.git

@@ -777,6 +777,24 @@ jobs:
     - put: final-release-manifest
       params: {file: final-release-tarball/single-vm-*.yml}
 
+- name: bump-concourse-deployment
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-deployment
+    - get: concourse-boshio
+      trigger: true
+    - get: garden-runc
+      passed: [shipit]
+    - get: postgres-release
+      passed: [shipit]
+  - task: bump-versions
+    file: concourse-deployment/ci/bump-versions.yml
+  - put: concourse-deployment
+    params:
+      repository: bumped-repo
+      merge: true
+
 - name: push-docs
   serial: true
   plan:
@@ -1038,6 +1056,11 @@ resources:
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 
+- name: concourse-boshio
+  type: bosh-io-release
+  source:
+    repository: concourse/concourse
+
 - name: garden-runc
   type: bosh-io-release
   source:
@@ -1128,8 +1151,9 @@ resources:
 - name: concourse-deployment
   type: git
   source:
-    uri: https://github.com/concourse/concourse-deployment
+    uri: git@github.com:concourse/concourse-deployment.git
     branch: master
+    private_key: ((concourse_deployment_repo_private_key))
 
 - name: bin-rc
   type: github-release

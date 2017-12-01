@@ -752,6 +752,8 @@ jobs:
     - get: garden-runc-release
       passed: [bosh-deploy]
       resource: garden-runc
+    - get: postgres-release
+      passed: [bosh-deploy]
     - get: bosh-rc
       passed: [bosh-deploy]
     - get: gcp-stemcell

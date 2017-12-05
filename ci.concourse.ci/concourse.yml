@@ -406,8 +406,6 @@ jobs:
   serial_groups: [bosh-testflight]
   plan:
   - aggregate:
-    - get: 30m
-      trigger: true
     - get: concourse
       passed: [bosh-test-deploy]
       trigger: true
@@ -1198,10 +1196,6 @@ resources:
     endpoint: storage.googleapis.com
     bucket: golang
     regexp: 'go(1\.\d+(\.\d+)?)\.linux-amd64\.tar.gz'
-
-- name: 30m
-  type: time
-  source: {interval: 30m}
 
 - name: puppeteer
   type: docker-image

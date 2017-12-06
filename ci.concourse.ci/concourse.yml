@@ -808,6 +808,10 @@ jobs:
       params: {submodules: none}
       passed: [shipit]
       trigger: true
+    - get: concourse-head
+      params: {submodules: none}
+      passed: [shipit]
+      trigger: true
     - get: version
       passed: [shipit]
       trigger: true
@@ -831,7 +835,7 @@ jobs:
           source: {repository: concourse/git-resource}
 
         inputs:
-        - name: concourse
+        - name: concourse-head
         - name: version
 
         outputs:
@@ -842,7 +846,7 @@ jobs:
           args:
           - -c
           - |
-            git -C concourse rev-parse v$(cat version/version) > generated-commitish/commitish
+            git -C concourse-head rev-parse v$(cat version/version) > generated-commitish/commitish
   - put: export-deployment
     params:
       manifest: concourse/ci/manifests/concourse-export.yml

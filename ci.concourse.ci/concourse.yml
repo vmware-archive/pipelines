@@ -424,9 +424,8 @@ jobs:
       trigger: true
     - get: postgres-release
     - get: gcp-stemcell
-    - get: deployments
+    - get: concourse-deployment
     - get: final-release
-    - get: final-release-manifest
   - task: delete-deployment
     file: concourse/ci/delete-deployment.yml
     params:
@@ -437,58 +436,52 @@ jobs:
   - put: bosh-rc-deployment
     resource: downgrade-deployment
     params:
-      manifest: concourse/manifests/single-vm.yml
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
-      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      ops_files:
+      - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/no-auth.yml
+      - concourse-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-downgrade
         web_ip: 10.244.17.2
+        external_url: "http://10.244.17.2:8080"
         network_name: testflight
-        vm_type: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
   - task: create-test-pipeline
     file: concourse/ci/create-uber-pipeline.yml
     params:
       WEB_IP: 10.244.17.2
       PIPELINE_NAME: test-pipeline
-  - task: remove-me-once-bosh-deployment-supports-globs-in-manifest-path
-    config:
-      platform: linux
-
-      image_resource:
-        type: docker-image
-        source: {repository: ubuntu}
-
-      inputs:
-      - name: final-release-manifest
-
-      outputs:
-      - name: final-manifest
-
-      run:
-        path: sh
-        args:
-        - -c
-        - |
-          cp final-release-manifest/single-vm-*.yml final-manifest/single-vm.yml
   - put: final-release-deployment
     resource: downgrade-deployment
     params:
-      manifest: final-manifest/single-vm.yml
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - final-release/*.tgz
-      ops_files: [deployments/testflight/metrics-logs-ops.yml]
+      ops_files:
+      - concourse-deployment/cluster/operations/dev-versions.yml
+      - concourse-deployment/cluster/operations/no-auth.yml
+      - concourse-deployment/cluster/operations/static-web.yml
       vars:
-        deployment_name: concourse-test-upgrade
+        deployment_name: concourse-test-downgrade
         web_ip: 10.244.17.2
+        external_url: "http://10.244.17.2:8080"
         network_name: testflight
-        vm_type: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
   - task: manual-downgrade
     file: concourse/ci/manual-downgrade.yml
     params:
@@ -1124,6 +1117,14 @@ resources:
   source:
     target: ((bosh_target))
     deployment: concourse-test-upgrade
+    client: ((bosh_client.id))
+    client_secret: ((bosh_client.secret))
+
+- name: downgrade-deployment
+  type: bosh-deployment
+  source:
+    target: ((bosh_target))
+    deployment: concourse-test-downgrade
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 

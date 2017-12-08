@@ -339,6 +339,7 @@ jobs:
   - put: delete-upgrade-deployment
     resource: upgrade-deployment
     params:
+      manifest: concourse-deployment/cluster/concourse.yml
       delete:
         enabled: true
         force: true
@@ -428,6 +429,7 @@ jobs:
   - put: delete-downgrade-deployment
     resource: downgrade-deployment
     params:
+      manifest: concourse-deployment/cluster/concourse.yml
       delete:
         enabled: true
         force: true

@@ -336,13 +336,12 @@ jobs:
     - get: gcp-stemcell
     - get: concourse-deployment
     - get: final-release
-  - task: delete-deployment
-    file: concourse/ci/delete-deployment.yml
+  - put: delete-upgrade-deployment
+    resource: upgrade-deployment
     params:
-      BOSH_ENVIRONMENT: bosh.concourse.ci
-      BOSH_CLIENT: ((bosh_client.id))
-      BOSH_CLIENT_SECRET: ((bosh_client.secret))
-      BOSH_DEPLOYMENT: concourse-test-upgrade
+      delete:
+        enabled: true
+        force: true
   - put: final-release-deployment
     resource: upgrade-deployment
     params:
@@ -426,13 +425,12 @@ jobs:
     - get: gcp-stemcell
     - get: concourse-deployment
     - get: final-release
-  - task: delete-deployment
-    file: concourse/ci/delete-deployment.yml
+  - put: delete-downgrade-deployment
+    resource: downgrade-deployment
     params:
-      BOSH_ENVIRONMENT: bosh.concourse.ci
-      BOSH_CLIENT: ((bosh_client.id))
-      BOSH_CLIENT_SECRET: ((bosh_client.secret))
-      BOSH_DEPLOYMENT: concourse-test-downgrade
+      delete:
+        enabled: true
+        force: true
   - put: bosh-rc-deployment
     resource: downgrade-deployment
     params:

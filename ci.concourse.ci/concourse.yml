@@ -460,28 +460,29 @@ jobs:
     params:
       WEB_IP: 10.244.17.2
       PIPELINE_NAME: test-pipeline
-  - put: final-release-deployment
-    resource: downgrade-deployment
-    params:
-      manifest: concourse-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
-      releases:
-      - garden-runc/*.tgz
-      - postgres-release/*.tgz
-      - final-release/*.tgz
-      ops_files:
-      - concourse-deployment/cluster/operations/dev-versions.yml
-      - concourse-deployment/cluster/operations/no-auth.yml
-      - concourse-deployment/cluster/operations/static-web.yml
-      vars:
-        deployment_name: concourse-test-downgrade
-        web_ip: 10.244.17.2
-        external_url: "http://10.244.17.2:8080"
-        network_name: testflight
-        web_vm_type: testflight
-        db_vm_type: testflight
-        worker_vm_type: testflight
-        db_persistent_disk_type: small
+  - try:
+      put: final-release-deployment
+      resource: downgrade-deployment
+      params:
+        manifest: concourse-deployment/cluster/concourse.yml
+        stemcells: [gcp-stemcell/*.tgz]
+        releases:
+        - garden-runc/*.tgz
+        - postgres-release/*.tgz
+        - final-release/*.tgz
+        ops_files:
+        - concourse-deployment/cluster/operations/dev-versions.yml
+        - concourse-deployment/cluster/operations/no-auth.yml
+        - concourse-deployment/cluster/operations/static-web.yml
+        vars:
+          deployment_name: concourse-test-downgrade
+          web_ip: 10.244.17.2
+          external_url: "http://10.244.17.2:8080"
+          network_name: testflight
+          web_vm_type: testflight
+          db_vm_type: testflight
+          worker_vm_type: testflight
+          db_persistent_disk_type: small
   - task: manual-downgrade
     file: concourse/ci/manual-downgrade.yml
     params:

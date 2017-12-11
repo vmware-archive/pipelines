@@ -490,6 +490,7 @@ jobs:
       BOSH_CLIENT: ((bosh_client.id))
       BOSH_CLIENT_SECRET: ((bosh_client.secret))
       BOSH_DEPLOYMENT: concourse-test-downgrade
+      BOSH_KEY: ((topgun.bosh_key))
   - task: verify-test-pipeline
     file: concourse/ci/verify-uber-pipeline.yml
     params:

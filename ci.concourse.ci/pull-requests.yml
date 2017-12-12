@@ -40,11 +40,10 @@ jobs:
     - get: fly
       trigger: true
       version: every
-      params:
-        fetch_merge: true
     - get: concourse
   - put: fly
     params: {path: fly, status: pending}
+    get_params: {fetch_merge: true}
   - task: unit
     file: fly/ci/pr.yml
     tags: [pr]
@@ -62,11 +61,10 @@ jobs:
     - get: atc
       trigger: true
       version: every
-      params:
-        fetch_merge: true
     - get: concourse
   - put: atc
     params: {path: atc, status: pending}
+    get_params: {fetch_merge: true}
   - task: unit
     file: atc/ci/pr.yml
     tags: [pr]
@@ -84,11 +82,10 @@ jobs:
     - get: go-concourse
       trigger: true
       version: every
-      params:
-        fetch_merge: true
     - get: concourse
   - put: go-concourse
     params: {path: go-concourse, status: pending}
+    get_params: {fetch_merge: true}
   - task: unit
     file: go-concourse/ci/pr.yml
     tags: [pr]

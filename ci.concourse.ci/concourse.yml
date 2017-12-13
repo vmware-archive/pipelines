@@ -313,7 +313,6 @@ jobs:
 
 
 - name: bosh-upgrade
-  public: true
   serial_groups: [bosh-upgrade]
   plan:
   - aggregate:
@@ -403,7 +402,6 @@ jobs:
     timeout: 1h
 
 - name: bosh-downgrade
-  public: true
   serial_groups: [bosh-downgrade]
   plan:
   - aggregate:

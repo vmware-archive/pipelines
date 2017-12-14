@@ -37,28 +37,30 @@ jobs:
   public: true
   plan:
   - aggregate:
-    - get: fly
+    - get: fly-pr
+      resource: fly
       trigger: true
       version: every
     - get: concourse
   - put: fly
-    params: {path: fly, status: pending}
+    params: {path: fly-pr, status: pending}
     get_params: {fetch_merge: true}
   - task: unit
     file: fly/ci/pr.yml
     tags: [pr]
     on_failure:
       put: fly
-      params: {path: fly, status: failure}
+      params: {path: fly-pr, status: failure}
     on_success:
       put: fly
-      params: {path: fly, status: success}
+      params: {path: fly-pr, status: success}
 
 - name: atc
   public: true
   plan:
   - aggregate:
-    - get: atc
+    - get: atc-pr
+      resource: atc
       trigger: true
       version: every
     - get: concourse
@@ -70,16 +72,17 @@ jobs:
     tags: [pr]
     on_failure:
       put: atc
-      params: {path: atc, status: failure}
+      params: {path: atc-pr, status: failure}
     on_success:
       put: atc
-      params: {path: atc, status: success}
+      params: {path: atc-pr, status: success}
 
 - name: go-concourse
   public: true
   plan:
   - aggregate:
-    - get: go-concourse
+    - get: go-concourse-pr
+      resource: go-concourse
       trigger: true
       version: every
     - get: concourse
@@ -91,7 +94,7 @@ jobs:
     tags: [pr]
     on_failure:
       put: go-concourse
-      params: {path: go-concourse, status: failure}
+      params: {path: go-concourse-pr, status: failure}
     on_success:
       put: go-concourse
-      params: {path: go-concourse, status: success}
+      params: {path: go-concourse-pr, status: success}

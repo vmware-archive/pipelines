@@ -600,6 +600,9 @@ jobs:
       BOSH_CLIENT_SECRET: ((bosh_client.secret))
       BOSH_KEY: ((topgun.bosh_key))
       TOPGUN_NETWORK_OFFSET: 0
+      AWS_REGION: ((topgun_aws_ssm.region))
+      AWS_ACCESS_KEY_ID: ((topgun_aws_ssm.access_key_id))
+      AWS_SECRET_ACCESS_KEY: ((topgun_aws_ssm.secret_access_key))
 
 - name: bosh-deploy
   serial: true

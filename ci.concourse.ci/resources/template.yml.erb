@@ -5,6 +5,12 @@
   ship = ship == "true"
 %>
 ---
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
 resources:
 - name: alpine-edge
   type: docker-image
@@ -16,6 +22,13 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/((resource))-resource
+
+- name: resource-pr
+  type: pull-request
+  source:
+    repo: concourse/((resource))-resource
+    base: master
+    access_token: ((pull_requests_access_token))
 
 - name: resource-image
   type: docker-image
@@ -70,6 +83,45 @@ jobs:
     params:
       load_base: alpine-edge
       build: resource-repo
+
+- name: prs
+  serial: true
+  public: true
+  plan:
+  - get: resource-pr
+    trigger: true
+    version: every
+  - get: alpine-edge
+    params: {save: true}
+    trigger: true
+<% resources.each do |resource_name| %>
+  - get: <%= resource_name %>
+    trigger: true
+    params:
+      globs: [ "<%= resource_name %>*linux*" ]
+<% end %>
+  - put: resource-pr-merged
+    resource: resource-pr
+    params:
+      path: resource-pr
+      status: pending
+    get_params: {fetch_merge: true}
+  - put: resource-image
+    params:
+      load_base: alpine-edge
+      build: resource-pr-merged
+      tag: resource-pr/.git/id
+      tag_prefix: pr-
+    on_failure:
+      put: resource-pr
+      params:
+        path: resource-pr
+        status: failure
+    on_success:
+      put: resource-pr
+      params:
+        path: resource-pr
+        status: success
 
 <% if ship %>
 - name: ship

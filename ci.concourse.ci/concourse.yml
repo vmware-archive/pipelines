@@ -586,6 +586,7 @@ jobs:
       trigger: true
     - get: git-server-release
     - get: vault-release
+    - get: credhub-release
     - get: gcp-stemcell
     - get: bosh-cli
   - task: topgun
@@ -1165,6 +1166,11 @@ resources:
     owner: vito
     repository: vault-boshrelease
     access_token: ((concourse_github_dummy.access_token))
+
+- name: credhub-release
+  type: bosh-io-release
+  source:
+    repository: pivotal-cf/credhub-release
 
 - name: fly-rc
   type: github-release

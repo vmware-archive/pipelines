@@ -494,8 +494,33 @@ jobs:
     params:
       WEB_IP: 10.244.17.2
       PIPELINE_NAME: test-pipeline
+  - task: get-final-release-concourse-repo
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: concourse/atc-ci
+      inputs:
+        - name: final-release
+        - name: concourse
+      outputs:
+        - name: final-release-concourse
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          set -x
+          version=$(cat final-release/version)
+          pushd concourse
+          git checkout tags/v${version} && git submodule update --init --recursive
+          popd
+          cp -r concourse/* final-release-concourse/
+
   - task: testflight
-    file: concourse/ci/testflight.yml
+    file: final-release-concourse/ci/testflight.yml
+    input_mapping: {concourse: final-release-concourse}
     params: {ATC_URL: "http://10.244.17.2:8080"}
     timeout: 1h
 

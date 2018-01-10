@@ -76,12 +76,9 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-  - aggregate:
-    - task: go-unit
-      file: concourse/ci/atc-go.yml
-      privileged: true
-    - task: elm-unit
-      file: concourse/ci/atc-elm.yml
+  - task: go-unit
+    file: concourse/ci/atc-go.yml
+    privileged: true
 
 - name: baggageclaim
   public: true
@@ -117,8 +114,11 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-  - task: build
-    file: concourse/ci/web.yml
+  - aggregate:
+    - task: build
+      file: concourse/ci/web.yml
+    - task: elm-unit
+      file: concourse/ci/atc-elm.yml
 
 - name: blackbox
   public: true

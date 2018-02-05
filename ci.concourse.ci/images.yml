@@ -63,8 +63,8 @@ resources:
 - name: concourse-atc-ci-elm
   type: git
   source:
-    uri: https://github.com/concourse/atc.git
-    paths: [web/Dockerfile]
+    uri: https://github.com/concourse/web.git
+    paths: [Dockerfile]
 
 - name: concourse-atc-ci-elm-image
   type: docker-image
@@ -389,7 +389,7 @@ jobs:
   - put: concourse-atc-ci-elm-image
     params:
       load_base: node
-      build: concourse-atc-ci-elm/web
+      build: concourse-atc-ci-elm
 
 - name: build-tsa-ci
   public: true

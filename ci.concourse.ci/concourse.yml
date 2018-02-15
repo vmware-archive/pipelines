@@ -684,6 +684,7 @@ jobs:
     - get: postgres-release
       passed: [bosh-testflight]
       trigger: true
+    - get: windows-worker
     - get: gcp-stemcell
     - get: gcp-windows-stemcell
     - get: concourse-deployment
@@ -697,6 +698,7 @@ jobs:
       - garden-runc-release/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
+      - windows-worker/*.tgz
       ops_files:
       - concourse-deployment/cluster/operations/scale.yml
       - concourse-deployment/cluster/operations/dev-versions.yml
@@ -1245,6 +1247,11 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-google-kvm-windows2012R2-go_agent
+
+- name: windows-worker
+  type: bosh-io-release
+  source:
+    repository: pivotal-cf-experimental/concourse-windows-worker-release
 
 - name: vsphere-stemcell
   type: bosh-io-stemcell

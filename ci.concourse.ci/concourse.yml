@@ -627,16 +627,16 @@ jobs:
   plan:
   - aggregate:
     - get: concourse
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: bosh-rc
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: garden-runc
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: postgres-release
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: git-server-release
     - get: vault-release

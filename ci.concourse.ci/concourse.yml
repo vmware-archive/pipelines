@@ -13,6 +13,7 @@ groups:
   - rc
   - build-fly
   - bin-rc
+  - bosh-lengthy-output
   - bosh-rc
   - bosh-test-deploy
   - bosh-testflight

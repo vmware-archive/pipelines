@@ -636,7 +636,6 @@ jobs:
       passed: [bosh-rc]
       trigger: true
     - get: postgres-release
-      passed: [bosh-rc]
       trigger: true
     - get: git-server-release
     - get: vault-release

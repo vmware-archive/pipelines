@@ -631,10 +631,8 @@ jobs:
     - get: fly-rc
       passed: [bosh-test-deploy]
       trigger: true
-    - get: puppeteer
   - task: watsjs
     file: concourse/ci/watsjs.yml
-    image: puppeteer
     params: {ATC_URL: "http://10.244.15.2:8080"}
     timeout: 1h
 
@@ -1393,10 +1391,6 @@ resources:
     endpoint: storage.googleapis.com
     bucket: golang
     regexp: 'go(1\.\d+(\.\d+)?)\.linux-amd64\.tar.gz'
-
-- name: puppeteer
-  type: docker-image
-  source: {repository: alekzonder/puppeteer}
 
 resource_types:
 - name: bosh-deployment

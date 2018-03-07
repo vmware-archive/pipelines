@@ -514,7 +514,7 @@ jobs:
   - task: manual-downgrade
     file: concourse/ci/manual-downgrade.yml
     params:
-      BOSH_ENVIRONMENT: bosh.concourse.ci
+      BOSH_ENVIRONMENT: bosh.concourse-ci.org
       BOSH_CLIENT: ((bosh_client.id))
       BOSH_CLIENT_SECRET: ((bosh_client.secret))
       BOSH_DEPLOYMENT: concourse-test-downgrade
@@ -664,7 +664,7 @@ jobs:
       garden-runc-release: garden-runc
       stemcell: gcp-stemcell
     params:
-      BOSH_ENVIRONMENT: bosh.concourse.ci
+      BOSH_ENVIRONMENT: bosh.concourse-ci.org
       BOSH_CLIENT: ((bosh_client.id))
       BOSH_CLIENT_SECRET: ((bosh_client.secret))
       BOSH_KEY: ((topgun.bosh_key))
@@ -1033,7 +1033,7 @@ jobs:
       release: final-release
       stemcell: gcp-stemcell
     params:
-      BOSH_ENVIRONMENT: bosh.concourse.ci
+      BOSH_ENVIRONMENT: bosh.concourse-ci.org
       BOSH_CLIENT: ((bosh_client.id))
       BOSH_CLIENT_SECRET: ((bosh_client.secret))
       BOSH_DEPLOYMENT: concourse-export

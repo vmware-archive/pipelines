@@ -735,7 +735,7 @@ jobs:
         deployment_name: concourse-prod
         web_instances: 2
         worker_instances: 3
-        external_url: "https://ci.concourse.ci"
+        external_url: "https://ci.concourse-ci.org"
         web_vm_type: web
         db_vm_type: database
         worker_vm_type: worker
@@ -747,7 +747,7 @@ jobs:
         web_network_vm_extension: concourse-web-target-pool
         untrusted_worker_deny_networks: [10.0.0.0/16]
         untrusted_worker_tags: [pr]
-        windows_worker_tsa_host: ci.concourse.ci
+        windows_worker_tsa_host: ci.concourse-ci.org
 
 - name: bin-testflight
   public: true

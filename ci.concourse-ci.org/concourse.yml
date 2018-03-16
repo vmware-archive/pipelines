@@ -771,6 +771,29 @@ jobs:
     privileged: true
     timeout: 1h
 
+- name: bin-testflight-qs
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [bin-rc]
+      trigger: true
+    - get: linux-binary
+      resource: bin-rc
+      passed: [bin-rc]
+      trigger: true
+    - get: version
+      passed: [bin-rc]
+      trigger: true
+    - get: fly-rc
+      passed: [bin-rc]
+  - task: testflight
+    file: concourse/src/github.com/concourse/bin/ci/testflight.yml
+    privileged: true
+    timeout: 1h
+    params: {QUICKSTART: true}
+
 - name: bin-smoke
   serial: true
   plan:

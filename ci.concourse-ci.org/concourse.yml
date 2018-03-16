@@ -22,6 +22,7 @@ groups:
   - bosh-upgrade
   - bosh-downgrade
   - bin-testflight
+  - bin-testflight-qs
   - bin-smoke
   - bin-docker
   - bin-docker-testflight

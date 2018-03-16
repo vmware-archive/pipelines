@@ -800,17 +800,17 @@ jobs:
   plan:
   - aggregate:
     - get: bin-rc
-      passed: [bin-testflight]
+      passed: [bin-testflight, bin-testflight-qs]
       params: {globs: [concourse_linux_amd64]}
       trigger: true
     - get: concourse
-      passed: [bin-testflight]
+      passed: [bin-testflight, bin-testflight-qs]
       trigger: true
     - get: version
-      passed: [bin-testflight]
+      passed: [bin-testflight, bin-testflight-qs]
       trigger: true
     - get: fly-rc
-      passed: [bin-testflight]
+      passed: [bin-testflight, bin-testflight-qs]
   - task: setup-tugboat
     file: concourse/src/github.com/concourse/bin/ci/smoke-tests/setup-tugboat.yml
     params:

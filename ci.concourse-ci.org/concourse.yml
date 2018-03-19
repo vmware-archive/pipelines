@@ -26,6 +26,7 @@ groups:
   - bin-smoke
   - bin-docker
   - bin-docker-testflight
+  - bin-docker-testflight-qs
   - topgun
   - bosh-deploy
 
@@ -900,6 +901,37 @@ jobs:
     privileged: true
     timeout: 1h
 
+- name: bin-docker-testflight-qs
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [bin-docker]
+      trigger: true
+    - get: version
+      passed: [bin-docker]
+      trigger: true
+    - get: bin-rc
+      passed: [bin-docker]
+      trigger: true
+    - get: concourse-docker
+      trigger: true
+      passed: [bin-docker]
+    - get: concourse-image-rc
+      passed: [bin-docker]
+      trigger: true
+      params: {save: true}
+    - get: fly-rc
+      passed: [bin-docker]
+    - get: postgres-image
+      params: {save: true}
+  - task: testflight
+    file: concourse-docker/ci/testflight.yml
+    privileged: true
+    params: {DOCKER_COMPOSE_YML: docker-compose-quickstart.yml}
+    timeout: 1h
+
 
 - name: nightly
   plan:
@@ -933,9 +965,9 @@ jobs:
     - get: gcp-stemcell
       passed: [bosh-deploy]
     - get: bin-rc
-      passed: [bin-smoke, bin-docker-testflight]
+      passed: [bin-smoke, bin-docker-testflight, bin-docker-testflight-qs]
     - get: fly-rc
-      passed: [bin-smoke, bin-docker-testflight, bosh-deploy]
+      passed: [bin-smoke, bin-docker-testflight, bin-docker-testflight-qs, bosh-deploy]
     - get: concourse-image-rc
       passed: [bin-docker-testflight]
     - get: concourse-head

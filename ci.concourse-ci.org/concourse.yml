@@ -226,25 +226,32 @@ jobs:
 - name: bosh-rc
   public: true
   plan:
-  - get: concourse
-    passed: [build-fly]
-    trigger: true
-  - get: garden-runc
-    passed: [build-fly]
-    trigger: true
-  - get: version
-    passed: [build-fly]
-    trigger: true
-  - get: final-version
-    resource: version
-    passed: [build-fly]
-    params: {bump: final}
-    trigger: true
-  - get: fly-rc
-    trigger: true
-    passed: [build-fly]
-    params:
-      globs: [fly_*]
+  - aggregate:
+    - get: concourse
+      trigger: true
+      passed: [build-fly]
+    - get: garden-runc
+      trigger: true
+      passed: [build-fly]
+    - get: version
+      trigger: true
+      passed: [build-fly]
+    - get: final-version
+      trigger: true
+      resource: version
+      passed: [build-fly]
+      params: {bump: final}
+    - get: fly-rc
+      trigger: true
+      passed: [build-fly]
+      params:
+        globs: [fly_*]
+    - get: postgres-release
+      trigger: true
+    - get: gcp-stemcell
+      trigger: true
+    - get: concourse-deployment
+      trigger: true
   - task: create-bosh-rc
     file: concourse/ci/create-bosh-rc.yml
   - put: bosh-rc
@@ -302,23 +309,29 @@ jobs:
   plan:
   - aggregate:
     - get: concourse
-      passed: [bosh-rc]
       trigger: true
+      passed: [bosh-rc]
     - get: bosh-rc
-      passed: [bosh-rc]
       trigger: true
+      passed: [bosh-rc]
     - get: version
-      passed: [bosh-rc]
       trigger: true
+      passed: [bosh-rc]
     - get: garden-runc
-      passed: [bosh-rc]
       trigger: true
+      passed: [bosh-rc]
     - get: fly-rc
+      trigger: true
+      passed: [bosh-rc]
+    - get: postgres-release
+      trigger: true
+      passed: [bosh-rc]
+    - get: gcp-stemcell
+      trigger: true
+      passed: [bosh-rc]
+    - get: concourse-deployment
       passed: [bosh-rc]
       trigger: true
-    - get: postgres-release
-    - get: gcp-stemcell
-    - get: concourse-deployment
   - put: test-deployment
     params:
       manifest: concourse-deployment/cluster/concourse.yml
@@ -349,23 +362,29 @@ jobs:
   plan:
   - aggregate:
     - get: concourse
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: bosh-rc
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: version
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: garden-runc
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: fly-rc
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: postgres-release
+      trigger: true
+      passed: [bosh-test-deploy]
     - get: gcp-stemcell
+      trigger: true
+      passed: [bosh-test-deploy]
     - get: concourse-deployment
+      trigger: true
+      passed: [bosh-test-deploy]
     - get: final-release
   - put: delete-upgrade-deployment
     resource: upgrade-deployment
@@ -438,23 +457,29 @@ jobs:
   plan:
   - aggregate:
     - get: concourse
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: bosh-rc
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: version
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: garden-runc
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: fly-rc
-      passed: [bosh-test-deploy]
       trigger: true
+      passed: [bosh-test-deploy]
     - get: postgres-release
-    - get: gcp-stemcell
+      trigger: true
+      passed: [bosh-test-deploy]
     - get: concourse-deployment
+      trigger: true
+      passed: [bosh-test-deploy]
+    - get: gcp-stemcell
+      trigger: true
+      passed: [bosh-test-deploy]
     - get: final-release
   - put: delete-downgrade-deployment
     resource: downgrade-deployment
@@ -582,6 +607,12 @@ jobs:
     - get: postgres-release
       passed: [bosh-test-deploy]
       trigger: true
+    - get: gcp-stemcell
+      passed: [bosh-test-deploy]
+      trigger: true
+    - get: concourse-deployment
+      passed: [bosh-test-deploy]
+      trigger: true
   - task: testflight
     file: concourse/ci/testflight.yml
     params: {ATC_URL: "http://10.244.15.2:8080"}
@@ -653,11 +684,14 @@ jobs:
       passed: [bosh-rc]
       trigger: true
     - get: postgres-release
+      passed: [bosh-rc]
+      trigger: true
+    - get: gcp-stemcell
+      passed: [bosh-rc]
       trigger: true
     - get: git-server-release
     - get: vault-release
     - get: credhub-release
-    - get: gcp-stemcell
     - get: bosh-cli
   - task: topgun
     file: concourse/ci/topgun.yml
@@ -682,7 +716,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-upgrade, bosh-downgrade, bosh-testflight, bosh-wats, bosh-watsjs, topgun]
+      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-wats, bosh-watsjs, topgun]
       trigger: true
     - get: version
       passed: [bosh-testflight]
@@ -700,10 +734,14 @@ jobs:
     - get: postgres-release
       passed: [bosh-testflight]
       trigger: true
-    - get: windows-worker
     - get: gcp-stemcell
-    - get: gcp-windows-stemcell
+      passed: [bosh-testflight]
+      trigger: true
     - get: concourse-deployment
+      passed: [bosh-testflight]
+      trigger: true
+    - get: windows-worker
+    - get: gcp-windows-stemcell
   - put: prod-deployment
     params:
       manifest: concourse-deployment/cluster/concourse.yml

@@ -482,7 +482,7 @@ jobs:
   - put: bosh-rc-deployment
     resource: downgrade-deployment
     params:
-      manifest: downgrade-concourse-deployment/cluster/concourse.yml
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
@@ -510,7 +510,7 @@ jobs:
       put: final-release-deployment
       resource: downgrade-deployment
       params:
-        manifest: concourse-deployment/cluster/concourse.yml
+        manifest: downgrade-concourse-deployment/cluster/concourse.yml
         stemcells: [gcp-stemcell/*.tgz]
         releases:
         - garden-runc/*.tgz

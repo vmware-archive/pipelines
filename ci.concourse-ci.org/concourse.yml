@@ -6,7 +6,6 @@ groups:
   - fly
   - go-concourse
   - baggageclaim
-  - groundcrew
   - skymarshal
   - web
   - tsa
@@ -97,15 +96,6 @@ jobs:
   - task: build
     privileged: true
     file: concourse/ci/baggageclaim.yml
-
-- name: groundcrew
-  public: true
-  serial: true
-  plan:
-  - get: concourse
-    trigger: true
-  - task: build
-    file: concourse/ci/groundcrew.yml
 
 - name: skymarshal
   public: true

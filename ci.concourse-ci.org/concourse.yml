@@ -1402,7 +1402,7 @@ resources:
   type: git
   source:
     uri: git@github.com:concourse/concourse-deployment.git
-    branch: master
+    branch: develop
     private_key: ((concourse_deployment_repo_private_key))
 
 - name: downgrade-concourse-deployment
@@ -1410,7 +1410,6 @@ resources:
   source:
     uri: git@github.com:concourse/concourse-deployment.git
     branch: master
-    tag_filter: v*
     private_key: ((concourse_deployment_repo_private_key))
 
 - name: bin-rc

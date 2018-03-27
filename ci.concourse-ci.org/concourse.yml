@@ -39,7 +39,7 @@ groups:
   - github-release
   - push-docs
   - promote-docker
-  - bump-concourse-deployment
+  - bump-concourse-bosh-deployment
 
 - name: workers
   jobs:
@@ -240,7 +240,7 @@ jobs:
       trigger: true
     - get: gcp-stemcell
       trigger: true
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       trigger: true
   - task: create-bosh-rc
     file: concourse/ci/create-bosh-rc.yml
@@ -319,23 +319,23 @@ jobs:
     - get: gcp-stemcell
       trigger: true
       passed: [bosh-rc]
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       passed: [bosh-rc]
       trigger: true
   - put: test-deployment
     params:
-      manifest: concourse-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
       ops_files:
-      - concourse-deployment/cluster/operations/dev-versions.yml
-      - concourse-deployment/cluster/operations/no-auth.yml
-      - concourse-deployment/cluster/operations/influxdb.yml
-      - concourse-deployment/cluster/operations/blackbox.yml
-      - concourse-deployment/cluster/operations/static-web.yml
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
+      - concourse-bosh-deployment/cluster/operations/influxdb.yml
+      - concourse-bosh-deployment/cluster/operations/blackbox.yml
+      - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test
         web_ip: 10.244.15.2
@@ -372,30 +372,30 @@ jobs:
     - get: gcp-stemcell
       trigger: true
       passed: [bosh-test-deploy]
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       trigger: true
       passed: [bosh-test-deploy]
     - get: final-release
   - put: delete-upgrade-deployment
     resource: upgrade-deployment
     params:
-      manifest: concourse-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
       delete:
         enabled: true
         force: true
   - put: final-release-deployment
     resource: upgrade-deployment
     params:
-      manifest: concourse-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
       ops_files:
-      - concourse-deployment/cluster/operations/dev-versions.yml
-      - concourse-deployment/cluster/operations/no-auth.yml
-      - concourse-deployment/cluster/operations/static-web.yml
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
+      - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
         web_ip: 10.244.16.2
@@ -413,16 +413,16 @@ jobs:
   - put: bosh-rc-deployment
     resource: upgrade-deployment
     params:
-      manifest: concourse-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
       ops_files:
-      - concourse-deployment/cluster/operations/dev-versions.yml
-      - concourse-deployment/cluster/operations/no-auth.yml
-      - concourse-deployment/cluster/operations/static-web.yml
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
+      - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
         web_ip: 10.244.16.2
@@ -464,34 +464,34 @@ jobs:
     - get: postgres-release
       trigger: true
       passed: [bosh-test-deploy]
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       trigger: true
       passed: [bosh-test-deploy]
     - get: gcp-stemcell
       trigger: true
       passed: [bosh-test-deploy]
     - get: final-release
-    - get: concourse-deployment-master
+    - get: concourse-bosh-deployment-master
   - put: delete-downgrade-deployment
     resource: downgrade-deployment
     params:
-      manifest: concourse-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
       delete:
         enabled: true
         force: true
   - put: bosh-rc-deployment
     resource: downgrade-deployment
     params:
-      manifest: concourse-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
       ops_files:
-      - concourse-deployment/cluster/operations/dev-versions.yml
-      - concourse-deployment/cluster/operations/no-auth.yml
-      - concourse-deployment/cluster/operations/static-web.yml
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
+      - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-downgrade
         web_ip: 10.244.17.2
@@ -510,16 +510,16 @@ jobs:
       put: final-release-deployment
       resource: downgrade-deployment
       params:
-        manifest: concourse-deployment-master/cluster/concourse.yml
+        manifest: concourse-bosh-deployment-master/cluster/concourse.yml
         stemcells: [gcp-stemcell/*.tgz]
         releases:
         - garden-runc/*.tgz
         - postgres-release/*.tgz
         - final-release/*.tgz
         ops_files:
-        - concourse-deployment/cluster/operations/dev-versions.yml
-        - concourse-deployment/cluster/operations/no-auth.yml
-        - concourse-deployment/cluster/operations/static-web.yml
+        - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+        - concourse-bosh-deployment/cluster/operations/no-auth.yml
+        - concourse-bosh-deployment/cluster/operations/static-web.yml
         vars:
           deployment_name: concourse-test-downgrade
           web_ip: 10.244.17.2
@@ -601,7 +601,7 @@ jobs:
     - get: gcp-stemcell
       passed: [bosh-test-deploy]
       trigger: true
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       passed: [bosh-test-deploy]
       trigger: true
   - task: testflight
@@ -728,14 +728,14 @@ jobs:
     - get: gcp-stemcell
       passed: [bosh-testflight]
       trigger: true
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       passed: [bosh-testflight]
       trigger: true
     - get: windows-worker
     - get: gcp-windows-stemcell
   - put: prod-deployment
     params:
-      manifest: concourse-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
       stemcells:
       - gcp-stemcell/*.tgz
       - gcp-windows-stemcell/*.tgz
@@ -745,23 +745,23 @@ jobs:
       - bosh-rc/concourse-*.tgz
       - windows-worker/*.tgz
       ops_files:
-      - concourse-deployment/cluster/operations/scale.yml
-      - concourse-deployment/cluster/operations/dev-versions.yml
-      - concourse-deployment/cluster/operations/privileged-http.yml
-      - concourse-deployment/cluster/operations/tls.yml
-      - concourse-deployment/cluster/operations/privileged-https.yml
-      - concourse-deployment/cluster/operations/basic-auth.yml
-      - concourse-deployment/cluster/operations/github-auth.yml
-      - concourse-deployment/cluster/operations/encryption.yml
-      - concourse-deployment/cluster/operations/vault-tls-cert-auth.yml
-      - concourse-deployment/cluster/operations/influxdb.yml
-      - concourse-deployment/cluster/operations/blackbox.yml
-      - concourse-deployment/cluster/operations/db-stats.yml
-      - concourse-deployment/cluster/operations/web-network-extension.yml
-      - concourse-deployment/cluster/operations/team-authorized-keys.yml
-      - concourse-deployment/cluster/operations/untrusted-worker.yml
-      - concourse-deployment/cluster/operations/windows-worker.yml
-      - concourse-deployment/cluster/operations/telegraf-postgres.yml
+      - concourse-bosh-deployment/cluster/operations/scale.yml
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/privileged-http.yml
+      - concourse-bosh-deployment/cluster/operations/tls.yml
+      - concourse-bosh-deployment/cluster/operations/privileged-https.yml
+      - concourse-bosh-deployment/cluster/operations/basic-auth.yml
+      - concourse-bosh-deployment/cluster/operations/github-auth.yml
+      - concourse-bosh-deployment/cluster/operations/encryption.yml
+      - concourse-bosh-deployment/cluster/operations/vault-tls-cert-auth.yml
+      - concourse-bosh-deployment/cluster/operations/influxdb.yml
+      - concourse-bosh-deployment/cluster/operations/blackbox.yml
+      - concourse-bosh-deployment/cluster/operations/db-stats.yml
+      - concourse-bosh-deployment/cluster/operations/web-network-extension.yml
+      - concourse-bosh-deployment/cluster/operations/team-authorized-keys.yml
+      - concourse-bosh-deployment/cluster/operations/untrusted-worker.yml
+      - concourse-bosh-deployment/cluster/operations/windows-worker.yml
+      - concourse-bosh-deployment/cluster/operations/telegraf-postgres.yml
       vars:
         deployment_name: concourse-prod
         web_instances: 2
@@ -990,7 +990,7 @@ jobs:
       passed: [bosh-deploy]
     - get: bosh-rc
       passed: [bosh-deploy]
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       passed: [bosh-deploy]
     - get: gcp-stemcell
       passed: [bosh-deploy]
@@ -1014,11 +1014,11 @@ jobs:
     - put: final-release
       params: {file: final-release-tarball/concourse-*.tgz}
 
-- name: bump-concourse-deployment
+- name: bump-concourse-bosh-deployment
   serial: true
   plan:
   - aggregate:
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
       passed: [shipit]
     - get: concourse-boshio
       trigger: true
@@ -1027,8 +1027,8 @@ jobs:
     - get: postgres-release
       passed: [shipit]
   - task: bump-versions
-    file: concourse-deployment/ci/bump-versions.yml
-  - put: concourse-deployment-master
+    file: concourse-bosh-deployment/ci/bump-versions.yml
+  - put: concourse-bosh-deployment-master
     params:
       repository: bumped-repo
       merge: true
@@ -1079,7 +1079,7 @@ jobs:
       # passed: [shipit]
     - get: vsphere-stemcell
     - get: bosh-virtualbox-cpi
-    - get: concourse-deployment
+    - get: concourse-bosh-deployment
     - get: postgres-release
   - aggregate:
     - task: build-release-notes
@@ -1127,7 +1127,7 @@ jobs:
       RELEASE_NAME: concourse
       STEMCELL_NAME: ubuntu-trusty
   - task: generate-concourse-lite-manifest
-    file: concourse-deployment/ci/generate-concourse-lite-manifest.yml
+    file: concourse-bosh-deployment/ci/generate-concourse-lite-manifest.yml
   - put: github-release
     params:
       name: release-notes/release-name
@@ -1400,17 +1400,17 @@ resources:
     uri: https://github.com/cloudfoundry/garden-runc-release
     branch: master
 
-- name: concourse-deployment
+- name: concourse-bosh-deployment
   type: git
   source:
-    uri: git@github.com:concourse/concourse-deployment.git
+    uri: git@github.com:concourse/concourse-bosh-deployment.git
     branch: develop
     private_key: ((concourse_deployment_repo_private_key))
 
-- name: concourse-deployment-master
+- name: concourse-bosh-deployment-master
   type: git
   source:
-    uri: git@github.com:concourse/concourse-deployment.git
+    uri: git@github.com:concourse/concourse-bosh-deployment.git
     branch: master
     private_key: ((concourse_deployment_repo_private_key))
 

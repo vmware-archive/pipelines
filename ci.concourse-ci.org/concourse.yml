@@ -471,7 +471,7 @@ jobs:
       trigger: true
       passed: [bosh-test-deploy]
     - get: final-release
-    - get: downgrade-concourse-deployment
+    - get: concourse-deployment-master
   - put: delete-downgrade-deployment
     resource: downgrade-deployment
     params:
@@ -510,7 +510,7 @@ jobs:
       put: final-release-deployment
       resource: downgrade-deployment
       params:
-        manifest: downgrade-concourse-deployment/cluster/concourse.yml
+        manifest: concourse-deployment-master/cluster/concourse.yml
         stemcells: [gcp-stemcell/*.tgz]
         releases:
         - garden-runc/*.tgz
@@ -961,7 +961,6 @@ jobs:
     params: {DOCKER_COMPOSE_YML: docker-compose-quickstart.yml}
     timeout: 1h
 
-
 - name: nightly
   plan:
    - get: in-the-middle-of-the-night
@@ -991,6 +990,8 @@ jobs:
       passed: [bosh-deploy]
     - get: bosh-rc
       passed: [bosh-deploy]
+    - get: concourse-deployment
+      passed: [bosh-deploy]
     - get: gcp-stemcell
       passed: [bosh-deploy]
     - get: bin-rc
@@ -1018,6 +1019,7 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-deployment
+      passed: [shipit]
     - get: concourse-boshio
       trigger: true
     - get: garden-runc
@@ -1026,7 +1028,7 @@ jobs:
       passed: [shipit]
   - task: bump-versions
     file: concourse-deployment/ci/bump-versions.yml
-  - put: concourse-deployment
+  - put: concourse-deployment-master
     params:
       repository: bumped-repo
       merge: true
@@ -1405,7 +1407,7 @@ resources:
     branch: develop
     private_key: ((concourse_deployment_repo_private_key))
 
-- name: downgrade-concourse-deployment
+- name: concourse-deployment-master
   type: git
   source:
     uri: git@github.com:concourse/concourse-deployment.git

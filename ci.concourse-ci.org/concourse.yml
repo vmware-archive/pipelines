@@ -1028,10 +1028,15 @@ jobs:
       passed: [shipit]
   - task: bump-versions
     file: concourse-bosh-deployment/ci/bump-versions.yml
-  - put: concourse-bosh-deployment-master
-    params:
-      repository: bumped-repo
-      merge: true
+  - aggregate:
+    - put: concourse-bosh-deployment
+      params:
+        repository: bumped-repo
+        merge: true
+    - put: concourse-bosh-deployment-master
+      params:
+        repository: bumped-repo
+        merge: true
 
 - name: push-docs
   serial: true

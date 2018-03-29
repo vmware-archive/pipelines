@@ -1019,7 +1019,7 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-bosh-deployment
-      passed: [shipit]
+      # passed: [shipit]
     - get: concourse-boshio
       trigger: true
     - get: garden-runc

@@ -1241,14 +1241,6 @@ resources:
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 
-- name: export-deployment
-  type: bosh-deployment
-  source:
-    target: ((bosh_target))
-    deployment: concourse-export
-    client: ((bosh_client.id))
-    client_secret: ((bosh_client.secret))
-
 - name: upgrade-deployment
   type: bosh-deployment
   source:

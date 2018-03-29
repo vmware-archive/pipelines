@@ -1076,8 +1076,7 @@ jobs:
       passed: [shipit]
       trigger: true
     - get: gcp-stemcell
-      # passed: [shipit]
-    - get: vsphere-stemcell
+      passed: [shipit]
     - get: bosh-virtualbox-cpi
     - get: concourse-bosh-deployment
     - get: postgres-release
@@ -1107,27 +1106,6 @@ jobs:
           - -c
           - |
             git -C concourse-head rev-parse v$(cat version/version) > generated-commitish/commitish
-  - put: export-deployment
-    params:
-      manifest: concourse/ci/manifests/concourse-export.yml
-      stemcells:
-      - gcp-stemcell/*.tgz
-      releases:
-      - final-release/*.tgz
-  - task: export-release
-    file: concourse/ci/export-release.yml
-    input_mapping:
-      release: final-release
-      stemcell: gcp-stemcell
-    params:
-      BOSH_ENVIRONMENT: bosh.concourse-ci.org
-      BOSH_CLIENT: ((bosh_client.id))
-      BOSH_CLIENT_SECRET: ((bosh_client.secret))
-      BOSH_DEPLOYMENT: concourse-export
-      RELEASE_NAME: concourse
-      STEMCELL_NAME: ubuntu-trusty
-  - task: generate-concourse-lite-manifest
-    file: concourse-bosh-deployment/ci/generate-concourse-lite-manifest.yml
   - put: github-release
     params:
       name: release-notes/release-name
@@ -1135,12 +1113,8 @@ jobs:
       body: release-notes/notes.md
       commitish: generated-commitish/commitish
       globs:
-      - exported-release/*.tgz
-      - final-release/*.tgz
-      - renamed-release/garden-runc-*.tgz
       - bin-rc/concourse_*
       - fly-rc/fly_*
-      - concourse-lite-manifest/*.yml
 
 - name: promote-docker
   serial: true
@@ -1169,6 +1143,7 @@ jobs:
     file: concourse/ci/install-go-windows.yml
   - task: install-git
     file: concourse/ci/install-git-windows.yml
+
 - name: bump-btrfs
   serial: true
   public: true
@@ -1353,11 +1328,6 @@ resources:
   type: bosh-io-release
   source:
     repository: pivotal-cf-experimental/concourse-windows-worker-release
-
-- name: vsphere-stemcell
-  type: bosh-io-stemcell
-  source:
-    name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
 
 - name: docs
   type: git

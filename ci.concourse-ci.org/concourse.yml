@@ -2,7 +2,6 @@ groups:
 - name: develop
   jobs:
   - atc
-  - blackbox
   - fly
   - go-concourse
   - baggageclaim
@@ -122,14 +121,6 @@ jobs:
     - task: elm-unit
       file: concourse/ci/atc-elm.yml
 
-- name: blackbox
-  public: true
-  plan:
-  - get: concourse
-    trigger: true
-  - task: build
-    file: concourse/ci/blackbox.yml
-
 - name: tsa
   public: true
   plan:
@@ -173,7 +164,7 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-    passed: [atc, fly, go-concourse, blackbox, tsa, baggageclaim, skymarshal, web]
+    passed: [atc, fly, go-concourse, tsa, baggageclaim, skymarshal, web]
   - get: garden-runc
   - get: version
     params: {pre: rc}
@@ -334,7 +325,6 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
       - concourse-bosh-deployment/cluster/operations/no-auth.yml
       - concourse-bosh-deployment/cluster/operations/influxdb.yml
-      - concourse-bosh-deployment/cluster/operations/blackbox.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test
@@ -755,7 +745,6 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/encryption.yml
       - concourse-bosh-deployment/cluster/operations/vault-tls-cert-auth.yml
       - concourse-bosh-deployment/cluster/operations/influxdb.yml
-      - concourse-bosh-deployment/cluster/operations/blackbox.yml
       - concourse-bosh-deployment/cluster/operations/db-stats.yml
       - concourse-bosh-deployment/cluster/operations/web-network-extension.yml
       - concourse-bosh-deployment/cluster/operations/team-authorized-keys.yml

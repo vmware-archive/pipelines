@@ -1079,33 +1079,12 @@ jobs:
       file: concourse/ci/build-release-notes.yml
     - task: rename-release
       file: concourse/ci/rename-release.yml
-    - task: generate-commitish
-      config:
-        platform: linux
-
-        image_resource:
-          type: docker-image
-          source: {repository: concourse/git-resource}
-
-        inputs:
-        - name: concourse-head
-        - name: version
-
-        outputs:
-        - name: generated-commitish
-
-        run:
-          path: sh
-          args:
-          - -c
-          - |
-            git -C concourse-head rev-parse v$(cat version/version) > generated-commitish/commitish
   - put: github-release
     params:
       name: release-notes/release-name
       tag: release-notes/release-name
       body: release-notes/notes.md
-      commitish: generated-commitish/commitish
+      commitish: concourse-head/.git/ref
       globs:
       - bin-rc/concourse_*
       - fly-rc/fly_*

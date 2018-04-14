@@ -43,6 +43,7 @@ groups:
 - name: workers
   jobs:
   - install-go-windows
+  - deploy-windows-worker
 
 - name: dependencies
   jobs:
@@ -1116,6 +1117,20 @@ jobs:
     file: concourse/ci/install-go-windows.yml
   - task: install-git
     file: concourse/ci/install-git-windows.yml
+
+- name: deploy-windows-worker
+  plan:
+  - aggregate:
+    - get: concourse
+    - get: windows-worker
+  - task: deploy-latest-windows-worker
+    file: concourse/ci/deploy-windows-worker.yml
+    params:
+      BOSH_ENVIRONMENT: bosh.concourse-ci.org
+      BOSH_CLIENT: ((bosh_client.id))
+      BOSH_CLIENT_SECRET: ((bosh_client.secret))
+      BOSH_DEPLOYMENT: concourse-prod
+      BOSH_KEY: ((topgun.bosh_key))
 
 - name: bump-btrfs
   serial: true

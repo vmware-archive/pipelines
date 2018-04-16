@@ -520,26 +520,14 @@ jobs:
           db_vm_type: testflight
           worker_vm_type: testflight
           db_persistent_disk_type: small
-    on_failure:
-      task: manual-downgrade
-      file: concourse/ci/manual-downgrade.yml
-      params:
-        BOSH_ENVIRONMENT: bosh.concourse-ci.org
-        BOSH_CLIENT: ((bosh_client.id))
-        BOSH_CLIENT_SECRET: ((bosh_client.secret))
-        BOSH_DEPLOYMENT: concourse-test-downgrade
-        BOSH_KEY: ((topgun.bosh_key))
-    on_success:
-      task: manual-downgrade
-      config :
-        platform: linux
-        image_resource:
-          type: docker-image
-          source: {repository: busybox}
-        run:
-          path: echo
-          args:
-           - We do not expect the build to be successful! Check again
+  - task: manual-downgrade
+    file: concourse/ci/manual-downgrade.yml
+    params:
+      BOSH_ENVIRONMENT: bosh.concourse-ci.org
+      BOSH_CLIENT: ((bosh_client.id))
+      BOSH_CLIENT_SECRET: ((bosh_client.secret))
+      BOSH_DEPLOYMENT: concourse-test-downgrade
+      BOSH_KEY: ((topgun.bosh_key))
   - task: verify-test-pipeline
     file: concourse/ci/verify-uber-pipeline.yml
     params:

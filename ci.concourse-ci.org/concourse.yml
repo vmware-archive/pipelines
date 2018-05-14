@@ -769,6 +769,8 @@ jobs:
         untrusted_worker_deny_networks: [10.0.0.0/16]
         untrusted_worker_tags: [pr]
         windows_worker_tsa_host: ci.concourse-ci.org:2222
+        windows_worker_os: windows2016
+        windows_worker_vm_type: worker
 
 - name: bin-testflight
   public: true

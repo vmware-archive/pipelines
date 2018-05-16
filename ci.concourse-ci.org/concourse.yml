@@ -43,7 +43,6 @@ groups:
 - name: workers
   jobs:
   - install-go-windows
-  - deploy-windows-worker
 
 - name: dependencies
   jobs:
@@ -722,7 +721,6 @@ jobs:
     - get: concourse-bosh-deployment
       passed: [bosh-testflight]
       trigger: true
-    - get: windows-worker
     - get: gcp-windows-stemcell
   - put: prod-deployment
     params:
@@ -734,7 +732,6 @@ jobs:
       - garden-runc-release/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
-      - windows-worker/*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/scale.yml
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
@@ -1120,20 +1117,6 @@ jobs:
   - task: install-git
     file: concourse/ci/install-git-windows.yml
 
-- name: deploy-windows-worker
-  plan:
-  - aggregate:
-    - get: concourse
-    - get: windows-worker
-  - task: deploy-latest-windows-worker
-    file: concourse/ci/deploy-windows-worker.yml
-    params:
-      BOSH_ENVIRONMENT: bosh.concourse-ci.org
-      BOSH_CLIENT: ((bosh_client.id))
-      BOSH_CLIENT_SECRET: ((bosh_client.secret))
-      BOSH_DEPLOYMENT: concourse-prod
-      BOSH_KEY: ((topgun.bosh_key))
-
 - name: bump-btrfs
   serial: true
   public: true
@@ -1305,11 +1288,6 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-google-kvm-windows2012R2-go_agent
-
-- name: windows-worker
-  type: bosh-io-release
-  source:
-    repository: pivotal-cf-experimental/concourse-windows-worker-release
 
 - name: docs
   type: git

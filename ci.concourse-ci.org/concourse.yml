@@ -1287,7 +1287,7 @@ resources:
 - name: gcp-windows-stemcell
   type: bosh-io-stemcell
   source:
-    name: bosh-google-kvm-windows2012R2-go_agent
+    name: bosh-google-kvm-windows2016-go_agent
 
 - name: docs
   type: git

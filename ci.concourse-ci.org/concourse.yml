@@ -286,7 +286,7 @@ jobs:
 
 - name: bosh-test-deploy
   public: true
-  serial_groups: [bosh-wats, bosh-watsjs, bosh-testflight]
+  serial_groups: [bosh-lengthy-output, bosh-wats, bosh-watsjs, bosh-testflight]
   plan:
   - aggregate:
     - get: concourse
@@ -564,7 +564,7 @@ jobs:
 
 - name: bosh-testflight
   public: true
-  serial_groups: [bosh-testflight]
+  serial_groups: [bosh-testflight, ui-tests]
   plan:
   - aggregate:
     - get: concourse
@@ -601,7 +601,7 @@ jobs:
 
 - name: bosh-lengthy-output
   public: true
-  serial_groups: [bosh-lengthy-output]
+  serial_groups: [bosh-lengthy-output, ui-tests]
   plan:
   - aggregate:
     - get: concourse
@@ -617,7 +617,7 @@ jobs:
 
 - name: bosh-wats
   public: true
-  serial_groups: [bosh-wats]
+  serial_groups: [bosh-wats, ui-tests]
   plan:
   - aggregate:
     - get: concourse
@@ -633,7 +633,7 @@ jobs:
 
 - name: bosh-watsjs
   public: true
-  serial_groups: [bosh-watsjs]
+  serial_groups: [bosh-watsjs, ui-tests]
   plan:
   - aggregate:
     - get: concourse

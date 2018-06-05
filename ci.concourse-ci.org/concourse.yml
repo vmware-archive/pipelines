@@ -429,7 +429,10 @@ jobs:
       PIPELINE_NAME: test-pipeline
   - task: testflight
     file: concourse/ci/testflight.yml
-    params: {ATC_URL: "http://10.244.16.2:8080"}
+    params:
+      ATC_URL: "http://10.244.16.2:8080"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-downgrade
@@ -559,7 +562,10 @@ jobs:
   - task: testflight
     file: final-release-concourse/ci/testflight.yml
     input_mapping: {concourse: final-release-concourse}
-    params: {ATC_URL: "http://10.244.17.2:8080"}
+    params:
+      ATC_URL: "http://10.244.17.2:8080"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-testflight
@@ -596,7 +602,10 @@ jobs:
       trigger: true
   - task: testflight
     file: concourse/ci/testflight.yml
-    params: {ATC_URL: "http://10.244.15.2:8080"}
+    params: 
+      ATC_URL: "http://10.244.15.2:8080"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-lengthy-output
@@ -612,7 +621,10 @@ jobs:
       trigger: true
   - task: lengthy-output
     file: concourse/ci/lengthy-output.yml
-    params: {ATC_URL: "http://10.244.15.2:8080"}
+    params:
+      ATC_URL: "http://10.244.15.2:8080"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-wats
@@ -628,7 +640,10 @@ jobs:
       trigger: true
   - task: wats
     file: concourse/ci/wats.yml
-    params: {ATC_URL: "http://10.244.15.2:8080"}
+    params:
+      ATC_URL: "http://10.244.15.2:8080"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-watsjs
@@ -647,7 +662,10 @@ jobs:
       trigger: true
   - task: watsjs
     file: concourse/ci/watsjs.yml
-    params: {ATC_URL: "http://10.244.15.2:8080"}
+    params:
+      ATC_URL: "http://10.244.15.2:8080"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: topgun

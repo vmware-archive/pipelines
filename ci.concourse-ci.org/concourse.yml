@@ -4,6 +4,7 @@ groups:
   - atc
   - fly
   - go-concourse
+  - worker
   - baggageclaim
   - skymarshal
   - web
@@ -70,6 +71,14 @@ jobs:
     trigger: true
   - task: go-unit
     file: concourse/ci/go-concourse.yml
+
+- name: worker
+  public: true
+  plan:
+  - get: concourse
+    trigger: true
+  - task: go-unit
+    file: concourse/ci/worker.yml
 
 - name: atc
   public: true

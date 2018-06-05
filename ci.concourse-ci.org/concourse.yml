@@ -399,6 +399,8 @@ jobs:
     file: concourse/ci/create-uber-pipeline.yml
     params:
       WEB_IP: 10.244.16.2
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - put: bosh-rc-deployment
     resource: upgrade-deployment
@@ -426,6 +428,8 @@ jobs:
     file: concourse/ci/verify-uber-pipeline.yml
     params:
       WEB_IP: 10.244.16.2
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - task: testflight
     file: concourse/ci/testflight.yml
@@ -498,6 +502,8 @@ jobs:
     file: concourse/ci/create-uber-pipeline.yml
     params:
       WEB_IP: 10.244.17.2
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - try:
       put: final-release-deployment
@@ -534,6 +540,8 @@ jobs:
     file: concourse/ci/verify-uber-pipeline.yml
     params:
       WEB_IP: 10.244.17.2
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - task: get-final-release-concourse-repo
     config:

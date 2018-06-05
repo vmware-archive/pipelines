@@ -323,7 +323,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-      - concourse-bosh-deployment/cluster/operations/default-test-user.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
       - concourse-bosh-deployment/cluster/operations/influxdb.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
@@ -384,7 +384,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-      - concourse-bosh-deployment/cluster/operations/default-test-user.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
@@ -413,7 +413,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-      - concourse-bosh-deployment/cluster/operations/default-test-user.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
@@ -487,7 +487,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-      - concourse-bosh-deployment/cluster/operations/default-test-user.yml
+      - concourse-bosh-deployment/cluster/operations/no-auth.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-downgrade
@@ -517,7 +517,7 @@ jobs:
         - final-release/*.tgz
         ops_files:
         - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-        - concourse-bosh-deployment/cluster/operations/default-test-user.yml
+        - concourse-bosh-deployment/cluster/operations/no-auth.yml
         - concourse-bosh-deployment/cluster/operations/static-web.yml
         vars:
           deployment_name: concourse-test-downgrade

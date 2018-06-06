@@ -40,6 +40,7 @@ groups:
   - push-docs
   - promote-docker
   - bump-concourse-bosh-deployment
+  - merge-concourse-bosh-deployment-master
 
 - name: workers
   jobs:
@@ -1061,6 +1062,16 @@ jobs:
       params:
         repository: bumped-repo
         merge: true
+
+- name: merge-concourse-bosh-deployment-master
+  serial: true
+  plan:
+  - get: concourse-bosh-deployment-master
+    trigger: true
+  - put: concourse-bosh-deployment
+    params:
+      repository: concourse-bosh-deployment-master
+      merge: true
 
 - name: push-docs
   serial: true

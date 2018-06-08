@@ -376,6 +376,7 @@ jobs:
       trigger: true
       passed: [bosh-test-deploy]
     - get: final-release
+    - get: concourse-bosh-deployment-master
   - put: delete-upgrade-deployment
     resource: upgrade-deployment
     params:
@@ -386,16 +387,16 @@ jobs:
   - put: final-release-deployment
     resource: upgrade-deployment
     params:
-      manifest: concourse-bosh-deployment/cluster/concourse.yml
+      manifest: concourse-bosh-deployment-master/cluster/concourse.yml
       stemcells: [gcp-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
       - final-release/concourse-*.tgz
       ops_files:
-      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-      - concourse-bosh-deployment/cluster/operations/default-test-user.yml
-      - concourse-bosh-deployment/cluster/operations/static-web.yml
+      - concourse-bosh-deployment-master/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment-master/cluster/operations/no-auth.yml
+      - concourse-bosh-deployment-master/cluster/operations/static-web.yml
       vars:
         deployment_name: concourse-test-upgrade
         web_ip: 10.244.16.2
@@ -526,9 +527,9 @@ jobs:
         - postgres-release/*.tgz
         - final-release/*.tgz
         ops_files:
-        - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-        - concourse-bosh-deployment/cluster/operations/default-test-user.yml
-        - concourse-bosh-deployment/cluster/operations/static-web.yml
+        - concourse-bosh-deployment-master/cluster/operations/dev-versions.yml
+        - concourse-bosh-deployment-master/cluster/operations/no-auth.yml
+        - concourse-bosh-deployment-master/cluster/operations/static-web.yml
         vars:
           deployment_name: concourse-test-downgrade
           web_ip: 10.244.17.2

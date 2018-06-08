@@ -391,7 +391,7 @@ jobs:
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
-      - bosh-rc/concourse-*.tgz
+      - final-release/concourse-*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
       - concourse-bosh-deployment/cluster/operations/default-test-user.yml

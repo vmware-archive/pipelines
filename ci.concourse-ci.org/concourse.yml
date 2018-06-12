@@ -333,7 +333,7 @@ jobs:
       - bosh-rc/concourse-*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-      - concourse-bosh-deployment/cluster/operations/default-test-user.yml
+      - concourse-bosh-deployment/cluster/operations/add-local-users.yml
       - concourse-bosh-deployment/cluster/operations/influxdb.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
@@ -345,6 +345,15 @@ jobs:
         db_vm_type: testflight
         worker_vm_type: testflight
         db_persistent_disk_type: small
+        main_team_local_users:
+        - test
+        add_local_users:
+        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW'
+        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e'
+        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq'
+        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu'
+        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.'
+        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC'
 
 
 - name: bosh-upgrade

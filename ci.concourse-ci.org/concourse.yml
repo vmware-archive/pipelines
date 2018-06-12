@@ -352,6 +352,10 @@ jobs:
         - test3
         - test4
         - test5
+        - test6
+        - test7
+        - test8
+        - test9
         - user
         add_local_users:
         - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW'
@@ -360,6 +364,10 @@ jobs:
         - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu'
         - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.'
         - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC'
+        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i'
+        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey'
+        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na'
+        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue'
         - 'user:$2a$10$kw1w9KhCxvO.i7QHTMXygOgbd2fhwRj0ZU1.42AS0QKIqRWPUKux6'
 
 

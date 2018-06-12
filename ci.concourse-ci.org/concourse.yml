@@ -357,8 +357,6 @@ jobs:
         - test8
         - test9
         - test10
-        - test11
-        - test12
         add_local_users:
         - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
         - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # bosh-testflight
@@ -370,9 +368,7 @@ jobs:
         - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
         - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
         - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
-        - 'test10:$2a$10$x11JmWPLpDbphz8nADJRbuzhjo7OlvvOba8Vnxk/y/ukFfCGMByFm' # bosh-upgrade
-        - 'test11:$2a$10$FL4HRelcWRnzSn.WZcswe.NwAaZ9fZa1vdpxuPdd5dHBKND.NhL92' # bosh-downgrade
-        - 'test12:$2a$10$NLLfNCx0Tf4DJP3CdWf4uea3uAzDDB986vT9rNF/v3jiYIVApxqGq' # bosh-lengthy-output
+        - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
 
 
 - name: bosh-upgrade
@@ -438,8 +434,8 @@ jobs:
     file: concourse/ci/create-uber-pipeline.yml
     params:
       WEB_IP: 10.244.16.2
-      WEB_USERNAME: "test10"
-      WEB_PASSWORD: "test10"
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - put: bosh-rc-deployment
     resource: upgrade-deployment
@@ -467,15 +463,15 @@ jobs:
     file: concourse/ci/verify-uber-pipeline.yml
     params:
       WEB_IP: 10.244.16.2
-      WEB_USERNAME: "test10"
-      WEB_PASSWORD: "test10"
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - task: testflight
     file: concourse/ci/testflight.yml
     params:
       ATC_URL: "http://10.244.16.2:8080"
-      ATC_USERNAME: "test10"
-      ATC_PASSWORD: "test10"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-downgrade
@@ -541,8 +537,8 @@ jobs:
     file: concourse/ci/create-uber-pipeline.yml
     params:
       WEB_IP: 10.244.17.2
-      WEB_USERNAME: "test11"
-      WEB_PASSWORD: "test11"
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - try:
       put: final-release-deployment
@@ -579,8 +575,8 @@ jobs:
     file: concourse/ci/verify-uber-pipeline.yml
     params:
       WEB_IP: 10.244.17.2
-      WEB_USERNAME: "test11"
-      WEB_PASSWORD: "test11"
+      WEB_USERNAME: "test"
+      WEB_PASSWORD: "test"
       PIPELINE_NAME: test-pipeline
   - task: get-final-release-concourse-repo
     config:
@@ -611,8 +607,8 @@ jobs:
     input_mapping: {concourse: final-release-concourse}
     params:
       ATC_URL: "http://10.244.17.2:8080"
-      ATC_USERNAME: "test11"
-      ATC_PASSWORD: "test11"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-testflight
@@ -670,8 +666,8 @@ jobs:
     file: concourse/ci/lengthy-output.yml
     params:
       ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test12"
-      ATC_PASSWORD: "test12"
+      ATC_USERNAME: "test10"
+      ATC_PASSWORD: "test10"
     timeout: 1h
 
 - name: bosh-wats

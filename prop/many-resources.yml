@@ -1,4 +1,10 @@
 ---
+resource_types:
+- name: pivnet
+  type: docker-image
+  source:
+    repository: pivotalcf/pivnet-resource
+    tag: latest-final
 
 resources:
 - name: git-pipelines
@@ -97,7 +103,6 @@ jobs:
     - get: bosh-io-cf-release
     - get: bosh-io-cf-mysql-release
     - get: bosh-io-haproxy-release
-
 - name: get-more-resources
   plan:
   - get: git-pipelines
@@ -107,7 +112,21 @@ jobs:
   - get: bosh-io-garden-runc
     passed: [so-many-resources]
     trigger: true
+  - get: bosh-io-bosh-release
+  - get: bosh-io-diego-release
+  - get: bosh-io-postgres-release
   - get: gcp-stemcell
     trigger: true
-  - task: failing-task
-    file: git-pipelines/airbus.concourse.ci/clara/tasks/failing-task.yml
+
+- name: get-even-more-resources
+  plan:
+  - get: git-pipelines
+  - get: bosh-io-concourse
+    passed: [get-more-resources]
+    trigger: true
+  - get: bosh-io-garden-runc
+    passed: [get-more-resources]
+    trigger: true
+  - get: bosh-io-bosh-release
+  - get: bosh-io-diego-release
+  - get: bosh-io-postgres-release

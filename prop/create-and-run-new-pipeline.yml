@@ -1,0 +1,80 @@
+resources:
+- name: 30s
+  type: time
+  source:
+    interval: 30s
+
+- name: fly
+  type: github-release
+  check_every: 1h
+  source:
+    user: concourse
+    repository: concourse
+    access_token: ((github_access_token))
+
+- name: oxygen-mask
+  type: git
+  source:
+    uri: https://github.com/concourse/oxygen-mask
+
+jobs:
+- name: create-and-run-new-pipeline
+  build_logs_to_retain: 20
+  serial: true
+  plan:
+  - get: 30s
+    trigger: true
+  - get: fly
+    params:
+      globs: [fly_linux_amd64]
+  - get: oxygen-mask
+  - task: create-and-run-new-pipeline
+    config:
+      platform: linux
+
+      image_resource:
+        type: docker-image
+        source:
+          repository: ubuntu
+
+      inputs:
+      - name: fly
+      - name: oxygen-mask
+
+      params:
+        ATC_URL: ((atc_url))
+        TEAM_NAME: main
+        USERNAME: ((username))
+        PASSWORD: ((password))
+
+      run:
+        user: root
+        path: timeout
+        args:
+        - 70
+        - bash
+        - -c
+        - |
+          #!/bin/bash
+
+          set -e -u -x
+
+          pushd fly
+            chmod +x fly_linux_amd64
+            mv fly_linux_amd64 fly
+            export PATH=`pwd`:$PATH
+          popd
+
+          fly -t ci login -c $ATC_URL -n $TEAM_NAME -u $USERNAME -p $PASSWORD -k
+          fly -t ci sync
+          fly -t ci destroy-pipeline -n -p new-pipeline
+          fly -t ci set-pipeline -n -p new-pipeline -c oxygen-mask/pipeline.yml
+          fly -t ci unpause-pipeline -p new-pipeline
+
+          until [ "$(fly -t ci builds -j new-pipeline/auto-triggering | grep -v pending | wc -l)" -gt 0 ]; do
+            echo 'waiting for job to trigger...'
+            sleep 1
+          done
+
+          fly -t ci watch -j new-pipeline/auto-triggering
+          fly -t ci destroy-pipeline -n -p new-pipeline

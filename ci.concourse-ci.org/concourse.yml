@@ -677,8 +677,6 @@ jobs:
     file: concourse/ci/wats.yml
     params:
       ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test"
-      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: bosh-watsjs

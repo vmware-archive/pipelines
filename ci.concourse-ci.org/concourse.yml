@@ -356,18 +356,24 @@ jobs:
         - test7
         - test8
         - test9
+        - test10
+        - test11
+        - test12
         - user
         add_local_users:
-        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW'
-        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e'
-        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq'
-        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu'
-        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.'
-        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC'
-        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i'
-        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey'
-        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na'
-        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue'
+        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
+        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # bosh-testflight
+        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq' # wats
+        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu' # wats
+        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.' # wats
+        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC' # wats
+        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i' # wats
+        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
+        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
+        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
+        - 'test10:$2a$10$x11JmWPLpDbphz8nADJRbuzhjo7OlvvOba8Vnxk/y/ukFfCGMByFm' # bosh-upgrade
+        - 'test11:$2a$10$FL4HRelcWRnzSn.WZcswe.NwAaZ9fZa1vdpxuPdd5dHBKND.NhL92' # bosh-downgrade
+        - 'test12:$2a$10$NLLfNCx0Tf4DJP3CdWf4uea3uAzDDB986vT9rNF/v3jiYIVApxqGq' # bosh-lengthy-output
         - 'user:$2a$10$kw1w9KhCxvO.i7QHTMXygOgbd2fhwRj0ZU1.42AS0QKIqRWPUKux6'
 
 
@@ -434,8 +440,8 @@ jobs:
     file: concourse/ci/create-uber-pipeline.yml
     params:
       WEB_IP: 10.244.16.2
-      WEB_USERNAME: "test"
-      WEB_PASSWORD: "test"
+      WEB_USERNAME: "test10"
+      WEB_PASSWORD: "test10"
       PIPELINE_NAME: test-pipeline
   - put: bosh-rc-deployment
     resource: upgrade-deployment
@@ -463,15 +469,15 @@ jobs:
     file: concourse/ci/verify-uber-pipeline.yml
     params:
       WEB_IP: 10.244.16.2
-      WEB_USERNAME: "test"
-      WEB_PASSWORD: "test"
+      WEB_USERNAME: "test10"
+      WEB_PASSWORD: "test10"
       PIPELINE_NAME: test-pipeline
   - task: testflight
     file: concourse/ci/testflight.yml
     params:
       ATC_URL: "http://10.244.16.2:8080"
-      ATC_USERNAME: "test"
-      ATC_PASSWORD: "test"
+      ATC_USERNAME: "test10"
+      ATC_PASSWORD: "test10"
     timeout: 1h
 
 - name: bosh-downgrade
@@ -537,8 +543,8 @@ jobs:
     file: concourse/ci/create-uber-pipeline.yml
     params:
       WEB_IP: 10.244.17.2
-      WEB_USERNAME: "test"
-      WEB_PASSWORD: "test"
+      WEB_USERNAME: "test11"
+      WEB_PASSWORD: "test11"
       PIPELINE_NAME: test-pipeline
   - try:
       put: final-release-deployment
@@ -575,8 +581,8 @@ jobs:
     file: concourse/ci/verify-uber-pipeline.yml
     params:
       WEB_IP: 10.244.17.2
-      WEB_USERNAME: "test"
-      WEB_PASSWORD: "test"
+      WEB_USERNAME: "test11"
+      WEB_PASSWORD: "test11"
       PIPELINE_NAME: test-pipeline
   - task: get-final-release-concourse-repo
     config:
@@ -607,8 +613,8 @@ jobs:
     input_mapping: {concourse: final-release-concourse}
     params:
       ATC_URL: "http://10.244.17.2:8080"
-      ATC_USERNAME: "test"
-      ATC_PASSWORD: "test"
+      ATC_USERNAME: "test11"
+      ATC_PASSWORD: "test11"
     timeout: 1h
 
 - name: bosh-testflight
@@ -645,10 +651,10 @@ jobs:
       trigger: true
   - task: testflight
     file: concourse/ci/testflight.yml
-    params: 
+    params:
       ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test"
-      ATC_PASSWORD: "test"
+      ATC_USERNAME: "test1"
+      ATC_PASSWORD: "test1"
     timeout: 1h
 
 - name: bosh-lengthy-output
@@ -666,8 +672,8 @@ jobs:
     file: concourse/ci/lengthy-output.yml
     params:
       ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test"
-      ATC_PASSWORD: "test"
+      ATC_USERNAME: "test12"
+      ATC_PASSWORD: "test12"
     timeout: 1h
 
 - name: bosh-wats
@@ -705,8 +711,8 @@ jobs:
     file: concourse/ci/watsjs.yml
     params:
       ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test"
-      ATC_PASSWORD: "test"
+      ATC_USERNAME: "test9"
+      ATC_PASSWORD: "test9"
     timeout: 1h
 
 - name: topgun

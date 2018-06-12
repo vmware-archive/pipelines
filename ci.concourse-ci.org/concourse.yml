@@ -359,7 +359,6 @@ jobs:
         - test10
         - test11
         - test12
-        - user
         add_local_users:
         - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
         - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # bosh-testflight
@@ -374,7 +373,6 @@ jobs:
         - 'test10:$2a$10$x11JmWPLpDbphz8nADJRbuzhjo7OlvvOba8Vnxk/y/ukFfCGMByFm' # bosh-upgrade
         - 'test11:$2a$10$FL4HRelcWRnzSn.WZcswe.NwAaZ9fZa1vdpxuPdd5dHBKND.NhL92' # bosh-downgrade
         - 'test12:$2a$10$NLLfNCx0Tf4DJP3CdWf4uea3uAzDDB986vT9rNF/v3jiYIVApxqGq' # bosh-lengthy-output
-        - 'user:$2a$10$kw1w9KhCxvO.i7QHTMXygOgbd2fhwRj0ZU1.42AS0QKIqRWPUKux6'
 
 
 - name: bosh-upgrade

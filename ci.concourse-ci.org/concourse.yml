@@ -1447,7 +1447,7 @@ resources:
   source:
     uri: git@github.com:concourse/draupnir-deployments.git
     branch: master
-    private_key: ((concourse_deployment_repo_private_key))
+    private_key: ((draupnir_deployments_private_key))
 
 - name: bin-rc
   type: github-release

@@ -28,6 +28,7 @@ groups:
   - bin-docker-testflight-qs
   - topgun
   - bosh-deploy
+  - prop-deploy
 
 - name: publish
   jobs:
@@ -828,6 +829,34 @@ jobs:
         windows_worker_os: windows2016
         windows_worker_vm_type: worker
 
+- name: prop-deploy
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse
+      params: {submodules: none}
+      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-wats, bosh-watsjs, topgun]
+      trigger: true
+    - get: concourse-bosh-deployment
+      passed: [bosh-testflight]
+    - get: bosh-rc
+      passed: [bosh-testflight]
+      trigger: true
+    - get: garden-runc-release
+      resource: garden-runc
+      passed: [bosh-testflight]
+      trigger: true
+    - get: postgres-release
+      passed: [bosh-testflight]
+      trigger: true
+    - get: draupnir-deployments
+  - task: prop-deploy
+    privileged: true
+    file: draupnir-deployments/ci/prop-deploy.yml
+    params:
+      GCP_KEY: ((gcp_key))
+
 - name: bin-testflight
   public: true
   serial: true
@@ -1410,6 +1439,13 @@ resources:
   type: git
   source:
     uri: git@github.com:concourse/concourse-bosh-deployment.git
+    branch: master
+    private_key: ((concourse_deployment_repo_private_key))
+
+- name: draupnir-deployments
+  type: git
+  source:
+    uri: git@github.com:concourse/draupnir-deployments.git
     branch: master
     private_key: ((concourse_deployment_repo_private_key))
 

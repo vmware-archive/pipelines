@@ -10,23 +10,16 @@ groups:
   - web
   - tsa
   - rc
-  - build-fly
+  - fly-rc
   - bin-rc
-  - bosh-lengthy-output
   - bosh-rc
-  - bosh-test-deploy
   - bosh-testflight
-  - bosh-wats
-  - bosh-watsjs
   - bosh-upgrade
   - bosh-downgrade
   - bin-testflight
-  - bin-testflight-qs
   - bin-smoke
   - bin-docker
-  - bin-docker-testflight
-  - bin-docker-testflight-qs
-  - topgun
+  - bosh-topgun
   - bosh-deploy
   - prop-deploy
 
@@ -182,7 +175,7 @@ jobs:
   - put: version
     params: {file: version/version}
 
-- name: build-fly
+- name: fly-rc
   public: true
   plan:
   - get: concourse
@@ -221,21 +214,21 @@ jobs:
   - aggregate:
     - get: concourse
       trigger: true
-      passed: [build-fly]
+      passed: [fly-rc]
     - get: garden-runc
       trigger: true
-      passed: [build-fly]
+      passed: [fly-rc]
     - get: version
       trigger: true
-      passed: [build-fly]
+      passed: [fly-rc]
     - get: final-version
       trigger: true
       resource: version
-      passed: [build-fly]
+      passed: [fly-rc]
       params: {bump: final}
     - get: fly-rc
       trigger: true
-      passed: [build-fly]
+      passed: [fly-rc]
       params:
         globs: [fly_*]
     - get: postgres-release
@@ -255,22 +248,22 @@ jobs:
   plan:
   - aggregate:
     - get: concourse
-      passed: [build-fly]
+      passed: [fly-rc]
       trigger: true
     - get: version
-      passed: [build-fly]
+      passed: [fly-rc]
       trigger: true
     - get: final-version
       resource: version
-      passed: [build-fly]
+      passed: [fly-rc]
       params: {bump: final}
       trigger: true
     - get: garden-runc
-      passed: [build-fly]
+      passed: [fly-rc]
       trigger: true
     - get: fly-rc
       trigger: true
-      passed: [build-fly]
+      passed: [fly-rc]
       params:
         globs: [fly_*]
     - get: garden-runc-src
@@ -295,111 +288,34 @@ jobs:
       body: release/body
       globs: [release/artifacts/*]
 
-- name: bosh-test-deploy
-  public: true
-  serial_groups: [bosh-lengthy-output, bosh-wats, bosh-watsjs, bosh-testflight]
-  plan:
-  - aggregate:
-    - get: concourse
-      trigger: true
-      passed: [bosh-rc]
-    - get: bosh-rc
-      trigger: true
-      passed: [bosh-rc]
-    - get: version
-      trigger: true
-      passed: [bosh-rc]
-    - get: garden-runc
-      trigger: true
-      passed: [bosh-rc]
-    - get: fly-rc
-      trigger: true
-      passed: [bosh-rc]
-    - get: postgres-release
-      trigger: true
-      passed: [bosh-rc]
-    - get: gcp-stemcell
-      trigger: true
-      passed: [bosh-rc]
-    - get: concourse-bosh-deployment
-      passed: [bosh-rc]
-      trigger: true
-  - put: test-deployment
-    params:
-      manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
-      releases:
-      - garden-runc/*.tgz
-      - postgres-release/*.tgz
-      - bosh-rc/concourse-*.tgz
-      ops_files:
-      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
-      - concourse-bosh-deployment/cluster/operations/add-local-users.yml
-      - concourse-bosh-deployment/cluster/operations/influxdb.yml
-      - concourse-bosh-deployment/cluster/operations/static-web.yml
-      vars:
-        deployment_name: concourse-test
-        web_ip: 10.244.15.2
-        external_url: "http://10.244.15.2:8080"
-        network_name: testflight
-        web_vm_type: testflight
-        db_vm_type: testflight
-        worker_vm_type: testflight
-        db_persistent_disk_type: small
-        main_team_local_users:
-        - test
-        - test1
-        - test2
-        - test3
-        - test4
-        - test5
-        - test6
-        - test7
-        - test8
-        - test9
-        - test10
-        add_local_users:
-        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
-        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # bosh-testflight
-        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq' # wats
-        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu' # wats
-        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.' # wats
-        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC' # wats
-        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i' # wats
-        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
-        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
-        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
-        - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
-
-
 - name: bosh-upgrade
   serial_groups: [bosh-upgrade]
   plan:
   - aggregate:
     - get: concourse
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: bosh-rc
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: version
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: garden-runc
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: fly-rc
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: postgres-release
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: gcp-stemcell
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: concourse-bosh-deployment
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: final-release
     - get: concourse-bosh-deployment-master
   - put: delete-upgrade-deployment
@@ -481,28 +397,28 @@ jobs:
   - aggregate:
     - get: concourse
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: bosh-rc
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: version
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: garden-runc
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: fly-rc
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: postgres-release
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: concourse-bosh-deployment
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: gcp-stemcell
       trigger: true
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
     - get: final-release
     - get: concourse-bosh-deployment-master
   - put: delete-downgrade-deployment
@@ -618,32 +534,94 @@ jobs:
   plan:
   - aggregate:
     - get: concourse
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: bosh-rc
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: version
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: garden-runc
-      passed: [bosh-test-deploy]
-      trigger: true
-    - get: test-deployment
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: fly-rc
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: postgres-release
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: gcp-stemcell
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
     - get: concourse-bosh-deployment
-      passed: [bosh-test-deploy]
+      passed: [bosh-rc]
       trigger: true
+  - put: test-deployment
+    params:
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
+      stemcells: [gcp-stemcell/*.tgz]
+      releases:
+      - garden-runc/*.tgz
+      - postgres-release/*.tgz
+      - bosh-rc/concourse-*.tgz
+      ops_files:
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/add-local-users.yml
+      - concourse-bosh-deployment/cluster/operations/influxdb.yml
+      - concourse-bosh-deployment/cluster/operations/static-web.yml
+      vars:
+        deployment_name: concourse-test
+        web_ip: 10.244.15.2
+        external_url: "http://10.244.15.2:8080"
+        network_name: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
+        main_team_local_users:
+        - test
+        - test1
+        - test2
+        - test3
+        - test4
+        - test5
+        - test6
+        - test7
+        - test8
+        - test9
+        - test10
+        add_local_users:
+        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
+        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # bosh-testflight
+        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq' # wats
+        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu' # wats
+        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.' # wats
+        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC' # wats
+        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i' # wats
+        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
+        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
+        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
+        - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
+  - task: wats
+    file: concourse/ci/wats.yml
+    params:
+      ATC_URL: "http://10.244.15.2:8080"
+    timeout: 1h
+  - task: watsjs
+    file: concourse/ci/watsjs.yml
+    params:
+      ATC_URL: "http://10.244.15.2:8080"
+      ATC_USERNAME: "test9"
+      ATC_PASSWORD: "test9"
+    timeout: 1h
+  - task: lengthy-output
+    file: concourse/ci/lengthy-output.yml
+    params:
+      ATC_URL: "http://10.244.15.2:8080"
+      ATC_USERNAME: "test10"
+      ATC_PASSWORD: "test10"
+    timeout: 1h
   - task: testflight
     file: concourse/ci/testflight.yml
     params:
@@ -652,65 +630,7 @@ jobs:
       ATC_PASSWORD: "test1"
     timeout: 1h
 
-- name: bosh-lengthy-output
-  public: true
-  serial_groups: [bosh-lengthy-output, ui-tests]
-  plan:
-  - aggregate:
-    - get: concourse
-      passed: [bosh-test-deploy]
-      trigger: true
-    - get: test-deployment
-      passed: [bosh-test-deploy]
-      trigger: true
-  - task: lengthy-output
-    file: concourse/ci/lengthy-output.yml
-    params:
-      ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test10"
-      ATC_PASSWORD: "test10"
-    timeout: 1h
-
-- name: bosh-wats
-  public: true
-  serial_groups: [bosh-wats, ui-tests]
-  plan:
-  - aggregate:
-    - get: concourse
-      passed: [bosh-test-deploy]
-      trigger: true
-    - get: test-deployment
-      passed: [bosh-test-deploy]
-      trigger: true
-  - task: wats
-    file: concourse/ci/wats.yml
-    params:
-      ATC_URL: "http://10.244.15.2:8080"
-    timeout: 1h
-
-- name: bosh-watsjs
-  public: true
-  serial_groups: [bosh-watsjs, ui-tests]
-  plan:
-  - aggregate:
-    - get: concourse
-      passed: [bosh-test-deploy]
-      trigger: true
-    - get: test-deployment
-      passed: [bosh-test-deploy]
-      trigger: true
-    - get: fly-rc
-      passed: [bosh-test-deploy]
-      trigger: true
-  - task: watsjs
-    file: concourse/ci/watsjs.yml
-    params:
-      ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test9"
-      ATC_PASSWORD: "test9"
-    timeout: 1h
-
-- name: topgun
+- name: bosh-topgun
   public: true
   serial: true
   plan:
@@ -734,7 +654,7 @@ jobs:
     - get: vault-release
     - get: credhub-release
     - get: bosh-cli
-  - task: topgun
+  - task: bosh-topgun
     file: concourse/ci/topgun.yml
     input_mapping:
       concourse-release: bosh-rc
@@ -757,7 +677,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-wats, bosh-watsjs, topgun]
+      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-topgun]
       trigger: true
     - get: version
       passed: [bosh-testflight]
@@ -836,7 +756,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-wats, bosh-watsjs, topgun]
+      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-topgun]
       trigger: true
     - get: concourse-bosh-deployment
       passed: [bosh-testflight]
@@ -878,25 +798,7 @@ jobs:
     file: concourse/src/github.com/concourse/bin/ci/testflight.yml
     privileged: true
     timeout: 1h
-
-- name: bin-testflight-qs
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse
-      passed: [bin-rc]
-      trigger: true
-    - get: linux-binary
-      resource: bin-rc
-      passed: [bin-rc]
-      trigger: true
-    - get: version
-      passed: [bin-rc]
-      trigger: true
-    - get: fly-rc
-      passed: [bin-rc]
-  - task: testflight
+  - task: testflight-qs
     file: concourse/src/github.com/concourse/bin/ci/testflight.yml
     privileged: true
     timeout: 1h
@@ -907,17 +809,17 @@ jobs:
   plan:
   - aggregate:
     - get: bin-rc
-      passed: [bin-testflight, bin-testflight-qs]
+      passed: [bin-rc]
       params: {globs: [concourse_linux_amd64]}
       trigger: true
     - get: concourse
-      passed: [bin-testflight, bin-testflight-qs]
+      passed: [bin-rc]
       trigger: true
     - get: version
-      passed: [bin-testflight, bin-testflight-qs]
+      passed: [bin-rc]
       trigger: true
     - get: fly-rc
-      passed: [bin-testflight, bin-testflight-qs]
+      passed: [bin-rc]
   - task: setup-tugboat
     file: concourse/src/github.com/concourse/bin/ci/smoke-tests/setup-tugboat.yml
     params:
@@ -966,77 +868,30 @@ jobs:
     - get: ubuntu-image
       params: {save: true}
       trigger: true
+    - get: postgres-image
+      params: {save: true}
     - get: fly-rc
       passed: [bin-rc]
   - task: build-root
     file: concourse-docker/ci/build-root.yml
-  - put: concourse-image-rc
-    params:
-      build: concourse-image-build-root
-      load_base: ubuntu-image
-      tag: version/version
-      tag_as_latest: true
-
-- name: bin-docker-testflight
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse
-      passed: [bin-docker]
-      trigger: true
-    - get: version
-      passed: [bin-docker]
-      trigger: true
-    - get: bin-rc
-      passed: [bin-docker]
-      trigger: true
-    - get: concourse-docker
-      trigger: true
-      passed: [bin-docker]
-    - get: concourse-image-rc
-      passed: [bin-docker]
-      trigger: true
-      params: {save: true}
-    - get: fly-rc
-      passed: [bin-docker]
-    - get: postgres-image
-      params: {save: true}
-  - task: testflight
+  - task: build-image-rc
+    privileged: true
+    file: concourse-docker/ci/build-image-rc.yml
+  - task: bin-docker-testflight
     file: concourse-docker/ci/testflight.yml
     privileged: true
     timeout: 1h
-
-- name: bin-docker-testflight-qs
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse
-      passed: [bin-docker]
-      trigger: true
-    - get: version
-      passed: [bin-docker]
-      trigger: true
-    - get: bin-rc
-      passed: [bin-docker]
-      trigger: true
-    - get: concourse-docker
-      trigger: true
-      passed: [bin-docker]
-    - get: concourse-image-rc
-      passed: [bin-docker]
-      trigger: true
-      params: {save: true}
-    - get: fly-rc
-      passed: [bin-docker]
-    - get: postgres-image
-      params: {save: true}
-  - task: testflight
+  - task: bin-docker-testflight-qs
     file: concourse-docker/ci/testflight.yml
     privileged: true
     params: {DOCKER_COMPOSE_YML: docker-compose-quickstart.yml}
     timeout: 1h
+  - put: concourse-image-rc
+    params:
+      load_file: concourse-image/image
+      load_repository: concourse
+      tag: version/version
+      tag_as_latest: true
 
 - name: nightly
   plan:
@@ -1072,11 +927,11 @@ jobs:
     - get: gcp-stemcell
       passed: [bosh-deploy]
     - get: bin-rc
-      passed: [bin-smoke, bin-docker-testflight, bin-docker-testflight-qs]
+      passed: [bin-smoke, bin-docker, bin-testflight]
     - get: fly-rc
-      passed: [bin-smoke, bin-docker-testflight, bin-docker-testflight-qs, bosh-deploy]
+      passed: [bin-smoke, bin-docker, bin-testflight, bosh-deploy]
     - get: concourse-image-rc
-      passed: [bin-docker-testflight]
+      passed: [bin-docker]
     - get: concourse-head
   - task: finalize-release
     file: concourse-head/ci/finalize-release.yml
@@ -1467,11 +1322,12 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse-docker
+    branch: master
 
 - name: dumb-init
   type: github-release
   source:
-    user: Yelp
+    owner: Yelp
     repository: dumb-init
     access_token: ((concourse_github_dummy.access_token))
 

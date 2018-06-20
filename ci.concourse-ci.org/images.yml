@@ -73,19 +73,6 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
 
-- name: concourse-web-pr-ci
-  type: git
-  source:
-    uri: https://github.com/concourse/web.git
-    paths: [ci/Dockerfile]
-
-- name: concourse-web-pr-ci-image
-  type: docker-image
-  source:
-    repository: concourse/web-pr-ci
-    username: ((docker.username))
-    password: ((docker.password))
-
 - name: concourse-atc-ci-elm
   type: git
   source:
@@ -417,22 +404,6 @@ jobs:
     params:
       load_base: ruby-2.x
       build: context
-
-- name: build-web-pr-ci
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse-web-pr-ci
-      trigger: true
-    - get: concourse-bin-ci-image
-      passed: [build-bin-ci]
-      trigger: true
-      params: {save: true}
-  - put: concourse-web-pr-ci-image
-    params:
-      load_base: concourse-bin-ci-image
-      build: concourse-web-pr-ci
 
 - name: build-atc-ci-elm
   public: true

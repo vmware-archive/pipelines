@@ -893,6 +893,23 @@ jobs:
       tag: version/version
       tag_as_latest: true
 
+- name: k8s-testflight
+  serial: true
+  public: true
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [bin-docker]
+      trigger: true
+    - get: version
+      passed: [bin-docker]
+      trigger: true
+  - task: k8s-testflight
+    file: concourse/ci/k8s-testflight.yml
+    privileged: true
+    params: {KUBE_CONFIG: ((kube_config)), RELEASE_NAME: ((release_name))}
+    timeout: 1h
+
 - name: nightly
   plan:
    - get: in-the-middle-of-the-night

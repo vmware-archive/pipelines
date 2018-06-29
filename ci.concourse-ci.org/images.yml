@@ -367,7 +367,7 @@ jobs:
   - put: concourse-k8s-testflight-image
     params:
       load_base: concourse-atc-ci-image
-      build: concourse-k8s-testflight
+      build: concourse-k8s-testflight/ci/dockerfiles/k8s-testflight
 
 - name: build-wats-ci
   public: true

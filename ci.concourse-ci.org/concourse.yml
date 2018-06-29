@@ -908,7 +908,11 @@ jobs:
   - task: k8s-testflight
     file: concourse/ci/k8s-testflight.yml
     privileged: true
-    params: {KUBE_CONFIG: ((kube_config)), RELEASE_NAME: ((release_name))}
+    params:
+      KUBE_CONFIG: ((kube_config))
+      RELEASE_NAME: ((release_name))
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: nightly

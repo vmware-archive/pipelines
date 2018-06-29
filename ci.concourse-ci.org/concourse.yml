@@ -22,6 +22,7 @@ groups:
   - bosh-topgun
   - bosh-deploy
   - prop-deploy
+  - k8s-testflight
 
 - name: publish
   jobs:

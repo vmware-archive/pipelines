@@ -169,7 +169,7 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-    passed: [atc, fly, go-concourse, tsa, baggageclaim, skymarshal, web]
+    passed: [atc, fly, go-concourse, tsa, baggageclaim, skymarshal, web, worker]
   - get: garden-runc
   - get: version
     params: {pre: rc}
@@ -529,9 +529,104 @@ jobs:
       ATC_PASSWORD: "test"
     timeout: 1h
 
+- name: bosh-wats
+  public: true
+  serial_groups: [bosh-wats]
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [bosh-rc]
+      trigger: true
+    - get: bosh-rc
+      passed: [bosh-rc]
+      trigger: true
+    - get: version
+      passed: [bosh-rc]
+      trigger: true
+    - get: garden-runc
+      passed: [bosh-rc]
+      trigger: true
+    - get: fly-rc
+      passed: [bosh-rc]
+      trigger: true
+    - get: postgres-release
+      passed: [bosh-rc]
+      trigger: true
+    - get: gcp-stemcell
+      passed: [bosh-rc]
+      trigger: true
+    - get: concourse-bosh-deployment
+      passed: [bosh-rc]
+      trigger: true
+  - put: wats-deployment
+    params:
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
+      stemcells: [gcp-stemcell/*.tgz]
+      releases:
+      - garden-runc/*.tgz
+      - postgres-release/*.tgz
+      - bosh-rc/concourse-*.tgz
+      ops_files:
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/add-local-users.yml
+      - concourse-bosh-deployment/cluster/operations/influxdb.yml
+      - concourse-bosh-deployment/cluster/operations/static-web.yml
+      vars:
+        deployment_name: concourse-wats
+        web_ip: 10.244.19.2
+        external_url: "http://10.244.19.2:8080"
+        network_name: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
+        main_team_local_users:
+        - test
+        - test1
+        - test2
+        - test3
+        - test4
+        - test5
+        - test6
+        - test7
+        - test8
+        - test9
+        - test10
+        add_local_users:
+        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
+        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # wats
+        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq' # wats
+        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu' # wats
+        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.' # wats
+        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC' # wats
+        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i' # wats
+        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
+        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
+        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
+        - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
+  - task: wats
+    file: concourse/ci/wats.yml
+    params:
+      ATC_URL: "http://10.244.19.2:8080"
+    timeout: 1h
+  - task: watsjs
+    file: concourse/ci/watsjs.yml
+    params:
+      ATC_URL: "http://10.244.19.2:8080"
+      ATC_USERNAME: "test9"
+      ATC_PASSWORD: "test9"
+    timeout: 1h
+  - task: lengthy-output
+    file: concourse/ci/lengthy-output.yml
+    params:
+      ATC_URL: "http://10.244.19.2:8080"
+      ATC_USERNAME: "test10"
+      ATC_PASSWORD: "test10"
+    timeout: 1h
+
 - name: bosh-testflight
   public: true
-  serial_groups: [bosh-testflight, ui-tests]
+  serial_groups: [bosh-testflight]
   plan:
   - aggregate:
     - get: concourse
@@ -581,48 +676,9 @@ jobs:
         worker_vm_type: testflight
         db_persistent_disk_type: small
         main_team_local_users:
-        - test
         - test1
-        - test2
-        - test3
-        - test4
-        - test5
-        - test6
-        - test7
-        - test8
-        - test9
-        - test10
         add_local_users:
-        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
-        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # bosh-testflight
-        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq' # wats
-        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu' # wats
-        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.' # wats
-        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC' # wats
-        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i' # wats
-        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
-        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
-        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
-        - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
-  - task: wats
-    file: concourse/ci/wats.yml
-    params:
-      ATC_URL: "http://10.244.15.2:8080"
-    timeout: 1h
-  - task: watsjs
-    file: concourse/ci/watsjs.yml
-    params:
-      ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test9"
-      ATC_PASSWORD: "test9"
-    timeout: 1h
-  - task: lengthy-output
-    file: concourse/ci/lengthy-output.yml
-    params:
-      ATC_URL: "http://10.244.15.2:8080"
-      ATC_USERNAME: "test10"
-      ATC_PASSWORD: "test10"
-    timeout: 1h
+        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e'
   - task: testflight
     file: concourse/ci/testflight.yml
     params:
@@ -1210,6 +1266,14 @@ resources:
   source:
     target: ((bosh_target))
     deployment: concourse-test
+    client: ((bosh_client.id))
+    client_secret: ((bosh_client.secret))
+
+- name: wats-deployment
+  type: bosh-deployment
+  source:
+    target: ((bosh_target))
+    deployment: concourse-wats
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 

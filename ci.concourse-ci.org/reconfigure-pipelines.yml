@@ -3,12 +3,14 @@ resource_types:
   type: docker-image
   source:
     repository: concourse/concourse-pipeline-resource
+    tag: v4.0-pre # remove once we've built + published after shipping
 
 resources:
 - name: pipelines
   type: git
   source:
     uri: https://github.com/concourse/pipelines
+
 - name: ci.concourse-ci.org
   type: concourse-pipeline
   source:
@@ -17,6 +19,7 @@ resources:
     - name: main
       username: ((basic_auth.username))
       password: ((basic_auth.password))
+
 jobs:
 - name: reconfigure
   plan:

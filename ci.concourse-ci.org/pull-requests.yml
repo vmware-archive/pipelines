@@ -25,6 +25,13 @@ resources:
     access_token: ((pull_requests_access_token))
     every: true
 
+- name: worker
+  type: pull-request
+  source:
+    repo: concourse/worker
+    access_token: ((pull_requests_access_token))
+    every: true
+
 - name: go-concourse
   type: pull-request
   source:
@@ -98,3 +105,25 @@ jobs:
     on_success:
       put: go-concourse
       params: {path: go-concourse-pr, status: success}
+
+- name: worker
+  public: true
+  plan:
+  - aggregate:
+    - get: worker-pr
+      resource: worker
+      trigger: true
+      version: every
+    - get: concourse
+  - put: worker
+    params: {path: worker-pr, status: pending}
+    get_params: {fetch_merge: true}
+  - task: unit
+    file: worker/ci/pr.yml
+    tags: [pr]
+    on_failure:
+      put: worker
+      params: {path: worker-pr, status: failure}
+    on_success:
+      put: worker
+      params: {path: worker-pr, status: success}

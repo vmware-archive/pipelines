@@ -962,8 +962,11 @@ jobs:
     - get: version
       passed: [bin-docker]
       trigger: true
+    - get: k8s-helm-chart
+      trigger: true
   - task: k8s-testflight
     file: concourse/ci/k8s-testflight.yml
+    input_mapping: {charts: k8s-helm-chart}
     privileged: true
     params:
       KUBE_CONFIG: ((kube_config))
@@ -1417,6 +1420,12 @@ resources:
     owner: Yelp
     repository: dumb-init
     access_token: ((concourse_github_dummy.access_token))
+
+- name: k8s-helm-chart
+  type: git
+  source:
+    uri: https://github.com/concourse/charts
+    branch: develop
 
 - name: ubuntu-image
   type: docker-image

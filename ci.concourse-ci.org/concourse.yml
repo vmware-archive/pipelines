@@ -1242,7 +1242,7 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/influxdb.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
-        deployment_name: concourse-wats
+        deployment_name: concourse-wats-periodic
         web_ip: 10.244.20.2
         external_url: "http://10.244.20.2:8080"
         network_name: testflight
@@ -1332,7 +1332,7 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/influxdb.yml
       - concourse-bosh-deployment/cluster/operations/static-web.yml
       vars:
-        deployment_name: concourse-wats
+        deployment_name: concourse-watsjs-periodic
         web_ip: 10.244.21.2
         external_url: "http://10.244.21.2:8080"
         network_name: testflight

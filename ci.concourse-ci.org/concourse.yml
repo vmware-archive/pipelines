@@ -975,7 +975,7 @@ jobs:
     privileged: true
     params:
       KUBE_CONFIG: ((kube_config))
-      RELEASE_NAME: ((release_name))
+      RELEASE_NAME: concourse-k8s-test
       ATC_USERNAME: "test"
       ATC_PASSWORD: "test"
     timeout: 1h

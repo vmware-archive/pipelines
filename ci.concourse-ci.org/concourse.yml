@@ -1203,7 +1203,7 @@ jobs:
   build_logs_to_retain: 1000
   plan:
   - aggregate:
-    - get: 10m
+    - get: 20m
       trigger: true
     - get: concourse
       passed: [bosh-rc]
@@ -1403,9 +1403,9 @@ resources:
     start: 12:00 AM
     stop: 1:00 AM
 
-- name: 10m
+- name: 20m
   type: time
-  source: {interval: 10m}
+  source: {interval: 20m}
 
 - name: 3m
   type: time

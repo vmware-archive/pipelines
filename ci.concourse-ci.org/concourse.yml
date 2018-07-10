@@ -743,7 +743,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-topgun, bosh-watsjs]
+      passed: [bosh-testflight, bosh-topgun, bosh-watsjs]
       trigger: true
     - get: version
       passed: [bosh-testflight]

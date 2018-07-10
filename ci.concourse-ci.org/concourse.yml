@@ -427,6 +427,7 @@ jobs:
     - get: gcp-xenial-stemcell
       trigger: true
       passed: [bosh-rc]
+    - get: gcp-trusty-stemcell
     - get: final-release
     - get: concourse-bosh-deployment-master
   - put: delete-downgrade-deployment
@@ -470,7 +471,7 @@ jobs:
       resource: downgrade-deployment
       params:
         manifest: concourse-bosh-deployment-master/cluster/concourse.yml
-        stemcells: [gcp-xenial-stemcell/*.tgz]
+        stemcells: [gcp-trusty-stemcell/*.tgz]
         releases:
         - garden-runc/*.tgz
         - postgres-release/*.tgz

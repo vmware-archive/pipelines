@@ -240,7 +240,7 @@ jobs:
         globs: [fly_*]
     - get: postgres-release
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       trigger: true
     - get: concourse-bosh-deployment
       trigger: true
@@ -317,7 +317,7 @@ jobs:
     - get: postgres-release
       trigger: true
       passed: [bosh-rc]
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       trigger: true
       passed: [bosh-rc]
     - get: concourse-bosh-deployment
@@ -336,7 +336,7 @@ jobs:
     resource: upgrade-deployment
     params:
       manifest: concourse-bosh-deployment-master/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -365,7 +365,7 @@ jobs:
     resource: upgrade-deployment
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -423,7 +423,7 @@ jobs:
     - get: concourse-bosh-deployment
       trigger: true
       passed: [bosh-rc]
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       trigger: true
       passed: [bosh-rc]
     - get: final-release
@@ -439,7 +439,7 @@ jobs:
     resource: downgrade-deployment
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -469,7 +469,7 @@ jobs:
       resource: downgrade-deployment
       params:
         manifest: concourse-bosh-deployment-master/cluster/concourse.yml
-        stemcells: [gcp-stemcell/*.tgz]
+        stemcells: [gcp-xenial-stemcell/*.tgz]
         releases:
         - garden-runc/*.tgz
         - postgres-release/*.tgz
@@ -558,7 +558,7 @@ jobs:
     - get: postgres-release
       passed: [bosh-rc]
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [bosh-rc]
       trigger: true
     - get: concourse-bosh-deployment
@@ -567,7 +567,7 @@ jobs:
   - put: wats-deployment
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -653,7 +653,7 @@ jobs:
     - get: postgres-release
       passed: [bosh-rc]
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [bosh-rc]
       trigger: true
     - get: concourse-bosh-deployment
@@ -662,7 +662,7 @@ jobs:
   - put: test-deployment
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -710,7 +710,7 @@ jobs:
     - get: postgres-release
       passed: [bosh-rc]
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [bosh-rc]
       trigger: true
     - get: git-server-release
@@ -722,7 +722,7 @@ jobs:
     input_mapping:
       concourse-release: bosh-rc
       garden-runc-release: garden-runc
-      stemcell: gcp-stemcell
+      stemcell: gcp-xenial-stemcell
     params:
       BOSH_ENVIRONMENT: bosh.concourse-ci.org
       BOSH_CLIENT: ((bosh_client.id))
@@ -758,7 +758,7 @@ jobs:
     - get: postgres-release
       passed: [bosh-testflight]
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [bosh-testflight]
       trigger: true
     - get: concourse-bosh-deployment
@@ -769,7 +769,7 @@ jobs:
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
       stemcells:
-      - gcp-stemcell/*.tgz
+      - gcp-xenial-stemcell/*.tgz
       - gcp-windows-stemcell/*.tgz
       releases:
       - garden-runc-release/*.tgz
@@ -1011,7 +1011,7 @@ jobs:
       passed: [bosh-deploy]
     - get: concourse-bosh-deployment
       passed: [bosh-deploy]
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [bosh-deploy]
     - get: bin-rc
       passed: [bin-smoke, bin-docker, bin-testflight]
@@ -1109,7 +1109,7 @@ jobs:
     - get: version
       passed: [shipit]
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [shipit]
     - get: bosh-virtualbox-cpi
     - get: concourse-bosh-deployment
@@ -1223,7 +1223,7 @@ jobs:
     - get: postgres-release
       passed: [bosh-rc]
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [bosh-rc]
       trigger: true
     - get: concourse-bosh-deployment
@@ -1232,7 +1232,7 @@ jobs:
   - put: wats-deployment-periodic
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -1314,7 +1314,7 @@ jobs:
     - get: postgres-release
       passed: [bosh-rc]
       trigger: true
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
       passed: [bosh-rc]
       trigger: true
     - get: concourse-bosh-deployment
@@ -1323,7 +1323,7 @@ jobs:
   - put: watsjs-deployment-periodic
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -1508,7 +1508,7 @@ resources:
     pre_release: true
     access_token: ((concourse_github_release.access_token))
 
-- name: gcp-stemcell
+- name: gcp-xenial-stemcell
   type: bosh-io-stemcell
   source:
     name: bosh-google-kvm-ubuntu-xenial-go_agent

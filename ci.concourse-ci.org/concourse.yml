@@ -295,7 +295,7 @@ jobs:
       globs: [release/artifacts/*]
 
 - name: bosh-upgrade
-  serial_groups: [bosh-upgrade]
+  serial: true
   plan:
   - aggregate:
     - get: concourse
@@ -496,7 +496,7 @@ jobs:
 
 - name: bosh-testflight
   public: true
-  serial_groups: [bosh-testflight]
+  serial: true
   plan:
   - aggregate:
     - get: concourse

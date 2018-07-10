@@ -1283,13 +1283,6 @@ jobs:
     params:
       ATC_URL: "http://10.244.20.2:8080"
     timeout: 1h
-  - task: watsjs
-    file: concourse/ci/watsjs.yml
-    params:
-      ATC_URL: "http://10.244.20.2:8080"
-      ATC_USERNAME: "test9"
-      ATC_PASSWORD: "test9"
-    timeout: 1h
 
 - name: bosh-watsjs-periodic
   public: true

@@ -14,7 +14,7 @@ groups:
   - bin-rc
   - bosh-rc
   - bosh-testflight
-  - bosh-wats
+  - bosh-watsjs
   - bosh-upgrade
   - bosh-downgrade
   - bin-testflight
@@ -537,9 +537,8 @@ jobs:
       ATC_PASSWORD: "test"
     timeout: 1h
 
-- name: bosh-wats
+- name: bosh-watsjs
   public: true
-  serial_groups: [bosh-wats]
   plan:
   - aggregate:
     - get: concourse
@@ -612,11 +611,11 @@ jobs:
         - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
         - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
         - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
-  - task: wats
-    file: concourse/ci/wats.yml
-    params:
-      ATC_URL: "http://10.244.19.2:8080"
-    timeout: 1h
+  # - task: wats
+  #   file: concourse/ci/wats.yml
+  #   params:
+  #     ATC_URL: "http://10.244.19.2:8080"
+  #   timeout: 1h
   - task: watsjs
     file: concourse/ci/watsjs.yml
     params:
@@ -624,13 +623,15 @@ jobs:
       ATC_USERNAME: "test9"
       ATC_PASSWORD: "test9"
     timeout: 1h
-  - task: lengthy-output
-    file: concourse/ci/lengthy-output.yml
-    params:
-      ATC_URL: "http://10.244.19.2:8080"
-      ATC_USERNAME: "test10"
-      ATC_PASSWORD: "test10"
-    timeout: 1h
+  # XXX: this should actually be a separate job, since we have metrics tied up
+  # to it.
+  # - task: lengthy-output
+  #   file: concourse/ci/lengthy-output.yml
+  #   params:
+  #     ATC_URL: "http://10.244.19.2:8080"
+  #     ATC_USERNAME: "test10"
+  #     ATC_PASSWORD: "test10"
+  #   timeout: 1h
 
 - name: bosh-testflight
   public: true
@@ -742,7 +743,7 @@ jobs:
   - aggregate:
     - get: concourse
       params: {submodules: none}
-      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-topgun, bosh-wats]
+      passed: [bosh-testflight, bosh-upgrade, bosh-downgrade, bosh-topgun, bosh-watsjs]
       trigger: true
     - get: version
       passed: [bosh-testflight]

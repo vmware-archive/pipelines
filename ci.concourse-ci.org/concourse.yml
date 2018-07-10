@@ -320,6 +320,7 @@ jobs:
     - get: gcp-xenial-stemcell
       trigger: true
       passed: [bosh-rc]
+    - get: gcp-trusty-stemcell
     - get: concourse-bosh-deployment
       trigger: true
       passed: [bosh-rc]
@@ -336,7 +337,7 @@ jobs:
     resource: upgrade-deployment
     params:
       manifest: concourse-bosh-deployment-master/cluster/concourse.yml
-      stemcells: [gcp-xenial-stemcell/*.tgz]
+      stemcells: [gcp-trusty-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz
@@ -1512,6 +1513,13 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-google-kvm-ubuntu-xenial-go_agent
+
+# XXX: remove this once we ship 4.0.0 and don't need to test this upgrade path
+# anymore
+- name: gcp-trusty-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: bosh-google-kvm-ubuntu-trusty-go_agent
 
 - name: gcp-windows-stemcell
   type: bosh-io-stemcell

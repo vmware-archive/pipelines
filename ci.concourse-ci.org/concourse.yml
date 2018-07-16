@@ -1293,14 +1293,6 @@ resources:
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 
-- name: downgrade-deployment
-  type: bosh-deployment
-  source:
-    target: ((bosh_target))
-    deployment: concourse-test-downgrade
-    client: ((bosh_client.id))
-    client_secret: ((bosh_client.secret))
-
 - name: test-deployment
   type: bosh-deployment
   source:

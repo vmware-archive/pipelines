@@ -398,15 +398,6 @@ jobs:
       ATC_PASSWORD: "test"
     timeout: 1h
 
-  - task: testflight
-    file: final-release-concourse/ci/testflight.yml
-    input_mapping: {concourse: final-release-concourse}
-    params:
-      ATC_URL: "http://10.244.17.2:8080"
-      ATC_USERNAME: "test"
-      ATC_PASSWORD: "test"
-    timeout: 1h
-
 - name: bosh-watsjs
   public: true
   plan:

@@ -656,6 +656,7 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/untrusted-worker.yml
       - concourse-bosh-deployment/cluster/operations/windows-worker.yml
       - concourse-bosh-deployment/cluster/operations/telegraf-postgres.yml
+      - concourse-bosh-deployment/cluster/operations/syslog_forwarder.yml
       vars:
         deployment_name: concourse-prod
         web_instances: 2
@@ -675,6 +676,9 @@ jobs:
         windows_worker_tsa_host: ci.concourse-ci.org:2222
         windows_worker_os: windows2016
         windows_worker_vm_type: worker
+        syslog_address: logs2.papertrailapp.com
+        syslog_port: 51403
+        syslog_permitted_peer: "*.papertrailapp.com"
 
 - name: prop-deploy
   public: true

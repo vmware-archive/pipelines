@@ -657,6 +657,8 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/windows-worker.yml
       - concourse-bosh-deployment/cluster/operations/telegraf-postgres.yml
       - concourse-bosh-deployment/cluster/operations/syslog_forwarder.yml
+      vars_files:
+      - concourse-bosh-deployment/versions.yml
       vars:
         deployment_name: concourse-prod
         web_instances: 2

@@ -39,6 +39,7 @@ groups:
 
 - name: periodic
   jobs:
+  - bosh-testflight-periodic
   - bosh-wats-periodic
   - bosh-watsjs-periodic
 
@@ -1070,6 +1071,72 @@ jobs:
   - put: concourse-head
     params: {repository: bumped-concourse, rebase: true}
 
+- name: bosh-testflight-periodic
+  public: true
+  serial: true
+  build_logs_to_retain: 1000
+  plan:
+  - aggregate:
+    - get: 20m
+      trigger: true
+    - get: concourse
+      passed: [bosh-rc]
+      trigger: true
+    - get: bosh-rc
+      passed: [bosh-rc]
+      trigger: true
+    - get: version
+      passed: [bosh-rc]
+      trigger: true
+    - get: garden-runc
+      passed: [bosh-rc]
+      trigger: true
+    - get: fly-rc
+      passed: [bosh-rc]
+      trigger: true
+    - get: postgres-release
+      passed: [bosh-rc]
+      trigger: true
+    - get: gcp-xenial-stemcell
+      passed: [bosh-rc]
+      trigger: true
+    - get: concourse-bosh-deployment
+      passed: [bosh-rc]
+      trigger: true
+  - put: test-deployment-periodic
+    params:
+      manifest: concourse-bosh-deployment/cluster/concourse.yml
+      stemcells: [gcp-xenial-stemcell/*.tgz]
+      releases:
+      - garden-runc/*.tgz
+      - postgres-release/*.tgz
+      - bosh-rc/concourse-*.tgz
+      ops_files:
+      - concourse-bosh-deployment/cluster/operations/dev-versions.yml
+      - concourse-bosh-deployment/cluster/operations/add-local-users.yml
+      - concourse-bosh-deployment/cluster/operations/influxdb.yml
+      - concourse-bosh-deployment/cluster/operations/static-web.yml
+      vars:
+        deployment_name: concourse-test-periodic
+        web_ip: 10.244.22.2
+        external_url: "http://10.244.22.2:8080"
+        network_name: testflight
+        web_vm_type: testflight
+        db_vm_type: testflight
+        worker_vm_type: testflight
+        db_persistent_disk_type: small
+        main_team_local_users:
+        - test1
+        add_local_users:
+        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e'
+  - task: testflight
+    file: concourse/ci/testflight.yml
+    params:
+      ATC_URL: "http://10.244.22.2:8080"
+      ATC_USERNAME: "test1"
+      ATC_PASSWORD: "test1"
+    timeout: 1h
+
 - name: bosh-wats-periodic
   public: true
   serial: true
@@ -1306,6 +1373,14 @@ resources:
   source:
     target: ((bosh_target))
     deployment: concourse-wats
+    client: ((bosh_client.id))
+    client_secret: ((bosh_client.secret))
+
+- name: test-deployment-periodic
+  type: bosh-deployment
+  source:
+    target: ((bosh_target))
+    deployment: concourse-test-periodic
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 

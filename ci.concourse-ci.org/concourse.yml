@@ -629,6 +629,7 @@ jobs:
       passed: [bosh-testflight]
       trigger: true
     - get: gcp-windows-stemcell
+    - get: bbr-sdk-release
   - put: prod-deployment
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
@@ -639,6 +640,7 @@ jobs:
       - garden-runc-release/*.tgz
       - postgres-release/*.tgz
       - bosh-rc/concourse-*.tgz
+      - bbr-sdk-release/*.tgz
       ops_files:
       - concourse-bosh-deployment/cluster/operations/scale.yml
       - concourse-bosh-deployment/cluster/operations/dev-versions.yml
@@ -657,6 +659,7 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/windows-worker.yml
       - concourse-bosh-deployment/cluster/operations/telegraf-postgres.yml
       - concourse-bosh-deployment/cluster/operations/syslog_forwarder.yml
+      - concourse-bosh-deployment/cluster/operations/backup-atc.yml
       vars_files:
       - concourse-bosh-deployment/versions.yml
       vars:
@@ -1353,6 +1356,11 @@ resources:
   type: bosh-io-release
   source:
     repository: pivotal-cf/credhub-release
+
+- name: bbr-sdk-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-incubator/backup-and-restore-sdk-release
 
 - name: fly-rc
   type: github-release

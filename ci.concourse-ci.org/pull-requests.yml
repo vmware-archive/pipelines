@@ -23,10 +23,10 @@ resources:
     branch: develop
     private_key: ((concourse_deployment_repo_private_key))
 
-- name: gcp-stemcell
+- name: gcp-xenial-stemcell
   type: bosh-io-stemcell
   source:
-    name: bosh-google-kvm-ubuntu-trusty-go_agent
+    name: bosh-google-kvm-ubuntu-xenial-go_agent
 
 - name: fly
   type: pull-request
@@ -183,7 +183,7 @@ jobs:
       version: every
     - get: garden-runc
     - get: postgres-release
-    - get: gcp-stemcell
+    - get: gcp-xenial-stemcell
     - get: concourse-bosh-deployment
   - put: delete-web-pr-deployment
     resource: web-pr-bosh-deployment
@@ -200,7 +200,7 @@ jobs:
   - put: web-pr-bosh-deployment
     params:
       manifest: concourse-bosh-deployment/cluster/concourse.yml
-      stemcells: [gcp-stemcell/*.tgz]
+      stemcells: [gcp-xenial-stemcell/*.tgz]
       releases:
       - garden-runc/*.tgz
       - postgres-release/*.tgz

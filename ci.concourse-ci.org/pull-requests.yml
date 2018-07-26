@@ -63,7 +63,6 @@ resources:
     base: master
     access_token: ((pull_requests_access_token))
     every: true
-    require_review_approval: true
 
 - name: garden-runc
   type: bosh-io-release
@@ -174,6 +173,7 @@ jobs:
 
 - name: web
   public: true
+  serial: true
   plan:
   - aggregate:
     - get: concourse

@@ -801,6 +801,7 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/telegraf-postgres.yml
       - concourse-bosh-deployment/cluster/operations/syslog_forwarder.yml
       - concourse-bosh-deployment/cluster/operations/backup-atc.yml
+      - concourse-bosh-deployment/cluster/operations/worker-forward-registration-mode.yml
       vars_files:
       - concourse-bosh-deployment/versions.yml
       vars:

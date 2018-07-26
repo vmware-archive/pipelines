@@ -13,7 +13,7 @@ jobs:
         manifest: deployments/prod/deployments/wings.yml
         stemcells: [gcp-xenial-stemcell/*.tgz]
         releases:
-        - concourse-release/concourse-*.tgz
+        - concourse-release/*.tgz
         - garden-runc/*.tgz
 
   - name: prepare-nightly

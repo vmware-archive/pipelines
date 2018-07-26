@@ -479,7 +479,6 @@ jobs:
         - concourse-bosh-deployment-master/cluster/operations/dev-versions.yml
         - concourse-bosh-deployment-master/cluster/operations/default-test-user.yml
         - concourse-bosh-deployment-master/cluster/operations/static-web.yml
-        - concourse-bosh-deployment/cluster/operations/update-stemcell.yml
         vars:
           deployment_name: concourse-test-downgrade
           web_ip: 10.244.17.2

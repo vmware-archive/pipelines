@@ -3,18 +3,18 @@ jobs:
     serial_groups: [deploy]
     plan:
     - aggregate:
-      - get: github-release
-      - get: bosh-stemcell
-        resource: gcp-stemcell
+      - get: concourse-release
+      - get: garden-runc
+      - get: gcp-xenial-stemcell
       - get: deployments
     - put: wings-deployment
       params:
         cleanup: true
         manifest: deployments/prod/deployments/wings.yml
-        stemcells: [bosh-stemcell/*.tgz]
+        stemcells: [gcp-xenial-stemcell/*.tgz]
         releases:
-          - github-release/concourse-*.tgz
-          - github-release/garden-runc-*.tgz
+        - concourse-release/concourse-*.tgz
+        - garden-runc/*.tgz
 
   - name: prepare-nightly
     serial_groups: [deploy]
@@ -22,8 +22,7 @@ jobs:
     - aggregate:
       - get: nightly-release
       - get: garden-runc
-      - get: bosh-stemcell
-        resource: gcp-stemcell
+      - get: gcp-xenial-stemcell
       - get: deployments
       - get: from-commit
         resource: last-deployment
@@ -50,8 +49,7 @@ jobs:
         passed: [prepare-nightly]
       - get: garden-runc
         passed: [prepare-nightly]
-      - get: bosh-stemcell
-        resource: gcp-stemcell
+      - get: gcp-xenial-stemcell
         passed: [prepare-nightly]
       - get: deployments
         passed: [prepare-nightly]
@@ -65,7 +63,7 @@ jobs:
         - garden-runc/*.tgz
         - nightly-release/concourse-*.tgz
         stemcells:
-        - bosh-stemcell/*.tgz
+        - gcp-xenial-stemcell/*.tgz
     - put: last-deployment
       params:
         file: latest-nightly/ref
@@ -83,17 +81,10 @@ resources:
     client: ((bosh_client.id))
     client_secret: ((bosh_client.secret))
 
-- name: github-release
-  type: github-release
-  source:
-    access_token: ((concourse_github_release.access_token))
-    repository: concourse
-    user: concourse
-
-- name: gcp-stemcell
+- name: gcp-xenial-stemcell
   type: bosh-io-stemcell
   source:
-    name: bosh-google-kvm-ubuntu-trusty-go_agent
+    name: bosh-google-kvm-ubuntu-xenial-go_agent
 
 - name: deployments
   type: git
@@ -114,11 +105,15 @@ resources:
   source:
     repository: cloudfoundry/garden-runc-release
 
+- name: concourse-release
+  type: bosh-io-release
+  source:
+    repository: concourse/concourse
+
 - name: notify-concourse-wings
   type: slack-notification
   source:
     url: ((wings_webhook_url))
-
 
 - name: latest-nightly
   type: s3

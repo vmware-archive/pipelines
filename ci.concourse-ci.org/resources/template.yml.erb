@@ -134,6 +134,7 @@ jobs:
     params: {rootfs: true}
     trigger: true
   - get: concourse
+    params: {submodules: none}
   - task: bump-package
     file: concourse/ci/bump-resource-package.yml
     params:
@@ -141,4 +142,5 @@ jobs:
       BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
   - put: concourse
     params: {repository: bumped-concourse, rebase: true}
+    get_params: {submodules: none}
 <% end %>

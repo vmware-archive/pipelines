@@ -102,6 +102,7 @@ jobs:
     params:
       rootfs: true
   - get: concourse
+    params: {submodules: none}
   - task: bump-package
     file: concourse/ci/bump-resource-package.yml
     params:
@@ -111,3 +112,4 @@ jobs:
     params:
       rebase: true
       repository: bumped-concourse
+    get_params: {submodules: none}

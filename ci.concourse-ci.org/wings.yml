@@ -142,12 +142,11 @@ resources:
 
 resource_types:
 - name: bosh-deployment
-  type: docker-image
+  type: registry-image
   source:
     repository: cloudfoundry/bosh-deployment-resource
 
 - name: slack-notification
-  type: docker-image
+  type: registry-image
   source:
     repository: cfcommunity/slack-notification-resource
-    tag: latest

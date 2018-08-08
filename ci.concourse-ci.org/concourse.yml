@@ -509,7 +509,7 @@ jobs:
     config:
       platform: linux
       image_resource:
-        type: docker-image
+        type: registry-image
         source:
           repository: concourse/atc-ci
       inputs:
@@ -1699,13 +1699,13 @@ resources:
     branch: develop
 
 - name: ubuntu-image
-  type: docker-image
+  type: registry-image
   source:
     repository: ubuntu
     tag: '16.04'
 
 - name: postgres-image
-  type: docker-image
+  type: registry-image
   source:
     repository: postgres
     tag: latest
@@ -1746,6 +1746,6 @@ resources:
 
 resource_types:
 - name: bosh-deployment
-  type: docker-image
+  type: registry-image
   source:
     repository: cloudfoundry/bosh-deployment-resource

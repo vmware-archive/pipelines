@@ -1,9 +1,8 @@
 resource_types:
 - name: concourse-pipeline
-  type: docker-image
+  type: registry-image
   source:
     repository: concourse/concourse-pipeline-resource
-    tag: v4.0-pre # remove once we've built + published after shipping
 
 resources:
 - name: pipelines

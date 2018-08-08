@@ -283,7 +283,7 @@ jobs:
     config:
       platform: linux
       image_resource:
-        type: docker-image
+        type: registry-image
         source: {repository: ubuntu}
       inputs:
       - name: bosh-cli
@@ -334,7 +334,7 @@ jobs:
     config:
       platform: linux
       image_resource:
-        type: docker-image
+        type: registry-image
         source: {repository: ubuntu}
       inputs:
       - name: golang-1.x-tarball
@@ -386,7 +386,7 @@ jobs:
     config:
       platform: linux
       image_resource:
-        type: docker-image
+        type: registry-image
         source: {repository: ubuntu}
       inputs:
       - name: golang-1.x-tarball
@@ -436,7 +436,7 @@ jobs:
     config:
       platform: linux
       image_resource:
-        type: docker-image
+        type: registry-image
         source: {repository: ubuntu}
       inputs:
       - name: golang-1.x-tarball

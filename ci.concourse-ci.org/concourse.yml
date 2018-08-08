@@ -904,7 +904,7 @@ jobs:
       ACCESS_TOKEN: ((digitalocean.access_token))
       SSH_USER: ((digitalocean.ssh_user))
       SSH_KEY: ((digitalocean.ssh_key))
-      IMAGE: ubuntu-16-04-x64
+      IMAGE: ubuntu-18-04-x64
       SIZE: 2gb
   - task: create-droplet
     file: concourse/src/github.com/concourse/bin/ci/smoke-tests/create-droplet.yml

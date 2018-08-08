@@ -1,7 +1,7 @@
 ---
 resource_types:
 - name: cron
-  type: docker-image
+  type: registry-image
   source: {repository: cftoolsmiths/cron-test}
   tags: [tagged]
 

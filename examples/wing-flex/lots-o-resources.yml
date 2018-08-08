@@ -1,48 +1,48 @@
 resources:
   - name: git-resource-image
-    type: docker-image
+    type: registry-image
     check_every: 1s
     source:
       repository: concourse/git-resource
 
   - name: s3-resource-image
-    type: docker-image
+    type: registry-image
     check_every: 1s
     source:
       repository: concourse/s3-resource
 
   - name: time-resource-image
-    type: docker-image
+    type: registry-image
     check_every: 1s
     source:
       repository: concourse/time-resource
 
   - name: semver-resource-image
-    type: docker-image
+    type: registry-image
     check_every: 1s
     source:
       repository: concourse/semver-resource
 
-  - name: docker-image-resource-image
-    type: docker-image
+  - name: registry-image-resource-image
+    type: registry-image
     check_every: 1s
     source:
-      repository: concourse/docker-image-resource
+      repository: concourse/registry-image-resource
 
   - name: tracker-resource-image
-    type: docker-image
+    type: registry-image
     check_every: 1s
     source:
       repository: concourse/tracker-resource
 
   - name: cf-resource-image
-    type: docker-image
+    type: registry-image
     check_every: 1s
     source:
       repository: concourse/cf-resource
 
   - name: archive-resource-image
-    type: docker-image
+    type: registry-image
     check_every: 1s
     source:
       repository: concourse/archive-resource
@@ -54,7 +54,7 @@ jobs:
       - get: s3-resource-image
       - get: time-resource-image
       - get: semver-resource-image
-      - get: docker-image-resource-image
+      - get: registry-image-resource-image
       - get: tracker-resource-image
       - get: cf-resource-image
       - get: archive-resource-image

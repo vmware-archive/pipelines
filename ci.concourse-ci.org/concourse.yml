@@ -942,10 +942,10 @@ jobs:
       passed: [bin-rc]
       trigger: true
     - get: ubuntu-image
-      params: {save: true}
+      params: {format: oci}
       trigger: true
     - get: postgres-image
-      params: {save: true}
+      params: {format: oci}
     - get: fly-rc
       passed: [bin-rc]
   - task: build-root

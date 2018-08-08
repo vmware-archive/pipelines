@@ -1,0 +1,89 @@
+resources:
+- name: resource-pr
+  type: pull-request
+  source:
+    repo: concourse/concourse-pipeline-resource
+    base: master
+    access_token: ((pull_requests_access_token))
+
+- name: resource-repo
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse-pipeline-resource
+
+- name: alpine-edge
+  type: docker-image
+  source:
+    repository: alpine
+    tag: edge
+
+- name: resource-image
+  type: docker-image
+  source:
+    repository: concourse/concourse-pipeline-resource
+    username: ((docker.username))
+    password: ((docker.password))
+
+- name: fly
+  type: github-release
+  check_every: 1h
+  source:
+    user: concourse
+    repository: concourse
+    access_token: ((concourse_github_dummy.access_token))
+
+resource_types:
+- name: pull-request
+  type: registry-image
+  source: {repository: jtarchie/pr}
+
+jobs:
+- name: build
+  plan:
+  - get: concourse-pipeline-resource
+    resource: resource-repo
+    trigger: true
+  - get: alpine-edge
+    trigger: true
+    params: {save: true}
+  - get: fly
+    params: {globs: [fly_linux_amd64]}
+  - put: resource-image
+    params:
+      build: .
+      dockerfile: concourse-pipeline-resource/Dockerfile
+      load_base: alpine-edge
+      additional_tags: fly/version
+
+- name: prs
+  public: true
+  serial: true
+  plan:
+  - get: resource-pr
+    trigger: true
+    version: every
+  - get: alpine-edge
+    trigger: true
+    params: {save: true}
+  - put: resource-pr-merged
+    resource: resource-pr
+    params:
+      path: resource-pr
+      status: pending
+    get_params: {fetch_merge: true}
+  - put: resource-image
+    params:
+      build: resource-pr-merged
+      load_base: alpine-edge
+      tag: resource-pr/.git/id
+      tag_prefix: pr-
+    on_failure:
+      put: resource-pr
+      params:
+        path: resource-pr
+        status: failure
+    on_success:
+      put: resource-pr
+      params:
+        path: resource-pr
+        status: success

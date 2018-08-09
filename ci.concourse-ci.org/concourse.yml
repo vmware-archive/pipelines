@@ -23,6 +23,7 @@ groups:
   - bosh-topgun
   - bosh-deploy
   - prop-deploy
+  - check-helm-chart-params
   - k8s-testflight
 
 - name: publish
@@ -969,7 +970,7 @@ jobs:
       tag: version/version
       tag_as_latest: true
 
-- name: k8s-testflight
+- name: check-helm-chart-params
   serial: true
   public: true
   plan:
@@ -979,6 +980,23 @@ jobs:
       trigger: true
     - get: version
       passed: [bin-docker]
+      trigger: true
+    - get: k8s-helm-chart
+      trigger: true
+  - task: check-helm-chart-params
+    file: concourse/ci/check-helm-chart-params.yml
+    input_mapping: {helm-chart: k8s-helm-chart}
+
+- name: k8s-testflight
+  serial: true
+  public: true
+  plan:
+  - aggregate:
+    - get: concourse
+      passed: [check-helm-chart-params]
+      trigger: true
+    - get: version
+      passed: [check-helm-chart-params]
       trigger: true
     - get: k8s-helm-chart
       trigger: true

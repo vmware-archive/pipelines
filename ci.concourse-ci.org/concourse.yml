@@ -965,7 +965,7 @@ jobs:
     timeout: 1h
   - put: concourse-image-rc
     params:
-      load_file: concourse-image/image
+      load_file: concourse-image/image.tar
       load_repository: concourse
       tag: version/version
       tag_as_latest: true

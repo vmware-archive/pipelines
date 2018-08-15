@@ -801,6 +801,7 @@ jobs:
       - concourse-bosh-deployment/cluster/operations/syslog_forwarder.yml
       - concourse-bosh-deployment/cluster/operations/backup-atc.yml
       - concourse-bosh-deployment/cluster/operations/worker-forward-registration-mode.yml
+      - concourse-bosh-deployment/cluster/operations/task-limits.yml
       vars_files:
       - concourse-bosh-deployment/versions.yml
       vars:
@@ -825,6 +826,8 @@ jobs:
         syslog_address: logs2.papertrailapp.com
         syslog_port: 51403
         syslog_permitted_peer: "*.papertrailapp.com"
+        default_task_memory_limit: 1GB
+        default_task_cpu_limit: 1024
 
 - name: prop-deploy
   public: true

@@ -1185,6 +1185,7 @@ jobs:
   plan:
   - aggregate:
     - get: concourse
+      params: {submodules: none}
     - get: golang-windows
   - task: install-go
     file: concourse/ci/install-go-windows.yml

@@ -47,7 +47,7 @@ groups:
 
 - name: workers
   jobs:
-  - install-go-windows
+  - install-windows-deps
 
 - name: dependencies
   jobs:
@@ -1181,7 +1181,7 @@ jobs:
       tag: version/version
       tag_as_latest: true
 
-- name: install-go-windows
+- name: install-windows-deps
   plan:
   - aggregate:
     - get: concourse
@@ -1189,7 +1189,11 @@ jobs:
   - task: install-go
     file: concourse/ci/install-go-windows.yml
   - task: install-git
-    file: concourse/ci/install-git-windows.yml
+    file: concourse/ci/choco-install.yml
+    params: {PACKAGE: git}
+  - task: install-mingw
+    file: concourse/ci/choco-install.yml
+    params: {PACKAGE: mingw}
 
 - name: bump-btrfs
   serial: true

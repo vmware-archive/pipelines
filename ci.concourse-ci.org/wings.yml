@@ -6,11 +6,11 @@ jobs:
       - get: concourse-release
       - get: garden-runc
       - get: gcp-xenial-stemcell
-      - get: deployments
+      - get: prod
     - put: wings-deployment
       params:
         cleanup: true
-        manifest: deployments/prod/deployments/wings.yml
+        manifest: prod/deployments/wings.yml
         stemcells: [gcp-xenial-stemcell/*.tgz]
         releases:
         - concourse-release/*.tgz
@@ -23,7 +23,7 @@ jobs:
       - get: nightly-release
       - get: garden-runc
       - get: gcp-xenial-stemcell
-      - get: deployments
+      - get: prod
       - get: from-commit
         resource: last-deployment
       - get: to-commit
@@ -51,14 +51,14 @@ jobs:
         passed: [prepare-nightly]
       - get: gcp-xenial-stemcell
         passed: [prepare-nightly]
-      - get: deployments
+      - get: prod
         passed: [prepare-nightly]
       - get: latest-nightly
         passed: [prepare-nightly]
     - put: wings-deployment
       params:
         cleanup: true
-        manifest: deployments/prod/deployments/wings.yml
+        manifest: prod/deployments/wings.yml
         releases:
         - garden-runc/*.tgz
         - nightly-release/concourse-*.tgz
@@ -86,12 +86,11 @@ resources:
   source:
     name: bosh-google-kvm-ubuntu-xenial-go_agent
 
-- name: deployments
+- name: prod
   type: git
   source:
-    uri: git@github.com:concourse/deployments.git
+    uri: https://github.com/concourse/prod
     branch: master
-    private_key: ((deployments_repo_private_key))
 
 - name: nightly-release
   type: s3

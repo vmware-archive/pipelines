@@ -90,14 +90,9 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-  - aggregate:
-    - task: check-bindata
-      file: concourse/ci/check-bindata.yml
-      params:
-        REPO: atc
-    - task: go-unit
-      file: concourse/ci/atc-go.yml
-      privileged: true
+  - task: go-unit
+    file: concourse/ci/atc-go.yml
+    privileged: true
 
 - name: baggageclaim
   public: true
@@ -125,10 +120,6 @@ jobs:
   - get: concourse
     trigger: true
   - aggregate:
-    - task: check-bindata
-      file: concourse/ci/check-bindata.yml
-      params:
-        REPO: web
     - task: build
       file: concourse/ci/web.yml
     - task: elm-unit

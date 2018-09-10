@@ -611,8 +611,8 @@ jobs:
     file: concourse/ci/watsjs.yml
     params:
       ATC_URL: "http://10.244.19.2:8080"
-      ATC_USERNAME: "test9"
-      ATC_PASSWORD: "test9"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
   # XXX: this should actually be a separate job, since we have metrics tied up
   # to it.

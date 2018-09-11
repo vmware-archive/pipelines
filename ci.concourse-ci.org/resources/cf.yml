@@ -1,0 +1,115 @@
+groups: []
+resources:
+- name: cf-cli
+  type: s3
+  source:
+    bucket: cf-cli-releases
+    regexp: releases/v([\d\.]+)/cf-cli_.*_linux_x86-64.tgz
+    region_name: us-west-1
+- name: resource-image
+  type: docker-image
+  source:
+    password: ((docker.password))
+    repository: concourse/cf-resource
+    username: ((docker.username))
+- name: alpine-edge
+  type: docker-image
+  source:
+    repository: alpine
+    tag: edge
+- name: resource-repo
+  type: git
+  source:
+    uri: https://github.com/concourse/cf-resource
+- name: resource-pr
+  type: pull-request
+  source:
+    access_token: ((pull_requests_access_token))
+    base: master
+    private_key: ((concourse_repo_private_key))
+    repo: concourse/cf-resource
+- name: concourse
+  type: git
+  source:
+    branch: master
+    private_key: ((concourse_repo_private_key))
+    uri: git@github.com:concourse/concourse.git
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+jobs:
+- name: build
+  plan:
+  - get: resource-repo
+    trigger: true
+  - get: alpine-edge
+    trigger: true
+    params:
+      save: true
+  - get: cf-cli
+    trigger: true
+    params:
+      globs:
+      - cf-cli*linux*
+  - put: resource-image
+    params:
+      build: resource-repo
+      load_base: alpine-edge
+- name: ship
+  plan:
+  - get: resource-repo
+    passed:
+    - build
+    trigger: true
+  - get: resource-image
+    passed:
+    - build
+    trigger: true
+    params:
+      rootfs: true
+  - get: concourse
+  - task: bump-package
+    file: concourse/ci/bump-resource-package.yml
+    params:
+      BOSH_PRIVATE_CONFIG: ((concourse_release_private_config))
+      RESOURCE_NAME: cf-resource
+  - put: concourse
+    params:
+      rebase: true
+      repository: bumped-concourse
+- name: prs
+  serial: true
+  plan:
+  - get: resource-pr
+    trigger: true
+    params:
+      fetch_merge: true
+    version: every
+  - get: pr-for-statuses
+    resource: resource-pr
+  - get: alpine-edge
+    params:
+      save: true
+  - put: resource-pr
+    params:
+      path: pr-for-statuses
+      status: pending
+    get_params:
+      fetch_merge: true
+  - put: resource-image
+    params:
+      build: resource-pr
+      load_base: alpine-edge
+      tag: resource-pr/.git/id
+      tag_prefix: pr-
+    on_failure:
+      put: resource-pr
+      params:
+        path: pr-for-statuses
+        status: failure
+  - put: resource-pr
+    params:
+      path: pr-for-statuses
+      status: success

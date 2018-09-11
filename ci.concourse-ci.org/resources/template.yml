@@ -1,0 +1,171 @@
+---
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
+resources:
+- name: alpine-edge
+  type: docker-image
+  source:
+    repository: alpine
+    tag: edge
+
+- name: resource-repo
+  type: git
+  source:
+    uri: git@github.com:concourse/((resource))-resource
+    branch: master
+    private_key: ((concourse_bot_private_key))
+
+- name: version
+  type: semver
+  source:
+    driver: git
+    initial_version: 1.0.0
+    uri: git@github.com:concourse/((resource))-resource
+    branch: version
+    file: version
+    private_key: ((concourse_bot_private_key))
+
+- name: resource-pr
+  type: pull-request
+  source:
+    repo: concourse/((resource))-resource
+    base: master
+    access_token: ((pull_requests_access_token))
+
+- name: resource-image-latest
+  type: docker-image
+  source:
+    repository: concourse/((resource))-resource
+    tag: dev
+    username: ((docker.username))
+    password: ((docker.password))
+
+- name: resource-image-dev
+  type: docker-image
+  source:
+    repository: concourse/((resource))-resource
+    tag: latest
+    username: ((docker.username))
+    password: ((docker.password))
+
+jobs:
+- name: build
+  plan:
+  - get: resource-repo
+    trigger: true
+  - get: alpine-edge
+    params: {save: true}
+    trigger: true
+  - put: resource-image-dev
+    params:
+      load_base: alpine-edge
+      build: resource-repo
+
+- name: prs
+  serial: true
+  public: true
+  plan:
+  - get: resource-pr
+    trigger: true
+    params: {fetch_merge: true}
+    version: every
+  - get: pr-for-statuses
+    resource: resource-pr
+  - get: alpine-edge
+    params: {save: true}
+    trigger: true
+  - put: resource-pr
+    params: {path: pr-for-statuses, status: pending}
+    get_params: {fetch_merge: true}
+  - put: resource-image-dev
+    params:
+      load_base: alpine-edge
+      build: resource-pr
+      tag: resource-pr/.git/id
+      tag_prefix: pr-
+    on_failure:
+      put: resource-pr
+      params:
+        path: pr-for-statuses
+        status: failure
+    on_success:
+      put: resource-pr
+      params:
+        path: pr-for-statuses
+        status: success
+
+- name: major
+  plan:
+  - aggregate:
+    - get: resource-repo
+      passed: [build]
+    - get: resource-image-dev
+      passed: [build]
+      params: {save: true}
+    - get: version
+      params: {bump: major}
+  - aggregate:
+    - put: resource-image-latest
+      params:
+        load: resource-image-dev
+        additional_tags: version/version
+    - put: resource-repo
+      params:
+        repository: resource-repo
+        tag: version/version
+        tag_prefix: v
+        only_tag: true
+  - put: version
+    params: {file: version/version}
+
+- name: minor
+  plan:
+  - aggregate:
+    - get: resource-repo
+      passed: [build]
+    - get: resource-image-dev
+      passed: [build]
+      params: {save: true}
+    - get: version
+      params: {bump: patch}
+  - aggregate:
+    - put: resource-image-latest
+      params:
+        load: resource-image-dev
+        additional_tags: version/version
+    - put: resource-repo
+      params:
+        repository: resource-repo
+        tag: version/version
+        tag_prefix: v
+        only_tag: true
+  - put: version
+    params: {file: version/version}
+
+- name: patch
+  plan:
+  - aggregate:
+    - get: resource-repo
+      passed: [build]
+    - get: resource-image-dev
+      passed: [build]
+      params: {save: true}
+    - get: version
+      params: {bump: patch}
+  - aggregate:
+    - put: resource-image-latest
+      params:
+        load: resource-image-dev
+        additional_tags: version/version
+    - put: resource-repo
+      params:
+        repository: resource-repo
+        tag: version/version
+        tag_prefix: v
+        only_tag: true
+  - put: version
+    params: {file: version/version}

@@ -1,20 +1,25 @@
 #!/bin/bash
 
-set -eux
+set -eu
 
-resource=$1; shift
-params=${*:-"ship=true"}
+vanilla_resources="git time registry-image bosh-io-release bosh-io-stemcell tracker hg github-release semver pool"
+privileged_resources="docker-image"
+special_resources="s3 cf concourse-pipeline"
 
-usage() {
-  echo "usage: $0 <resource-name> [ship=true] [resources=fly|cf]"
-  exit 1
-}
+for r in $vanilla_resources; do
+  echo "--- configuring $r ---"
+  fly -t resources sp -p $r -c template.yml -v resource=$r -v privileged=false
+  echo ""
+done
 
-[ -n "$resource" ] || usage
+for r in $privileged_resources; do
+  echo "--- configuring $r ---"
+  fly -t resources sp -p $r -c template.yml -v resource=$r -v privileged=true
+  echo ""
+done
 
-if [ -e "$resource.yml" ]; then
-  fly -t resources set-pipeline -p "$resource" -c "$resource.yml"
-else
-  fly -t resources set-pipeline -p "$resource" -c <(erb $params template.yml.erb) -v resource="$resource"
-fi
-fly -t resources expose-pipeline -p "$resource"
+for r in $special_resources; do
+  echo "--- configuring $r ---"
+  fly -t resources sp -p $r -c $r.yml
+  echo ""
+done

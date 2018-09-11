@@ -1,4 +1,38 @@
 ---
+tasks:
+- &create_release_task
+  platform: linux
+
+  image_resource:
+    type: registry-image
+    source: {repository: ubuntu}
+
+  inputs:
+  - name: version
+  - name: resource-image-dev
+
+  outputs:
+  - name: release
+
+  run:
+    path: bash
+    args:
+    - -exc
+    - |
+      cat <<EOF > resource-image-dev/resource_metadata.json
+      {
+        "type": "((resource))",
+        "version": "$(cat version/number)",
+        "privileged": "((privileged))"
+      }
+      EOF
+
+      version="$(cat version/number)"
+      echo "v${version}" > release/name
+
+      cd resource-image-dev
+      tar -czf ../release/((resource))-resource-${version}.tgz rootfs resource_metadata.json
+
 resource_types:
 - name: pull-request
   type: docker-image
@@ -18,6 +52,13 @@ resources:
     uri: git@github.com:concourse/((resource))-resource
     branch: master
     private_key: ((concourse_bot_private_key))
+
+- name: resource-repo-release
+  type: github-release
+  source:
+    owner: concourse
+    repository: ((resource))-resource
+    access_token: ((concourse_bot_access_token))
 
 - name: version
   type: semver
@@ -108,17 +149,20 @@ jobs:
       params: {save: true}
     - get: version
       params: {bump: major}
+  - task: create-release
+    config: *create_release_task
   - aggregate:
     - put: resource-image-latest
       params:
         load: resource-image-dev
         additional_tags: version/version
-    - put: resource-repo
+    - put: resource-repo-release
       params:
-        repository: resource-repo
+        name: release/name
+        commitish: resource-repo/.git/ref
         tag: version/version
         tag_prefix: v
-        only_tag: true
+        globs: [release/*.tgz]
   - put: version
     params: {file: version/version}
 
@@ -132,17 +176,20 @@ jobs:
       params: {save: true}
     - get: version
       params: {bump: patch}
+  - task: create-release
+    config: *create_release_task
   - aggregate:
     - put: resource-image-latest
       params:
         load: resource-image-dev
         additional_tags: version/version
-    - put: resource-repo
+    - put: resource-repo-release
       params:
-        repository: resource-repo
+        name: release/name
+        commitish: resource-repo/.git/ref
         tag: version/version
         tag_prefix: v
-        only_tag: true
+        globs: [release/*.tgz]
   - put: version
     params: {file: version/version}
 
@@ -156,16 +203,19 @@ jobs:
       params: {save: true}
     - get: version
       params: {bump: patch}
+  - task: create-release
+    config: *create_release_task
   - aggregate:
     - put: resource-image-latest
       params:
         load: resource-image-dev
         additional_tags: version/version
-    - put: resource-repo
+    - put: resource-repo-release
       params:
-        repository: resource-repo
+        name: release/name
+        commitish: resource-repo/.git/ref
         tag: version/version
         tag_prefix: v
-        only_tag: true
+        globs: [release/*.tgz]
   - put: version
     params: {file: version/version}

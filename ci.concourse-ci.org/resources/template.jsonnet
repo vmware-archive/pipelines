@@ -219,7 +219,7 @@ local publish_job(bump) = {
       type: "semver",
       source: {
         driver: "git",
-        initial_version: "1.0.0",
+        initial_version: "0.0.0",
         uri: "git@github.com:concourse/"+resource+"-resource",
         branch: "version",
         file: "version",

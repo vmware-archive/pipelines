@@ -2,7 +2,7 @@
 
 set -e -u
 
-cat resources | while read resource; do
+for resource in $(cat resources); do
   echo "configuring $resource..."
   fly -t resources sp -p $resource -c <(jsonnet -V resource=$resource template.jsonnet)
   echo ""

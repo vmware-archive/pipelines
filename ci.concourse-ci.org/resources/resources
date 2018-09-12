@@ -12,3 +12,4 @@ semver
 s3
 concourse-pipeline
 pool
+datadog-event

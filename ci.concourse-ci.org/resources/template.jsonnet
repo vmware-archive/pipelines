@@ -84,22 +84,15 @@ local create_release = {
   platform: "linux",
   image_resource: {
     type: "registry-image",
-    source: {
-      repository: "ubuntu"
-    }
+    source: {repository: "ubuntu"}
   },
   inputs: [
-    {
-      name: "version"
-    },
-    {
-      name: "resource-image-dev"
-    }
+    {name: "version"},
+    {name: "resource-image-dev"}
   ],
   outputs: [
-    {
-      name: "release"
-    }
+    {name: "release"},
+    {name: "docker"}
   ],
   run: {
     path: "bash",
@@ -116,6 +109,11 @@ local create_release = {
 
         version="$(cat version/number)"
         echo "v${version}" > release/name
+
+        major=$(            echo $version | cut -d. -f1    )
+        major_minor=$(      echo $version | cut -d. -f1,2  )
+        major_minor_patch=$(echo $version | cut -d. -f1,2,3)
+        echo "$major_minor_patch $major_minor $major" > docker/tags
 
         cd resource-image-dev
         tar -czf ../release/%(resource)s-resource-${version}.tgz rootfs resource_metadata.json
@@ -157,7 +155,7 @@ local publish_job(bump) = {
           put: "resource-image-latest",
           params: {
             load: "resource-image-dev",
-            additional_tags: "version/version"
+            additional_tags: "docker/tags"
           }
         },
         {
@@ -219,7 +217,6 @@ local publish_job(bump) = {
       type: "semver",
       source: {
         driver: "git",
-        initial_version: "0.0.0",
         uri: "git@github.com:concourse/"+resource+"-resource",
         branch: "version",
         file: "version",

@@ -110,10 +110,9 @@ local create_release = {
         version="$(cat version/number)"
         echo "v${version}" > release/name
 
-        major=$(            echo $version | cut -d. -f1    )
-        major_minor=$(      echo $version | cut -d. -f1,2  )
-        major_minor_patch=$(echo $version | cut -d. -f1,2,3)
-        echo "$major_minor_patch $major_minor $major" > docker/tags
+        echo $version | cut -d. -f1      > docker/tags
+        echo $version | cut -d. -f1,2   >> docker/tags
+        echo $version | cut -d. -f1,2,3 >> docker/tags
 
         cd resource-image-dev
         tar -czf ../release/%(resource)s-resource-${version}.tgz rootfs resource_metadata.json

@@ -581,27 +581,9 @@ jobs:
         db_persistent_disk_type: small
         main_team_local_users:
         - test
-        - test1
-        - test3
-        - test4
-        - test5
-        - test6
-        - test7
-        - test8
-        - test9
-        - test10
         add_local_users:
-        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
-        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # wats
-        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq' # wats
-        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu' # wats
-        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.' # wats
-        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC' # wats
-        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i' # wats
-        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
-        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
-        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
-        - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
+        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW'
+        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq'
   # - task: wats
   #   file: concourse/ci/wats.yml
   #   params:
@@ -1348,28 +1330,8 @@ jobs:
         db_persistent_disk_type: small
         main_team_local_users:
         - test
-        - test1
-        - test2
-        - test3
-        - test4
-        - test5
-        - test6
-        - test7
-        - test8
-        - test9
-        - test10
         add_local_users:
-        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
-        - 'test1:$2a$10$T8jiznbmBp/kMdrZoRdkDekl9i8YWq0g.iRPndu.oVW.EhNvdPO7e' # wats
-        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq' # wats
-        - 'test3:$2a$10$NCcOzRYaJ3zPVWlV/3miauG0H9PRDZGf1yTFb2mlD6izNydfU.oQu' # wats
-        - 'test4:$2a$10$ewU0vIPw.NUJEn32oOkg9uKKjox3Bhwug4vxsAVUB/qRdH6Y4Jar.' # wats
-        - 'test5:$2a$10$rfeK1hiPYeA9IXQIX9kTyuUuqquUbGUf3JM8Iv9gJe8syzRbB7VHC' # wats
-        - 'test6:$2a$10$KJ5E79USADjtVfuOfyVdYOAOsSDIRHh0LPMrOH/n6c7Cn4bdm2u1i' # wats
-        - 'test7:$2a$10$QqcyRbAU9e5KWZoo3uokkOIEv4HY5/1FzKBDTSRkJEG2rnYNgcKey' # wats
-        - 'test8:$2a$10$OSIDOF4gmAgnAgeXnxndt.MBoHhQBtMwkOWJYIGcQWnm7L8kSm1Na' # wats
-        - 'test9:$2a$10$pZ1wk2teShR6bkpAME7Kie0L0e7TrXMzPQvf4W3bIZTRciNRXdnue' # watsjs
-        - 'test10:$2a$10$wJlVFxWDkcOgnb8tH2NhjeJQKaUiEHFqLY1FT3uC5s5CFh55ZaIcO' # bosh-lengthy-output
+        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW'
   - task: wats
     file: concourse/ci/wats.yml
     params:
@@ -1433,7 +1395,8 @@ jobs:
         main_team_local_users:
         - test
         add_local_users:
-        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW' # wats
+        - 'test:$2a$10$iEnPPyINsvif.wytAMgf7.HcForfasqXbbHyNsR5knEcRhjuR4MEW'
+        - 'test2:$2a$10$w9ijd0MV6b3LjPlRNlZN/.dYan8aITbJU9Wb1fH0Z8.qgqnEGHEmq'
   - task: watsjs
     file: concourse/ci/watsjs.yml
     params:

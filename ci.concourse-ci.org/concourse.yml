@@ -982,8 +982,8 @@ jobs:
     params:
       KUBE_CONFIG: ((kube_config))
       RELEASE_NAME: concourse-k8s-test
-      ATC_USERNAME: "test1"
-      ATC_PASSWORD: "test1"
+      ATC_USERNAME: "test"
+      ATC_PASSWORD: "test"
     timeout: 1h
 
 - name: nightly

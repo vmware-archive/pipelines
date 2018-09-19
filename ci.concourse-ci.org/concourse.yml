@@ -2,7 +2,6 @@ groups:
 - name: develop
   jobs:
   - unit
-  - fly
   - baggageclaim
   - rc
   - fly-rc
@@ -58,21 +57,13 @@ jobs:
     trigger: true
   - task: make
     file: concourse/ci/tasks/make.yml
-  - task: unit
-    file: concourse/ci/tasks/unit.yml
-    input_mapping: {concourse: built-concourse}
-
-- name: fly
-  public: true
-  plan:
-  - get: concourse
-    trigger: true
   - aggregate:
-    - task: linux
-      file: concourse/ci/tasks/fly-linux.yml
-    - task: darwin
+    - task: unit
+      file: concourse/ci/tasks/unit.yml
+      input_mapping: {concourse: built-concourse}
+    - task: fly-darwin
       file: concourse/ci/tasks/fly-darwin.yml
-    - task: windows
+    - task: fly-windows
       file: concourse/ci/tasks/fly-windows.yml
 
 - name: baggageclaim
@@ -120,7 +111,7 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-    passed: [unit, fly]
+    passed: [unit]
   - get: garden-runc
   - get: version
     params: {pre: rc}

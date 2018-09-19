@@ -1,14 +1,10 @@
 groups:
 - name: develop
   jobs:
-  - atc
+  - unit
   - fly
-  - go-concourse
-  - worker
   - baggageclaim
-  - skymarshal
   - web
-  - tsa
   - rc
   - fly-rc
   - bin-rc
@@ -55,6 +51,15 @@ groups:
   - bump-golang
 
 jobs:
+- name: unit
+  public: true
+  serial: true
+  plan:
+  - get: concourse
+    trigger: true
+  - task: unit
+    file: concourse/ci/tasks/unit.yml
+
 - name: fly
   public: true
   plan:
@@ -68,51 +73,6 @@ jobs:
     - task: windows
       file: concourse/ci/tasks/fly-windows.yml
 
-- name: go-concourse
-  public: true
-  plan:
-  - get: concourse
-    trigger: true
-  - task: go-unit
-    file: concourse/ci/tasks/go-concourse.yml
-
-- name: worker
-  public: true
-  plan:
-  - get: concourse
-    trigger: true
-  - task: go-unit
-    file: concourse/ci/tasks/worker.yml
-
-- name: atc
-  public: true
-  serial: true
-  plan:
-  - get: concourse
-    trigger: true
-  - task: go-unit
-    file: concourse/ci/tasks/atc.yml
-    privileged: true
-
-- name: baggageclaim
-  public: true
-  serial: true
-  plan:
-  - get: concourse
-    trigger: true
-  - task: build
-    privileged: true
-    file: concourse/ci/tasks/baggageclaim.yml
-
-- name: skymarshal
-  public: true
-  serial: true
-  plan:
-  - get: concourse
-    trigger: true
-  - task: build
-    file: concourse/ci/tasks/skymarshal.yml
-
 - name: web
   public: true
   serial: true
@@ -125,13 +85,15 @@ jobs:
     - task: elm-unit
       file: concourse/ci/tasks/web-elm.yml
 
-- name: tsa
+- name: baggageclaim
   public: true
+  serial: true
   plan:
-  - get: concourse
+  - get: baggageclaim
     trigger: true
-  - task: build
-    file: concourse/ci/tasks/tsa.yml
+  - task: unit
+    privileged: true
+    file: baggageclaim/ci/unit.yml
 
 - name: major
   public: true
@@ -168,7 +130,7 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-    passed: [atc, fly, go-concourse, tsa, baggageclaim, skymarshal, web, worker]
+    passed: [unit, fly, web, worker]
   - get: garden-runc
   - get: version
     params: {pre: rc}
@@ -1616,6 +1578,12 @@ resources:
     uri: git@github.com:concourse/concourse.git
     branch: master
     private_key: ((concourse_repo_private_key))
+
+- name: baggageclaim
+  type: git
+  source:
+    uri: https://github.com/concourse/baggageclaim.git
+    branch: master
 
 - name: garden-runc-src
   type: git

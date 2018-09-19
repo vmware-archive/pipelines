@@ -4,7 +4,6 @@ groups:
   - unit
   - fly
   - baggageclaim
-  - web
   - rc
   - fly-rc
   - bin-rc
@@ -57,8 +56,11 @@ jobs:
   plan:
   - get: concourse
     trigger: true
+  - task: make
+    file: concourse/ci/tasks/make.yml
   - task: unit
     file: concourse/ci/tasks/unit.yml
+    input_mapping: {concourse: built-concourse}
 
 - name: fly
   public: true
@@ -72,18 +74,6 @@ jobs:
       file: concourse/ci/tasks/fly-darwin.yml
     - task: windows
       file: concourse/ci/tasks/fly-windows.yml
-
-- name: web
-  public: true
-  serial: true
-  plan:
-  - get: concourse
-    trigger: true
-  - aggregate:
-    - task: build
-      file: concourse/ci/tasks/web.yml
-    - task: elm-unit
-      file: concourse/ci/tasks/web-elm.yml
 
 - name: baggageclaim
   public: true
@@ -130,7 +120,7 @@ jobs:
   plan:
   - get: concourse
     trigger: true
-    passed: [unit, fly, web]
+    passed: [unit, fly]
   - get: garden-runc
   - get: version
     params: {pre: rc}

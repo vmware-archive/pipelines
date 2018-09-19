@@ -72,9 +72,14 @@ jobs:
   plan:
   - get: baggageclaim
     trigger: true
-  - task: unit
-    privileged: true
-    file: baggageclaim/ci/unit.yml
+  - aggregate:
+    - task: unit-linux
+      privileged: true
+      file: baggageclaim/ci/unit-linux.yml
+    - task: unit-darwin
+      file: baggageclaim/ci/unit-darwin.yml
+    - task: unit-windows
+      file: baggageclaim/ci/unit-windows.yml
 
 - name: major
   public: true

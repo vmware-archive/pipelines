@@ -97,8 +97,11 @@ jobs:
       trigger: true
     - get: registry-image-resource
       trigger: true
+    - get: golang
+      trigger: true
   - put: concourse-dev
     params:
+      load_base: golang
       dockerfile: concourse/dev/Dockerfile
       build: .
 
@@ -1705,18 +1708,22 @@ resources:
     username: ((docker.username))
     password: ((docker.password))
 
+- name: bosh-cli
+  type: s3
+  source:
+    bucket: bosh-cli-artifacts
+    regexp: bosh-cli-([^-]+)-linux-amd64
+
+- name: golang
+  type: docker-image
+  source: {repository: golang, tag: '1'}
+
 - name: golang-windows
   type: s3
   source:
     endpoint: storage.googleapis.com
     bucket: golang
     regexp: 'go(\d+\.\d+(\.\d+)?)\.windows-amd64\.msi'
-
-- name: bosh-cli
-  type: s3
-  source:
-    bucket: bosh-cli-artifacts
-    regexp: bosh-cli-([^-]+)-linux-amd64
 
 - name: golang-linux
   type: s3

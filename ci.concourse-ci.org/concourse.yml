@@ -99,9 +99,13 @@ jobs:
       trigger: true
     - get: golang
       trigger: true
+      params: {save: true}
+    - get: concourse-dev
+      params: {save: true}
   - put: concourse-dev
     params:
       load_base: golang
+      cache_from: [concourse-dev]
       dockerfile: concourse/dev/Dockerfile
       build: .
 

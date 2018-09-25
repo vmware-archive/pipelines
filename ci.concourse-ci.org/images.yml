@@ -1,5 +1,38 @@
 ---
 resources:
+- name: concourse
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse
+
+- name: dumb-init
+  type: github-release
+  source:
+    owner: Yelp
+    repository: dumb-init
+    access_token: ((concourse_github_dummy.access_token))
+
+- name: gdn
+  type: github-release
+  source:
+    owner: cloudfoundry
+    repository: garden-runc-release
+    access_token: ((concourse_github_dummy.access_token))
+
+- name: mock-resource
+  type: github-release
+  source:
+    owner: concourse
+    repository: mock-resource
+    access_token: ((concourse_github_dummy.access_token))
+
+- name: registry-image-resource
+  type: github-release
+  source:
+    owner: concourse
+    repository: registry-image-resource
+    access_token: ((concourse_github_dummy.access_token))
+
 - name: bosh-cli
   type: s3
   source:
@@ -248,6 +281,13 @@ resources:
     user: docker
     repository: compose
     access_token: ((concourse_github_dummy.access_token))
+
+- name: concourse-dev
+  type: docker-image
+  source:
+    repository: concourse/dev
+    username: ((docker.username))
+    password: ((docker.password))
 
 jobs:
 - name: build-topgun-ci
@@ -553,3 +593,30 @@ jobs:
     params:
       load_base: golang-1.x
       build: concourse-static-golang
+
+- name: build-concourse-dev
+  public: true
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse
+      trigger: true
+    - get: gdn
+      trigger: true
+    - get: dumb-init
+      trigger: true
+    - get: mock-resource
+      trigger: true
+    - get: registry-image-resource
+      trigger: true
+    - get: golang-1.x
+      trigger: true
+      params: {save: true}
+    - get: concourse-dev
+      params: {save: true}
+  - put: concourse-dev
+    params:
+      load_base: golang-1.x
+      cache_from: [concourse-dev]
+      dockerfile: concourse/dev/Dockerfile
+      build: .

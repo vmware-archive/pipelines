@@ -19,7 +19,6 @@ groups:
   - prop-deploy
   - check-helm-chart-params
   - k8s-testflight
-  - concourse-dev
 
 - name: publish
   jobs:
@@ -81,33 +80,6 @@ jobs:
       file: baggageclaim/ci/unit-darwin.yml
     - task: unit-windows
       file: baggageclaim/ci/unit-windows.yml
-
-- name: concourse-dev
-  public: true
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse
-      trigger: true
-    - get: gdn
-      trigger: true
-    - get: dumb-init
-      trigger: true
-    - get: mock-resource
-      trigger: true
-    - get: registry-image-resource
-      trigger: true
-    - get: golang
-      trigger: true
-      params: {save: true}
-    - get: concourse-dev
-      params: {save: true}
-  - put: concourse-dev
-    params:
-      load_base: golang
-      cache_from: [concourse-dev]
-      dockerfile: concourse/dev/Dockerfile
-      build: .
 
 - name: major
   public: true
@@ -1512,27 +1484,6 @@ resources:
   source:
     repository: cloudfoundry/garden-runc-release
 
-- name: gdn
-  type: github-release
-  source:
-    owner: cloudfoundry
-    repository: garden-runc-release
-    access_token: ((concourse_github_dummy.access_token))
-
-- name: mock-resource
-  type: github-release
-  source:
-    owner: concourse
-    repository: mock-resource
-    access_token: ((concourse_github_dummy.access_token))
-
-- name: registry-image-resource
-  type: github-release
-  source:
-    owner: concourse
-    repository: registry-image-resource
-    access_token: ((concourse_github_dummy.access_token))
-
 - name: postgres-release
   type: bosh-io-release
   source:
@@ -1691,13 +1642,6 @@ resources:
     repository: postgres
     tag: latest
 
-- name: concourse-dev
-  type: docker-image
-  source:
-    repository: concourse/dev
-    username: ((docker.username))
-    password: ((docker.password))
-
 - name: concourse-image-rc
   type: docker-image
   source:
@@ -1717,10 +1661,6 @@ resources:
   source:
     bucket: bosh-cli-artifacts
     regexp: bosh-cli-([^-]+)-linux-amd64
-
-- name: golang
-  type: docker-image
-  source: {repository: golang, tag: '1'}
 
 - name: golang-windows
   type: s3

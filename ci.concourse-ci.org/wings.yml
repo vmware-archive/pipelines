@@ -135,9 +135,8 @@ resources:
 - name: concourse
   type: git
   source:
-    uri: git@github.com:concourse/concourse.git
+    uri: https://github.com/concourse/concourse
     branch: master
-    private_key: ((concourse_repo_private_key))
 
 resource_types:
 - name: bosh-deployment
